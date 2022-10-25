@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE vehicles SYSTEM "http://matsim.org/files/dtd/dvrp_vehicles_v1.dtd">
+
+<!-- let all vehicles start at the charging station -->
+<vehicles>
+	<vehicle id="drtA_1" start_link="777" t_0="0.0" t_1="86400.0" capacity="1"/>
+	<vehicle id="drtA_2" start_link="777" t_0="0.0" t_1="86400.0" capacity="1"/>
+</vehicles>
