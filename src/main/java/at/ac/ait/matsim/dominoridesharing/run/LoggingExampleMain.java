@@ -1,10 +1,10 @@
-package at.ac.ait.matsim.dominoridesharing;
+package at.ac.ait.matsim.dominoridesharing.run;
 
 import org.apache.log4j.Logger;
 
-public class ExampleMain {
+public class LoggingExampleMain {
 
-    private static Logger LOGGER = Logger.getLogger(ExampleMain.class);
+    private static Logger LOGGER = Logger.getLogger(LoggingExampleMain.class);
 
     public static void main(String[] args) {
         LOGGER.warn("this is a warning!");

@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.dominoridesharing;
+package at.ac.ait.matsim.dominoridesharing.run;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.otfvis.OTFVisLiveModule;
@@ -25,7 +25,7 @@ public class Main {
 
         // uncomment the next line for a live visualization.
         // note, that OTFVis is deprecated and outdated (but maybe it's still useful)
-        // controler.addOverridingModule(new OTFVisLiveModule());
+        controler.addOverridingModule(new OTFVisLiveModule());
 
         controler.run();
     }
