@@ -18,7 +18,7 @@
 
 	<Loggers>
 		<!-- enable more detailed logging for our parts of the code -->
-		<Logger name="at.ac.ait.matsim.dominoridesharing" level="debug" additivity="false">
+		<Logger name="at.ac.ait.matsim" level="debug" additivity="false">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="stderr" />
 		</Logger>
