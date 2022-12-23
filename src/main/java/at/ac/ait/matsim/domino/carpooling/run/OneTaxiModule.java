@@ -18,7 +18,7 @@
  * *********************************************************************** *
  */
 
-package at.ac.ait.matsim.dominoridesharing.run;
+package at.ac.ait.matsim.domino.carpooling.run;
 
 import java.net.URL;
 
@@ -47,9 +47,9 @@ import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
-import at.ac.ait.matsim.dominoridesharing.optimizer.OneTaxiActionCreator;
-import at.ac.ait.matsim.dominoridesharing.optimizer.OneTaxiOptimizer;
-import at.ac.ait.matsim.dominoridesharing.request.OneTaxiRequest;
+import at.ac.ait.matsim.domino.carpooling.optimizer.OneTaxiActionCreator;
+import at.ac.ait.matsim.domino.carpooling.optimizer.OneTaxiOptimizer;
+import at.ac.ait.matsim.domino.carpooling.request.OneTaxiRequest;
 
 /**
  * @author Michal Maciejewski (michalm)

@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.dominoridesharing.request;
+package at.ac.ait.matsim.domino.carpooling.request;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -19,7 +19,8 @@ public class CarpoolingRequest implements Request {
 
     private final Link toLink;
 
-    public CarpoolingRequest(Id<Request> id, double submissionTime, Id<Person> driverId, String mode, Link fromLink, Link toLink) {
+    public CarpoolingRequest(Id<Request> id, double submissionTime, Id<Person> driverId, String mode, Link fromLink,
+            Link toLink) {
         this.id = id;
         this.submissionTime = submissionTime;
         this.driverId = driverId;

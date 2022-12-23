@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.dominoridesharing.run;
+package at.ac.ait.matsim.domino.carpooling.run;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.contrib.otfvis.OTFVisLiveModule;

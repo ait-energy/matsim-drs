@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package at.ac.ait.matsim.dominoridesharing.run;
+package at.ac.ait.matsim.domino.carpooling.run;
 
 import java.net.URL;
 import java.nio.file.Path;

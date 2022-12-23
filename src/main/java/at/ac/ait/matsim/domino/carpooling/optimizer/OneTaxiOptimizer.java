@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package at.ac.ait.matsim.dominoridesharing.optimizer;
+package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import java.util.List;
 
@@ -49,8 +49,8 @@ import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.dominoridesharing.request.OneTaxiRequest;
-import at.ac.ait.matsim.dominoridesharing.schedule.OneTaxiServeTask;
+import at.ac.ait.matsim.domino.carpooling.request.OneTaxiRequest;
+import at.ac.ait.matsim.domino.carpooling.schedule.OneTaxiServeTask;
 
 /**
  * @author michalm

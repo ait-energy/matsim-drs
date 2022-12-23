@@ -1,3 +1,3 @@
-# domino-ridesharing
+# domino-carpooling
 
-Towards the proper simulation of ride-sharing for project DOMINO.
+Towards the proper simulation of carpooling for project DOMINO.

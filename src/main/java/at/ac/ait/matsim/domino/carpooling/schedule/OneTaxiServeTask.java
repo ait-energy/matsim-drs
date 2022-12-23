@@ -17,14 +17,14 @@
  *                                                                         *
  * *********************************************************************** */
 
-package at.ac.ait.matsim.dominoridesharing.schedule;
+package at.ac.ait.matsim.domino.carpooling.schedule;
 
-import static at.ac.ait.matsim.dominoridesharing.optimizer.OneTaxiOptimizer.OneTaxiTaskType;
+import static at.ac.ait.matsim.domino.carpooling.optimizer.OneTaxiOptimizer.OneTaxiTaskType;
 
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.contrib.dvrp.schedule.DefaultStayTask;
 
-import at.ac.ait.matsim.dominoridesharing.request.OneTaxiRequest;
+import at.ac.ait.matsim.domino.carpooling.request.OneTaxiRequest;
 
 /**
  * @author michalm

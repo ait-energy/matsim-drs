@@ -17,9 +17,9 @@
  *                                                                         *
  * *********************************************************************** */
 
-package at.ac.ait.matsim.dominoridesharing.optimizer;
+package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import static at.ac.ait.matsim.dominoridesharing.optimizer.OneTaxiOptimizer.OneTaxiTaskType;
+import static at.ac.ait.matsim.domino.carpooling.optimizer.OneTaxiOptimizer.OneTaxiTaskType;
 
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.dvrp.fleet.DvrpVehicle;
@@ -38,7 +38,7 @@ import org.matsim.core.mobsim.framework.MobsimTimer;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.dominoridesharing.schedule.OneTaxiServeTask;
+import at.ac.ait.matsim.domino.carpooling.schedule.OneTaxiServeTask;
 
 /**
  * @author michalm

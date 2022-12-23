@@ -1,8 +1,8 @@
-package at.ac.ait.matsim.dominoridesharing;
+package at.ac.ait.matsim.domino.carpooling;
 
 import org.junit.jupiter.api.Test;
 
-import at.ac.ait.matsim.dominoridesharing.run.LoggingExampleMain;
+import at.ac.ait.matsim.domino.carpooling.run.LoggingExampleMain;
 
 import org.junit.jupiter.api.Assertions;
 

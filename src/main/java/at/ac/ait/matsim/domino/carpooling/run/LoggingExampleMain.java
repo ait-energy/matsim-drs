@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.dominoridesharing.run;
+package at.ac.ait.matsim.domino.carpooling.run;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

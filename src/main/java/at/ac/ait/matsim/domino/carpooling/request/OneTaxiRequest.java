@@ -17,7 +17,7 @@
  *                                                                         *
  * *********************************************************************** */
 
-package at.ac.ait.matsim.dominoridesharing.request;
+package at.ac.ait.matsim.domino.carpooling.request;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;

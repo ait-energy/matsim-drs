@@ -1,10 +1,10 @@
-package at.ac.ait.matsim.dominoridesharing;
+package at.ac.ait.matsim.domino.carpooling;
 
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
-import at.ac.ait.matsim.dominoridesharing.run.RunOneTaxiExample;
+import at.ac.ait.matsim.domino.carpooling.run.RunOneTaxiExample;
 
 public class RunOneTaxiExampleTest {
 

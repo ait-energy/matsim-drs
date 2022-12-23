@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.dominoridesharing.run;
+package at.ac.ait.matsim.domino.carpooling.run;
 
 import java.util.List;
 import java.util.Map.Entry;

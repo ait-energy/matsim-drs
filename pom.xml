@@ -10,9 +10,9 @@
 		<artifactId>java-project</artifactId>
 		<version>11.1.1</version>
 	</parent>
-	<artifactId>domino-ridesharing</artifactId>
+	<artifactId>domino-carpooling</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<description>MATSim ride-sharing module for project DOMINO</description>
+	<description>MATSim carpooling module for project DOMINO</description>
 
 	<properties>
 		<matsim.version>14.0</matsim.version>
@@ -31,8 +31,8 @@
 	</properties>
 
 	<scm>
-		<url>https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-ridesharing</url>
-		<connection>scm:git:https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-ridesharing.git</connection>
+		<url>https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling</url>
+		<connection>scm:git:https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling.git</connection>
 		<tag>HEAD</tag>
 	</scm>
 
