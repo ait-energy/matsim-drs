@@ -18,27 +18,14 @@
 
 	<Loggers>
 		<!-- enable more detailed logging for our parts of the code -->
-		<!--<Logger name="at.ac.ait.matsim.dominoridesharing" level="debug" additivity="false">
+		<Logger name="at.ac.ait.matsim.dominoridesharing" level="debug" additivity="false">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="stderr" />
-		</Logger>-->
+		</Logger>
 		<Root level="info">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="stderr" />
 		</Root>
 	</Loggers>
-
-	<!-- debug setup so that logs from DijkstraNodeVisitor are printed as well 
-		(where the LOGGERS are named FORWARD / BACKWARD -->
-	<!-- 	<Loggers>
-		<Logger name="org" level="info" additivity="false">
-			<AppenderRef ref="stdout" />
-			<AppenderRef ref="stderr" />
-		</Logger>
-		<Root level="debug">
-			<AppenderRef ref="stdout" />
-			<AppenderRef ref="stderr" />
-		</Root>
-	</Loggers> -->
 
 </Configuration>
