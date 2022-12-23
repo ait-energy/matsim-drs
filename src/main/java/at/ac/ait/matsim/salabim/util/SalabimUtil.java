@@ -261,6 +261,24 @@ public class SalabimUtil {
 
     }
 
+    public static class LegWithActivities {
+        public final Activity startActivity;
+        public final Leg leg;
+        public final Activity endActivity;
+
+        public LegWithActivities(Activity startActivity, Leg leg, Activity endActivity) {
+            this.startActivity = startActivity;
+            this.leg = leg;
+            this.endActivity = endActivity;
+        }
+
+    }
+
+    public static LegWithActivities getActivitiesForLeg(List<? extends PlanElement> elements, Leg leg) {
+        int i = elements.indexOf(leg);
+        return new LegWithActivities((Activity) elements.get(i - 1), leg, (Activity) elements.get(i + 1));
+    }
+
     public static List<Leg> getLegsForMode(List<? extends PlanElement> elements, String mode) {
         return elements.stream() //
                 .filter(Leg.class::isInstance) //
