@@ -1,32 +1,25 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
-import org.checkerframework.checker.units.qual.A;
-import org.matsim.api.core.v01.TransportMode;
-import org.matsim.core.config.ReflectiveConfigGroup;
+import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 
-import java.util.ArrayList;
+public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
-public class CarpoolingConfigGroup extends ReflectiveConfigGroup {
+    public double driverMaxWaitTime = 600;// [s]
 
-    public double driverMaxWaitTime = Double.NaN;// [s]
+    public double driverMaxTravelTimeToPassenger = 600;// [s]
 
-    public double driverMaxTravelTimeToPassenger = Double.NaN;// [s]
+    public double passengerMaxWaitTime = 600;// [s]
 
-    public double passengerMaxWaitTime = Double.NaN;// [s]
+    public double maxDistance = 10000;// [m]
 
-    public double maxDistance = Double.NaN;// [m]
+    public double detourFactorWeight = 0.5;
 
-    public double detourFactorWeight = Double.NaN;
+    public double driverWaitingTimeWeight = 0.5;
 
-    public double driverWaitingTimeWeight = Double.NaN;
-
-    public double passengerWaitingTimeWeight = Double.NaN;
+    public double passengerWaitingTimeWeight = 0.5;
 
     public CarpoolingConfigGroup(String name) {
         super(name);
     }
 
-    public CarpoolingConfigGroup(String name, boolean storeUnknownParametersAsStrings) {
-        super(name, storeUnknownParametersAsStrings);
-    }
 }
