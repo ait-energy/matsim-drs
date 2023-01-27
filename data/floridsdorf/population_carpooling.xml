@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+<population>
+	<attributes>
+		<attribute name="coordinateReferenceSystem" class="java.lang.String" >epsg:31256</attribute>
+	</attributes>
+	<!-- ====================================================================== -->
+
+	<person id="person1_carDriver">
+		<plan selected="yes">
+			<activity type="home" link="1511" end_time="04:00:00" >
+			</activity>
+			<leg mode="car">
+			</leg>
+			<activity type="work" link="1364" start_time="04:45:00" end_time="12:00:00" >
+			</activity>
+			<leg mode="car">
+			</leg>
+			<activity type="home" link="1511" start_time="12:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person2_carpoolingDriver">
+		<plan selected="yes">
+			<activity type="home" link="1511" end_time="05:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="work" link="1364" start_time="05:45:00" end_time="13:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="home" link="1511" start_time="13:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person3_carpoolingDriver">
+		<plan selected="yes">
+			<activity type="home" link="1100" end_time="05:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="work" link="574" start_time="05:45:00" end_time="13:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="home" link="1100" start_time="13:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person4_carpoolingDriver">
+		<plan selected="yes">
+			<activity type="home" link="1511" end_time="03:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="work" link="1364" start_time="03:45:00" end_time="11:00:00" >
+			</activity>
+			<leg mode="carpoolingDriver">
+			</leg>
+			<activity type="home" link="1511" start_time="11:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person5_carpoolingPassenger">
+		<plan selected="yes">
+			<activity type="home" link="1533" end_time="05:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="work" link="1143" start_time="05:45:00" end_time="13:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="home" link="1533" start_time="13:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person6_carpoolingPassenger">
+		<plan selected="yes">
+			<activity type="home" link="1771" end_time="05:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="work" link="809" start_time="05:45:00" end_time="13:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="home" link="1771" start_time="13:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person7_carpoolingPassenger">
+		<plan selected="yes">
+			<activity type="home" link="1434" end_time="05:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="home" link="1434" start_time="13:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+	<person id="person8_carpoolingPassenger">
+		<plan selected="yes">
+			<activity type="home" link="1533" end_time="08:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="work" link="1143" start_time="08:45:00" end_time="16:00:00" >
+			</activity>
+			<leg mode="carpoolingPassenger">
+			</leg>
+			<activity type="home" link="1533" start_time="16:45:00" >
+			</activity>
+		</plan>
+
+	</person>
+
+	<!-- ====================================================================== -->
+
+</population>
