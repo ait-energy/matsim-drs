@@ -1,76 +1,53 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BestRequestFinder {
-
     private final LeastCostPathCalculator router;
-    private final Network network;
     private final CarpoolingConfigGroup cfgGroup;
-
-    public BestRequestFinder(LeastCostPathCalculator router, Network network, CarpoolingConfigGroup cfgGroup) {
+    public BestRequestFinder(LeastCostPathCalculator router, CarpoolingConfigGroup cfgGroup) {
         this.router = router;
-        this.network = network;
         this.cfgGroup = cfgGroup;
     }
 
-    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest,
-            ArrayList<CarpoolingRequest> filteredPassengersRequests) {
-        HashMap<CarpoolingRequest, Double> requestsScores = new HashMap<>();
-        CarpoolingRequest bestPassengerRequest = null;
-        Coord driverOrigin = driverRequest.getOrigin();
-        Coord driverDestination = driverRequest.getDestination();
-        Node driverOriginNode= NetworkUtils.getNearestNode(network,driverOrigin);
-        Node driverDestinationNode = NetworkUtils.getNearestNode(network,driverDestination);
-        LeastCostPathCalculator.Path originalPath = router.calcLeastCostPath(driverOriginNode,
-                driverDestinationNode, 0, null, null);
+    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, HashMap<CarpoolingRequest, LeastCostPathCalculator.Path> filteredPassengersRequests) {
+        HashMap<CarpoolingRequest,Double> bestRequests = new HashMap<>();
+        Node driverOrigin = driverRequest.getFromLink().getFromNode();
+        Node driverDestination = driverRequest.getToLink().getFromNode();
+        LeastCostPathCalculator.Path originalPath = router.calcLeastCostPath(driverOrigin,
+                driverDestination, 0, null, null);
         double originalPathTravelTime = originalPath.travelTime;
-        for (CarpoolingRequest passengerRequest : filteredPassengersRequests) {
-            Coord passengerOrigin = passengerRequest.getOrigin();
-            Coord passengerDestination = passengerRequest.getDestination();
-            Node passengerOriginNode = NetworkUtils.getNearestNode(network,passengerOrigin);
-            Node passengerDestinationNode = NetworkUtils.getNearestNode(network,passengerDestination);
-            LeastCostPathCalculator.Path pathToCustomer = router.calcLeastCostPath(driverOriginNode,
-                    passengerOriginNode, 0, null, null);
-            double t1 = pathToCustomer.travelTime;
-            LeastCostPathCalculator.Path pathWithCustomer = router.calcLeastCostPath(passengerOriginNode,
-                    passengerDestinationNode, 0, null, null);
-            double t2 = pathWithCustomer.travelTime;
+        for (CarpoolingRequest passengerRequest : filteredPassengersRequests.keySet()){
+            Node passengerOrigin = passengerRequest.getFromLink().getFromNode();
+            Node passengerDestination = passengerRequest.getToLink().getFromNode();
+            LeastCostPathCalculator.Path pathToCustomer = filteredPassengersRequests.get(passengerRequest);
+            double travelTimeToCustomer = pathToCustomer.travelTime;
+            LeastCostPathCalculator.Path pathWithCustomer = router.calcLeastCostPath(passengerOrigin,
+                    passengerDestination, 0, null, null);
+            double travelTimeWithCustomer = pathWithCustomer.travelTime;
             LeastCostPathCalculator.Path pathAfterCustomer = router
-                    .calcLeastCostPath(passengerDestinationNode, driverDestinationNode, 0, null, null);
-            double t3 = pathAfterCustomer.travelTime;
-            double newPathTravelTime = t1 + t2 + t3;
-            double detourTime = originalPathTravelTime - newPathTravelTime; // Or detour factor?
-            double driverWaitingTime = Math
-                    .max(passengerRequest.getSubmissionTime() - (driverRequest.getSubmissionTime() + t1), 0);
-            double passengerWaitingTime = Math
-                    .max((driverRequest.getSubmissionTime() + t1) - passengerRequest.getSubmissionTime(), 0);
-
-            double score = (-cfgGroup.detourFactorWeight * detourTime) + (-cfgGroup.driverWaitingTimeWeight * driverWaitingTime)
-                    + (-cfgGroup.passengerWaitingTimeWeight * passengerWaitingTime);
-
-            requestsScores.put(passengerRequest, score);
-        }
-
-        double highestScore = Double.NEGATIVE_INFINITY;
-        for (HashMap.Entry<CarpoolingRequest, Double> currentRequest : requestsScores.entrySet()) {
-            if (currentRequest.getValue() > highestScore) {
-                highestScore = currentRequest.getValue();
+                    .calcLeastCostPath(passengerDestination, driverDestination, 0, null, null);
+            double travelTimeAfterCustomer = pathAfterCustomer.travelTime;
+            double newPathTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
+            double detourFactor = newPathTravelTime/originalPathTravelTime;
+            if (detourFactor<cfgGroup.maxDetourFactor){
+                bestRequests.put(passengerRequest,detourFactor);
             }
         }
-        for (HashMap.Entry<CarpoolingRequest, Double> currentRequest : requestsScores.entrySet()) {
-            if (currentRequest.getValue() == highestScore) {
-                bestPassengerRequest = currentRequest.getKey();
-            }
+        return findRequestWithLeastDetour(bestRequests);
+    }
+
+    private static CarpoolingRequest findRequestWithLeastDetour(HashMap<CarpoolingRequest,Double> bestRequests) {
+        if (!bestRequests.isEmpty()){
+            return Collections.min(bestRequests.entrySet(), Map.Entry.comparingByValue()).getKey();
+        }else {
+            return null;
         }
-        return bestPassengerRequest;
     }
 }

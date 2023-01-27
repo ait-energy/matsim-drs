@@ -1,35 +1,34 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.contrib.common.util.DistanceUtils;
+import org.matsim.api.core.v01.network.Node;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import java.util.ArrayList;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import java.util.HashMap;
+import java.util.List;
 
 public class RequestsFilter {
-
     private final CarpoolingConfigGroup cfgGroup;
+    private final LeastCostPathCalculator router;
 
-    public RequestsFilter(CarpoolingConfigGroup cfgGroup) {
+    public RequestsFilter(CarpoolingConfigGroup cfgGroup, LeastCostPathCalculator router) {
         this.cfgGroup = cfgGroup;
+        this.router = router;
     }
 
-    public ArrayList<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest, ArrayList<CarpoolingRequest> passengersRequests) {
-        ArrayList<CarpoolingRequest> filteredPassengerRequests = new ArrayList<>();
-        Coord driverOrigin = driverRequest.getOrigin();
-        Coord driverDestination = driverRequest.getDestination();
-        double driverDepartureTime = driverRequest.getSubmissionTime();
+    public HashMap<CarpoolingRequest, LeastCostPathCalculator.Path>  filterRequests(CarpoolingRequest driverRequest, List<CarpoolingRequest> passengersRequests) {
+        HashMap<CarpoolingRequest, LeastCostPathCalculator.Path> filteredPassengerRequests = new HashMap<>();
+        Node driverOrigin = driverRequest.getFromLink().getFromNode();
+        double driverDepartureTime = driverRequest.getDepartureTime();
         for (CarpoolingRequest passengersRequest : passengersRequests) {
-            Coord passengerOrigin = passengersRequest.getOrigin();
-            Coord passengerDestination = passengersRequest.getDestination();
-            double passengerDepartureTime = passengersRequest.getSubmissionTime();
-            double distanceAtOrigin = DistanceUtils.calculateDistance(driverOrigin, passengerOrigin);
-            double distanceAtDestination = DistanceUtils.calculateDistance(driverDestination, passengerDestination);
-            boolean driverDepartureTimeWindow = passengerDepartureTime - cfgGroup.driverMaxWaitTime - cfgGroup.driverMaxTravelTimeToPassenger < driverDepartureTime &&  driverDepartureTime < passengerDepartureTime + cfgGroup.passengerMaxWaitTime;
-            boolean maxDistanceBetweenDriverAndPassengerAtOrigin = distanceAtOrigin < cfgGroup.maxDistance;
-            boolean maxDistanceBetweenDriverAndPassengerAtDestination  = distanceAtDestination < cfgGroup.maxDistance;
-            if (driverDepartureTimeWindow && maxDistanceBetweenDriverAndPassengerAtOrigin  && maxDistanceBetweenDriverAndPassengerAtDestination) {
-                filteredPassengerRequests.add(passengersRequest);
+            Node passengerOrigin = passengersRequest.getFromLink().getFromNode();
+            double passengerDepartureTime = passengersRequest.getDepartureTime();
+            LeastCostPathCalculator.Path pathToPassenger = router.calcLeastCostPath(driverOrigin,
+                    passengerOrigin, 0, null, null);
+            double expectedPickupTime = driverDepartureTime+pathToPassenger.travelTime;
+            boolean withinPassengerDepartureTimeWindow = (passengerDepartureTime-cfgGroup.passengerDepartureTimeAdjustment) < expectedPickupTime && expectedPickupTime < (passengerDepartureTime+cfgGroup.passengerDepartureTimeAdjustment);
+            if (withinPassengerDepartureTimeWindow) {
+                filteredPassengerRequests.put(passengersRequest,pathToPassenger);
             }
         }
         return filteredPassengerRequests;

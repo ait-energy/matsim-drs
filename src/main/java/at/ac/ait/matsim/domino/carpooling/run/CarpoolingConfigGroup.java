@@ -4,19 +4,13 @@ import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSet
 
 public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
-    public double driverMaxWaitTime = 600;// [s]
+    public int cellSize = 800; //in
+    public int neighbourhoodSize = 30;
+    public double passengerDepartureTimeAdjustment = 0.5*60*60;
+    public int timeSegmentLength = 2*60*60;
+    public double maxDetourFactor = 2;
 
-    public double driverMaxTravelTimeToPassenger = 600;// [s]
 
-    public double passengerMaxWaitTime = 600;// [s]
-
-    public double maxDistance = 10000;// [m]
-
-    public double detourFactorWeight = 0.5;
-
-    public double driverWaitingTimeWeight = 0.5;
-
-    public double passengerWaitingTimeWeight = 0.5;
 
     public CarpoolingConfigGroup(String name) {
         super(name);

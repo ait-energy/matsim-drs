@@ -1,57 +1,72 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-
-import java.util.ArrayList;
-import java.util.Map;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import org.matsim.api.core.v01.Id;
+import org.matsim.contrib.dvrp.optimizer.Request;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class RequestTimeSegmentRegistry {
-    private final Map<Integer, ArrayList<CarpoolingRequest>> requestsInTimeSegments;
-    private final SegmentLength segmentLength;
-    private enum SegmentLength {
+    private final Map<Integer, Map<Id<Request>,CarpoolingRequest>> requestsInTimeSegments;
+    private final CarpoolingConfigGroup cfgGroup;
 
-        HalfAnHour(48),
-        OneHour(24),
-        OneAndAHalfHour(16),
-        TwoHours(12),
-        ThreeHours(8);
-        final int numberOfSegments;
-        SegmentLength(int numberOfSegments) {
-            this.numberOfSegments = numberOfSegments;
-        }
-    }
-
-    public RequestTimeSegmentRegistry(Map<Integer, ArrayList<CarpoolingRequest>> requestsInTimeSegments, SegmentLength segmentLength) {
-        this.requestsInTimeSegments = requestsInTimeSegments;
-        this.segmentLength = segmentLength;
+    public RequestTimeSegmentRegistry(CarpoolingConfigGroup cfgGroup) {
+        this.cfgGroup = cfgGroup;
+        this.requestsInTimeSegments = new HashMap<>();
     }
 
     public void addRequest(CarpoolingRequest request) {
-        int timeSegment = getTimeSegment(request);
-        requestsInTimeSegments.get(timeSegment).add(request);
+        int timeSegment = getTimeSegment(request.getDepartureTime(),cfgGroup.timeSegmentLength);
+        Map<Id<Request>,CarpoolingRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
+        if(requestsInTimeSegment!=null) {
+            if(requestsInTimeSegments.get(timeSegment).get(request.getId())!= null) {
+                throw new IllegalStateException(request + " is already in the registry");
+            }else{
+                requestsInTimeSegment.put(request.getId(), request);
+            }
+        }else {
+            requestsInTimeSegment  = new HashMap<>();
+            requestsInTimeSegment.put(request.getId(), request);
+            requestsInTimeSegments.put(timeSegment,requestsInTimeSegment);
+        }
     }
 
     public void removeRequest(CarpoolingRequest request) {
-        int timeSegment = getTimeSegment(request);
-        requestsInTimeSegments.get(timeSegment).add(request);
+        int timeSegment = getTimeSegment(request.getDepartureTime(),cfgGroup.timeSegmentLength);
+        if(requestsInTimeSegments.get(timeSegment).remove(request.getId())== null) {
+            throw new IllegalStateException(request + " is not in the registry");
+        }
     }
 
-    public Stream<CarpoolingRequest> findClosestRequests(CarpoolingRequest request, int minCount) {
-        return requestsInTimeSegments.get(getTimeSegment(request)).stream().limit(minCount);
+    public Stream<CarpoolingRequest> findNearestRequests(double departureTime) {
+        int timeSegment = getTimeSegment(departureTime,cfgGroup.timeSegmentLength);
+        Stream<CarpoolingRequest> requestsInPreviousSegment = Stream.empty();
+        Stream<CarpoolingRequest> requestsInCurrentSegment = Stream.empty();
+        Stream<CarpoolingRequest> requestsInNextSegment = Stream.empty();
+        if(requestsInTimeSegments.get(timeSegment-1)!=null){
+            requestsInPreviousSegment = requestsInTimeSegments.get(timeSegment-1).values().stream();
+        }
+        if(requestsInTimeSegments.get(timeSegment)!=null){
+            requestsInCurrentSegment = requestsInTimeSegments.get(timeSegment).values().stream();
+        }
+        if(requestsInTimeSegments.get(timeSegment+1)!=null){
+            requestsInNextSegment = requestsInTimeSegments.get(timeSegment+1).values().stream();
+        }
+        return Stream.concat(Stream.concat(requestsInPreviousSegment,requestsInNextSegment),requestsInCurrentSegment);
     }
 
-
-    private int getTimeSegment(CarpoolingRequest request) {
+    static int getTimeSegment(double departureTime,int segmentLength) {
+        if(segmentLength<=0){
+            throw new RuntimeException("Time Segment length should be bigger than zero");
+        }
         int timeSegment = 0;
-        int counter = 0;
-        for (int i = 0; i < 24*60*60; i=i+(24*60*60/segmentLength.numberOfSegments)) {
-            counter++;
-            if (request.getSubmissionTime()>=i && request.getSubmissionTime()<(i+(24*60*60/segmentLength.numberOfSegments))){
-                timeSegment = counter;
-            }
+        for (int i = 0; i <= departureTime; i=i+segmentLength) {
+            timeSegment++;
         }
         return timeSegment;
-        //Throw an exception when timeSegment is zero saying that the request is not submitted within the day
+    }
+    public Map<Integer, Map<Id<Request>, CarpoolingRequest>> getRequestsInTimeSegments() {
+        return requestsInTimeSegments;
     }
 }
