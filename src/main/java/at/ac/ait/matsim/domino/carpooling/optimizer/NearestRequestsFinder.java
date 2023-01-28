@@ -17,8 +17,8 @@ public class NearestRequestsFinder {
         this.cfgGroup = cfgGroup;
         this.requestsRegister = requestsRegister;
     }
-    public List<CarpoolingRequest> findRegistryIntersections(Node node, double departureTime) {
-       return  getIntersection(cfgGroup,requestsRegister.getOriginZonalRegistry().findNearestRequests(node),requestsRegister.getDestinationZonalRegistry().findNearestRequests(node),requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
+    public List<CarpoolingRequest> findRegistryIntersections(Node origin, Node destination, double departureTime) {
+       return  getIntersection(cfgGroup,requestsRegister.getOriginZonalRegistry().findNearestRequests(origin),requestsRegister.getDestinationZonalRegistry().findNearestRequests(destination),requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
     }
 
     static List<CarpoolingRequest> getIntersection(CarpoolingConfigGroup cfgGroup,Stream<CarpoolingRequest> originNearRequests, Stream<CarpoolingRequest> destinationNearRequests, Stream<CarpoolingRequest> temporalNearRequests) {

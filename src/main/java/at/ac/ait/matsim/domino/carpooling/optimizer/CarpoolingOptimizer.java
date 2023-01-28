@@ -33,7 +33,7 @@ public class CarpoolingOptimizer {
             requestsRegister.addRequest(passengersRequest);
         }
         for (int i = 0; i < driversRequests.size(); i++) {
-            List<CarpoolingRequest> nearestRequests = nearestRequestsFinder.findRegistryIntersections(driversRequests.get(i).getFromLink().getFromNode(),driversRequests.get(i).getDepartureTime());
+            List<CarpoolingRequest> nearestRequests = nearestRequestsFinder.findRegistryIntersections(driversRequests.get(i).getFromLink().getFromNode(),driversRequests.get(i).getToLink().getFromNode(),driversRequests.get(i).getDepartureTime());
             HashMap<CarpoolingRequest, LeastCostPathCalculator.Path> filteredPassengersRequests = requestsFilter.filterRequests(driversRequests.get(i),nearestRequests);
             CarpoolingRequest bestPassengerRequest = bestRequestFinder.findBestRequest(driversRequests.get(i), filteredPassengersRequests);
             if (!(bestPassengerRequest == null)) {
