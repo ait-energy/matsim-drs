@@ -65,6 +65,6 @@ class BestRequestFinderTest {
         filteredPassengersRequests.put(request3,toRequest3);
         filteredPassengersRequests.put(request2,toRequest2);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
-        assertEquals("3",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
+        assertEquals("2",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
     }
 }

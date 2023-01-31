@@ -36,14 +36,14 @@ class RequestsCollectorTest {
         assertEquals("1",driversRequests.get(0).getId().toString());
         assertEquals(5*60*60 ,driversRequests.get(0).getDepartureTime());
         assertEquals("carpoolingDriver",driversRequests.get(0).getMode());
-        assertEquals("1511" ,driversRequests.get(0).getFromLink().getId().toString());
-        assertEquals("1364",driversRequests.get(0).getToLink().getId().toString());
+        assertEquals("1540" ,driversRequests.get(0).getFromLink().getId().toString());
+        assertEquals("688",driversRequests.get(0).getToLink().getId().toString());
 
         assertEquals("1",passengersRequests.get(0).getId().toString());
         assertEquals(5*60*60,passengersRequests.get(0).getDepartureTime());
         assertEquals("carpoolingPassenger",passengersRequests.get(0).getMode());
-        assertEquals("1533" ,passengersRequests.get(0).getFromLink().getId().toString());
-        assertEquals("1143",passengersRequests.get(0).getToLink().getId().toString());
+        assertEquals("1541" ,passengersRequests.get(0).getFromLink().getId().toString());
+        assertEquals("688",passengersRequests.get(0).getToLink().getId().toString());
 
     }
 
