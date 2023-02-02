@@ -1,41 +1,57 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import org.matsim.api.core.v01.network.Node;
-import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.core.router.DefaultRoutingRequest;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.RoutingRequest;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import org.matsim.facilities.FacilitiesUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BestRequestFinder {
-    private final LeastCostPathCalculator router;
+    private final RoutingModule router;
     private final CarpoolingConfigGroup cfgGroup;
-    public BestRequestFinder(LeastCostPathCalculator router, CarpoolingConfigGroup cfgGroup) {
+    Logger LOGGER = LogManager.getLogger();
+    public BestRequestFinder(RoutingModule router, CarpoolingConfigGroup cfgGroup) {
         this.router = router;
         this.cfgGroup = cfgGroup;
     }
 
-    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, HashMap<CarpoolingRequest, LeastCostPathCalculator.Path> filteredPassengersRequests) {
+    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, HashMap<CarpoolingRequest, List<? extends PlanElement>> filteredPassengersRequests) {
         HashMap<CarpoolingRequest,Double> bestRequests = new HashMap<>();
-        Node driverOrigin = driverRequest.getFromLink().getFromNode();
-        Node driverDestination = driverRequest.getToLink().getFromNode();
-        LeastCostPathCalculator.Path originalPath = router.calcLeastCostPath(driverOrigin,
-                driverDestination, 0, null, null);
-        double originalPathTravelTime = originalPath.travelTime;
+        RoutingRequest toDestination = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverRequest.getFromLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), driverRequest.getDepartureTime(), driverRequest.getPerson());
+        List<? extends PlanElement> originalRouteList = router.calcRoute(toDestination);
+        if (originalRouteList.size()>1||!(originalRouteList.get(0) instanceof Leg)) {LOGGER.warn("Their should be only one leg in this route.");}
+        Leg originalRoute= (Leg) originalRouteList.get(0);
+        double originalRouteTravelTime = originalRoute.getTravelTime().seconds();
         for (CarpoolingRequest passengerRequest : filteredPassengersRequests.keySet()){
-            Node passengerOrigin = passengerRequest.getFromLink().getFromNode();
-            Node passengerDestination = passengerRequest.getToLink().getFromNode();
-            LeastCostPathCalculator.Path pathToCustomer = filteredPassengersRequests.get(passengerRequest);
-            double travelTimeToCustomer = pathToCustomer.travelTime;
-            LeastCostPathCalculator.Path pathWithCustomer = router.calcLeastCostPath(passengerOrigin,
-                    passengerDestination, 0, null, null);
-            double travelTimeWithCustomer = pathWithCustomer.travelTime;
-            LeastCostPathCalculator.Path pathAfterCustomer = router
-                    .calcLeastCostPath(passengerDestination, driverDestination, 0, null, null);
-            double travelTimeAfterCustomer = pathAfterCustomer.travelTime;
-            double newPathTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
-            double detourFactor = newPathTravelTime/originalPathTravelTime;
+            List<? extends PlanElement> legToCustomerList = filteredPassengersRequests.get(passengerRequest);
+            if (legToCustomerList.size()>1||!(legToCustomerList.get(0) instanceof Leg)) {LOGGER.warn("Their should be only one leg in this route.");}
+            Leg legToCustomer= (Leg) legToCustomerList.get(0);
+            double travelTimeToCustomer = legToCustomer.getTravelTime().seconds();
+
+            RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), travelTimeToCustomer, driverRequest.getPerson());
+            List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
+            if (legWithCustomerList.size()>1||!(legWithCustomerList.get(0) instanceof Leg)) {LOGGER.warn("Their should be only one leg in this route.");}
+            Leg legWithCustomer= (Leg) legWithCustomerList.get(0);
+            double travelTimeWithCustomer = legWithCustomer.getTravelTime().seconds();
+
+            RoutingRequest afterCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), travelTimeToCustomer, driverRequest.getPerson());
+            List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
+            if (legAfterCustomerList.size()>1||!(legAfterCustomerList.get(0) instanceof Leg)) {LOGGER.warn("Their should be only one leg in this route.");}
+            Leg legAfterCustomer= (Leg) legAfterCustomerList.get(0);
+            double travelTimeAfterCustomer = legAfterCustomer.getTravelTime().seconds();
+
+            double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
+            double detourFactor = newRouteTravelTime/originalRouteTravelTime;
             if (detourFactor<cfgGroup.maxDetourFactor){
                 bestRequests.put(passengerRequest,detourFactor);
             }

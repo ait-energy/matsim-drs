@@ -6,9 +6,9 @@ import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import com.google.inject.Inject;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
-import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
 import org.matsim.contrib.zone.SquareGridSystem;
 import org.matsim.contrib.zone.ZonalSystem;
 import org.matsim.core.controler.events.ControlerEvent;
@@ -16,12 +16,7 @@ import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.controler.listener.StartupListener;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.TripStructureUtils;
-import org.matsim.core.router.speedy.SpeedyDijkstra;
-import org.matsim.core.router.speedy.SpeedyGraph;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+import org.matsim.core.router.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +45,8 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
         Network network = eventScenario.getNetwork();
-        LeastCostPathCalculator router = new SpeedyDijkstra(new SpeedyGraph(network),new FreeSpeedTravelTime(),new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
         CarpoolingConfigGroup cfgGroup = new CarpoolingConfigGroup("cfgGroup");
+        RoutingModule router = tripRouter.getRoutingModule("carpoolingDriver");
         ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(),cfgGroup.cellSize);
         RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,true);
         RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,false);
@@ -71,47 +66,51 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
 
         PopulationFactory populationFactory = population.getFactory();
 
-       /* RouteFactories routeFactories = new RouteFactories();
-        routeFactories.createRoute(NetworkRoute.class, passengerRequest.getToLink().getId(), driverRequest.getToLink().getId())
-        legWithCustomer.setRoute(RouteUtils.createLinkNetworkRouteImpl(passengerRequest.getFromLink().getId(),passengerRequest.getToLink().getId()));*/
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
-
-            modifyPlan(entry.getKey(),entry.getValue(),populationFactory,eventScenario,router);
+            modifyPlan(entry.getKey(),entry.getValue(),populationFactory,router);
         }
     }
 
-    private void modifyPlan(CarpoolingRequest driverRequest,CarpoolingRequest passengerRequest,PopulationFactory factory,Scenario scenario,LeastCostPathCalculator router ) {
+    private void modifyPlan(CarpoolingRequest driverRequest,CarpoolingRequest passengerRequest,PopulationFactory factory,RoutingModule router ) {
         LOGGER.info(driverRequest.getPerson().getId()+" matched with "+passengerRequest.getPerson().getId()+".");
         List<PlanElement> planElements = driverRequest.getPerson().getSelectedPlan().getPlanElements();
         LOGGER.info(driverRequest.getPerson().getId()+" had "+planElements.size()+" plan elements before matching.");
 
-
-        LeastCostPathCalculator.Path pathToCustomer = router.calcLeastCostPath(driverRequest.getFromLink().getFromNode(),
-                passengerRequest.getFromLink().getFromNode(), 0, null, null);
-        double pickupTime = driverRequest.getDepartureTime()+pathToCustomer.travelTime;
+        RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getFromLink()), driverRequest.getDepartureTime(), driverRequest.getPerson());
+        List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
+        Leg legToCustomer= (Leg) legToCustomerList.get(0);
+        for (PlanElement planElement : legToCustomerList) {
+            if (planElement instanceof Leg){
+                ((Leg) planElement).setMode("carpoolingDriver");
+                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+            }
+        }
+        double pickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getFromLink().getId());
         pickup.setEndTime(pickupTime);
 
-        List<? extends PlanElement> legToCustomerList = tripRouter.calcRoute("carpoolingDriver",
-                FacilitiesUtils.toFacility(driverRequest.getTrip().getOriginActivity(), scenario.getActivityFacilities()),
-                FacilitiesUtils.toFacility(pickup, scenario.getActivityFacilities()),
-                driverRequest.getTrip().getOriginActivity().getEndTime().orElse(0), driverRequest.getPerson(), null);
+        RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), pickupTime, driverRequest.getPerson());
+        List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
+        Leg legWithCustomer= (Leg) legWithCustomerList.get(0);
+        for (PlanElement planElement : legWithCustomerList) {
+            if (planElement instanceof Leg){
+                ((Leg) planElement).setMode("carpoolingDriver");
+                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+            }
+        }
 
-        LeastCostPathCalculator.Path pathWithCustomer = router.calcLeastCostPath(passengerRequest.getFromLink().getFromNode(),
-                passengerRequest.getToLink().getFromNode(), 0, null, null);
-        double dropoffTime = pickupTime+pathWithCustomer.travelTime;
+        double dropoffTime = pickupTime+ legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getToLink().getId());
-        dropoff.setEndTime(dropoffTime);
+        pickup.setEndTime(dropoffTime);
 
-        List<? extends PlanElement> legWithCustomerList = tripRouter.calcRoute("carpoolingDriver",
-                FacilitiesUtils.toFacility(pickup, scenario.getActivityFacilities()),
-                FacilitiesUtils.toFacility(dropoff, scenario.getActivityFacilities()),
-                pickup.getEndTime().orElse(0), driverRequest.getPerson(), null);
-
-        List<? extends PlanElement> legAfterCustomerList = tripRouter.calcRoute("carpoolingDriver",
-                FacilitiesUtils.toFacility(dropoff, scenario.getActivityFacilities()),
-                FacilitiesUtils.toFacility(driverRequest.getTrip().getDestinationActivity(), scenario.getActivityFacilities()),
-                dropoff.getEndTime().orElse(0), driverRequest.getPerson(), null);
+        RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
+        List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
+        for (PlanElement planElement : legAfterCustomerList) {
+            if (planElement instanceof Leg){
+                ((Leg) planElement).setMode("carpoolingDriver");
+                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+            }
+        }
 
         ArrayList<PlanElement> newRoute = new ArrayList<>();
         newRoute.addAll(legToCustomerList);
@@ -124,6 +123,8 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         TripRouter.insertTrip(planElements, startActivity, newRoute, endActivity);
         LOGGER.info("Now "+driverRequest.getPerson().getId()+" has "+planElements.size()+" plan elements after matching.");
     }
+
+
 
     void undoPlansModification(Population population) {
         for (Map.Entry<Id<Person>, ? extends Person> entry : population.getPersons().entrySet()) {

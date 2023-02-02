@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.api.core.v01.population.PlanElement;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class CarpoolingOptimizer {
         }
         for (int i = 0; i < driversRequests.size(); i++) {
             List<CarpoolingRequest> nearestRequests = nearestRequestsFinder.findRegistryIntersections(driversRequests.get(i).getFromLink().getFromNode(),driversRequests.get(i).getToLink().getFromNode(),driversRequests.get(i).getDepartureTime());
-            HashMap<CarpoolingRequest, LeastCostPathCalculator.Path> filteredPassengersRequests = requestsFilter.filterRequests(driversRequests.get(i),nearestRequests);
+            HashMap<CarpoolingRequest, List<? extends PlanElement >> filteredPassengersRequests = requestsFilter.filterRequests(driversRequests.get(i),nearestRequests);
             CarpoolingRequest bestPassengerRequest = bestRequestFinder.findBestRequest(driversRequests.get(i), filteredPassengersRequests);
             if (!(bestPassengerRequest == null)) {
                 matchedRequests.put(driversRequests.get(i), bestPassengerRequest);

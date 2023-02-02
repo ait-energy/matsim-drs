@@ -6,12 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.optimizer.Request;
-import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.router.speedy.SpeedyDijkstra;
-import org.matsim.core.router.speedy.SpeedyGraph;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.TripRouter;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RequestsFilterTest {
     Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    LeastCostPathCalculator router = new SpeedyDijkstra(new SpeedyGraph(network),new FreeSpeedTravelTime(),new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
+    TripRouter tripRouter;
+    RoutingModule router = tripRouter.getRoutingModule("carpoolingDriver");
     RequestsFilter requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"),router);
     CarpoolingRequest driverRequest = new CarpoolingRequest(Id.create(1, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
     CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1674)),null);
