@@ -1,26 +1,30 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import org.junit.jupiter.api.Test;
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.network.Network;
-import org.matsim.contrib.dvrp.optimizer.Request;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.router.RoutingModule;
-import org.matsim.core.router.TripRouter;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Network;
+import org.matsim.contrib.dvrp.optimizer.Request;
+import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
+import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.NetworkRoutingModule;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.speedy.SpeedyDijkstra;
+import org.matsim.core.router.speedy.SpeedyGraph;
+import org.matsim.core.router.util.LeastCostPathCalculator;
+import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
+
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 class RequestsFilterTest {
-    Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    TripRouter tripRouter;
-    RoutingModule router = tripRouter.getRoutingModule("carpoolingDriver");
-    RequestsFilter requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"),router);
+    static Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
     CarpoolingRequest driverRequest = new CarpoolingRequest(Id.create(1, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
     CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1674)),null);
     CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class),null,null,11*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
@@ -28,6 +32,17 @@ class RequestsFilterTest {
     CarpoolingRequest request5 = new CarpoolingRequest(Id.create(5, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
     CarpoolingRequest request6 = new CarpoolingRequest(Id.create(6, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1037)),null);
     List<CarpoolingRequest> passengersRequests = new ArrayList<>();
+
+    static RequestsFilter requestsFilter;
+
+    @BeforeAll
+    static void setup() {
+        LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
+                new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
+        RoutingModule router = new NetworkRoutingModule("carpoolingDriver", PopulationUtils.getFactory(), network,
+                dijkstra);
+        requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"), router);
+    }
 
     @Test
     void testDriverArrivesTooLateToPassengerDueToDistance(){
