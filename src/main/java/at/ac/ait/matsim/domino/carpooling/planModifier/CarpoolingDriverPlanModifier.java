@@ -101,7 +101,7 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
 
         double dropoffTime = pickupTime+ legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getToLink().getId());
-        pickup.setEndTime(dropoffTime);
+        dropoff.setEndTime(dropoffTime);
 
         RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
