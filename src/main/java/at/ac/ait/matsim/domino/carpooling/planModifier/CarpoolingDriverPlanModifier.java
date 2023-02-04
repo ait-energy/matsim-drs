@@ -6,7 +6,6 @@ import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import com.google.inject.Inject;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.contrib.zone.SquareGridSystem;
@@ -81,7 +80,6 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         Leg legToCustomer= (Leg) legToCustomerList.get(0);
         for (PlanElement planElement : legToCustomerList) {
             if (planElement instanceof Leg){
-                ((Leg) planElement).setMode("carpoolingDriver");
                 planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
             }
         }
@@ -94,7 +92,6 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         Leg legWithCustomer= (Leg) legWithCustomerList.get(0);
         for (PlanElement planElement : legWithCustomerList) {
             if (planElement instanceof Leg){
-                ((Leg) planElement).setMode("carpoolingDriver");
                 planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
             }
         }
@@ -107,7 +104,6 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
         for (PlanElement planElement : legAfterCustomerList) {
             if (planElement instanceof Leg){
-                ((Leg) planElement).setMode("carpoolingDriver");
                 planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
             }
         }
