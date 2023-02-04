@@ -6,9 +6,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
 
     public int cellSize = 800; //in
     public int neighbourhoodSize = 30;
-    public double passengerDepartureTimeAdjustment = 0.5*60*60;
+    public double passengerDepartureTimeAdjustment = 0.1*60*60;
     public int timeSegmentLength = 2*60*60;
-    public double maxDetourFactor = 2;
+    public double maxDetourFactor = 1.5;
 
 
 

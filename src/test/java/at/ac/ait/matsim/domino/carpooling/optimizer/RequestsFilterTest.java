@@ -32,7 +32,6 @@ class RequestsFilterTest {
     CarpoolingRequest request5 = new CarpoolingRequest(Id.create(5, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
     CarpoolingRequest request6 = new CarpoolingRequest(Id.create(6, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1037)),null);
     List<CarpoolingRequest> passengersRequests = new ArrayList<>();
-
     static RequestsFilter requestsFilter;
 
     @BeforeAll

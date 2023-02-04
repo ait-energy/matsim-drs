@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,12 +31,11 @@ import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 class BestRequestFinderTest {
-
     static Network network;
     static CarpoolingRequest driverRequest, request2, request3, request4, request5;
     static List<? extends PlanElement> request2Route, request3Route, request4Route, request5Route;
-    static RoutingRequest toRequest, toRequest2, toRequest3, toRequest4, toRequest5;
-    static Map<CarpoolingRequest, List<? extends PlanElement>> filteredPassengersRequests;
+    static RoutingRequest  toRequest2, toRequest3, toRequest4, toRequest5;
+    static List<CarpoolingRequest> filteredPassengersRequests;
     static BestRequestFinder bestRequestFinder;
 
     @BeforeAll
@@ -58,14 +57,14 @@ class BestRequestFinderTest {
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request2Route = router.calcRoute(toRequest2);
 
-        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1037)), network.getLinks().get(Id.createLinkId(186)));
         toRequest3 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request3.getFromLink()), FacilitiesUtils.wrapLink(request3.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request3Route = router.calcRoute(toRequest3);
 
-        request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
+        request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(186)), network.getLinks().get(Id.createLinkId(1037)));
         toRequest4 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request4.getFromLink()), FacilitiesUtils.wrapLink(request4.getToLink()),
@@ -79,7 +78,7 @@ class BestRequestFinderTest {
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request5Route = router.calcRoute(toRequest5);
 
-        filteredPassengersRequests = new HashMap<>();
+        filteredPassengersRequests = new ArrayList<>();
     }
 
     @Test
@@ -89,26 +88,26 @@ class BestRequestFinderTest {
 
     @Test
     void noRequestsLessThanDetourFactorThreshold(){
-        filteredPassengersRequests.put(request4,request4Route);
-        filteredPassengersRequests.put(request5,request5Route);
+        filteredPassengersRequests.add(request4);
+        filteredPassengersRequests.add(request5);
         assertNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
     }
 
     @Test
     void oneRequestLessThanDetourFactorThreshold(){
-        filteredPassengersRequests.put(request4,request4Route);
-        filteredPassengersRequests.put(request5,request5Route);
-        filteredPassengersRequests.put(request3,request3Route);
+        filteredPassengersRequests.add(request4);
+        filteredPassengersRequests.add(request5);
+        filteredPassengersRequests.add(request3);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("3",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
     }
 
     @Test
     void moreThanOneRequestLessThanDetourFactorThreshold(){
-        filteredPassengersRequests.put(request4,request4Route);
-        filteredPassengersRequests.put(request5,request5Route);
-        filteredPassengersRequests.put(request3,request3Route);
-        filteredPassengersRequests.put(request2,request2Route);
+        filteredPassengersRequests.add(request4);
+        filteredPassengersRequests.add(request5);
+        filteredPassengersRequests.add(request3);
+        filteredPassengersRequests.add(request2);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("2",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
     }

@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.domino;
+package at.ac.ait.matsim.domino.carpooling.util;
 
 import java.util.List;
 
