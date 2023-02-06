@@ -1,6 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
-import at.ac.ait.matsim.domino.carpooling.planModifier.CarpoolingDriverPlanModifier;
+import at.ac.ait.matsim.domino.carpooling.driver.CarpoolingDriverPlanModifier;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
@@ -29,7 +29,7 @@ public class RunSimpleCarpoolingExample {
         carpoolingPassengerScore.setMarginalUtilityOfTraveling(0);
         config.planCalcScore().addModeParams(carpoolingPassengerScore);
 
-        config.plansCalcRoute().setNetworkModes( Arrays.asList( TransportMode.car,"carpoolingPassenger","carpoolingDriver" ) );
+        config.plansCalcRoute().setNetworkModes(Arrays.asList( TransportMode.car,"carpoolingPassenger","carpoolingDriver" ) );
         config.qsim().setMainModes(Arrays.asList( TransportMode.car,"carpoolingPassenger","carpoolingDriver" ));
 
         Scenario scenario = ScenarioUtils.loadScenario(config);

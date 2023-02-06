@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.domino.carpooling.planModifier;
+package at.ac.ait.matsim.domino.carpooling.driver;
 
 import at.ac.ait.matsim.domino.carpooling.optimizer.*;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
