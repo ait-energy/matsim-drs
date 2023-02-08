@@ -30,6 +30,8 @@ import org.matsim.facilities.FacilitiesUtils;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
+@SuppressWarnings("all")
+
 class BestRequestFinderTest {
     static Network network;
     static CarpoolingRequest driverRequest, request2, request3, request4, request5;
@@ -100,6 +102,7 @@ class BestRequestFinderTest {
         filteredPassengersRequests.add(request3);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("3",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
+        filteredPassengersRequests.removeAll(filteredPassengersRequests);
     }
 
     @Test
@@ -110,5 +113,6 @@ class BestRequestFinderTest {
         filteredPassengersRequests.add(request2);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("2",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
+        filteredPassengersRequests.removeAll(filteredPassengersRequests);
     }
 }
