@@ -86,6 +86,8 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         double pickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getFromLink().getId());
         pickup.setEndTime(pickupTime);
+        pickup.getAttributes().putAttribute("type", "pickup");
+        pickup.getAttributes().putAttribute("passengerId", passengerRequest.getPerson().getId().toString());
 
         RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), pickupTime, driverRequest.getPerson());
         List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
@@ -99,6 +101,8 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         double dropoffTime = pickupTime+ legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getToLink().getId());
         dropoff.setEndTime(dropoffTime);
+        pickup.getAttributes().putAttribute("type", "dropoff");
+        pickup.getAttributes().putAttribute("passengerId", passengerRequest.getPerson().getId().toString());
 
         RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
