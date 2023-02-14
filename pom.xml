@@ -64,6 +64,12 @@
 			<version>${matsim.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.matsim</groupId>
+			<artifactId>pt2matsim</artifactId>
+			<version>22.11</version>
+		</dependency>
+
 		<!-- logging dependencies below this line (same as in MATSim 14.0) -->
 
 		<dependency>

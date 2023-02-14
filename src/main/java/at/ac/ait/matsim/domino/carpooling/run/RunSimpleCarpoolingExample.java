@@ -1,6 +1,9 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
 import at.ac.ait.matsim.domino.carpooling.driver.CarpoolingDriverPlanModifier;
+import at.ac.ait.matsim.salabim.util.CarFirstLinkAssigner;
+import at.ac.ait.matsim.salabim.util.SalabimUtil;
+
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
@@ -33,6 +36,11 @@ public class RunSimpleCarpoolingExample {
         config.qsim().setMainModes(Arrays.asList( TransportMode.car,"carpoolingPassenger","carpoolingDriver" ));
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
+        // add a car link to all activities with coords only
+        new CarFirstLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
+        // add coords to all activities with links only
+        SalabimUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
+
         Controler controler = new Controler(scenario);
         controler.addControlerListener(new CarpoolingDriverPlanModifier());
         controler.run();
