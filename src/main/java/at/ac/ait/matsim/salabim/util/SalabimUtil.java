@@ -26,9 +26,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.api.core.v01.population.Route;
-import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.StageActivityTypeIdentifier;
@@ -38,20 +36,23 @@ import org.matsim.facilities.ActivityFacility;
 
 import com.google.common.collect.ImmutableSet;
 
-import at.ac.ait.matsim.salabim.routing.SalabimConfigGroup;
+// import at.ac.ait.matsim.salabim.routing.SalabimConfigGroup;
 
 public class SalabimUtil {
 
 	public static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
-	public static SalabimConfigGroup addOrGetSalabimConfigGroup(Scenario scenario) {
-		return ConfigUtils.addOrGetModule(scenario.getConfig(), SalabimConfigGroup.GROUP_NAME,
-				SalabimConfigGroup.class);
-	}
+	// public static SalabimConfigGroup addOrGetSalabimConfigGroup(Scenario
+	// scenario) {
+	// return ConfigUtils.addOrGetModule(scenario.getConfig(),
+	// SalabimConfigGroup.GROUP_NAME,
+	// SalabimConfigGroup.class);
+	// }
 
-	public static SalabimConfigGroup addOrGetSalabimConfigGroup(Config config) {
-		return ConfigUtils.addOrGetModule(config, SalabimConfigGroup.GROUP_NAME, SalabimConfigGroup.class);
-	}
+	// public static SalabimConfigGroup addOrGetSalabimConfigGroup(Config config) {
+	// return ConfigUtils.addOrGetModule(config, SalabimConfigGroup.GROUP_NAME,
+	// SalabimConfigGroup.class);
+	// }
 
 	/**
 	 * @return the path where the scenario, i.e. the config.xml, population etc.,
