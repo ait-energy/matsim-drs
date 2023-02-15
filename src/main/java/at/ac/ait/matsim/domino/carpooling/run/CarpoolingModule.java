@@ -9,7 +9,6 @@ public final class CarpoolingModule extends AbstractModule {
 
 	@Override
 	public void install() {
-		// TODO re-enable!! (deactivated for test purposes)
 		addControlerListenerBinding().to(CarpoolingDriverPlanModifier.class);
 		installQSimModule(new AbstractQSimModule() {
 			@Override

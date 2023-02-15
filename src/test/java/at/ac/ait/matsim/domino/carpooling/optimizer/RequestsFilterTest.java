@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -25,23 +26,38 @@ import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 class RequestsFilterTest {
-    static Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    CarpoolingRequest driverRequest = new CarpoolingRequest(Id.create(1, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
-    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1674)),null);
-    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class),null,null,11*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
-    CarpoolingRequest request4 = new CarpoolingRequest(Id.create(4, Request.class),null,null,7*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
-    CarpoolingRequest request5 = new CarpoolingRequest(Id.create(5, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
-    CarpoolingRequest request6 = new CarpoolingRequest(Id.create(6, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1037)),null);
-    List<CarpoolingRequest> passengersRequests = new ArrayList<>();
+    static Network network;
     static RequestsFilter requestsFilter;
+    static CarpoolingRequest driverRequest, request2, request3, request4, request5, request6;
+    List<CarpoolingRequest> passengersRequests = new ArrayList<>();
 
     @BeforeAll
     static void setup() {
+        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
+        Carpooling.addCarpoolingDriverToCarLinks(network);
+
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
                 dijkstra);
         requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"), router);
+        driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
+                null, network.getLinks().get(Id.createLinkId(1540)), null);
+        request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1674)), null);
+        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1540)), null);
+        request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1540)), null);
+        request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1540)), null);
+        request6 = new CarpoolingRequest(Id.create(6, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1037)), null);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        passengersRequests = new ArrayList<>();
     }
 
     @Test

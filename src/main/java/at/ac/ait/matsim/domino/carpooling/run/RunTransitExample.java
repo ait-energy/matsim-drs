@@ -1,15 +1,12 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
-import at.ac.ait.matsim.domino.carpooling.driver.CarpoolingDriverPlanModifier;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import java.util.Arrays;
+import at.ac.ait.matsim.domino.carpooling.driver.CarpoolingDriverPlanModifier;
 
 public class RunTransitExample {
 

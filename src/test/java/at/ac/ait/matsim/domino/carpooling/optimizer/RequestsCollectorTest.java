@@ -2,6 +2,9 @@ package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -13,11 +16,24 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RequestsCollectorTest {
-    Population population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
-    Population populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
-    Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    RequestsCollector requestsCollector = new RequestsCollector(population,network);
-    RequestsCollector requestsCollectorNoRequests = new RequestsCollector(populationWithZeroCarpoolingDrivers,NetworkUtils.createNetwork());
+    static Population population, populationWithZeroCarpoolingDrivers;
+    static Network network;
+    RequestsCollector requestsCollector, requestsCollectorNoRequests;
+
+    @BeforeAll
+    static void setup() {
+        population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
+        populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
+        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
+        Carpooling.addCarpoolingDriverToCarLinks(network);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        requestsCollector = new RequestsCollector(population, network);
+        requestsCollectorNoRequests = new RequestsCollector(populationWithZeroCarpoolingDrivers,
+                NetworkUtils.createNetwork());
+    }
 
     @Test
     void testNumberOfRequests(){
