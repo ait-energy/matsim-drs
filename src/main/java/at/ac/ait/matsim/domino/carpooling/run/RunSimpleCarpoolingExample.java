@@ -12,27 +12,28 @@ import org.matsim.core.scenario.ScenarioUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import at.ac.ait.matsim.domino.carpooling.CarpoolingMode;
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 
 public class RunSimpleCarpoolingExample {
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling.xml");
+        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling_simulatedPassengers.xml");
         config.network().setInputFile("network_carpooling.xml");
         config.plans().setInputFile("population_carpooling.xml");
+        // config.plans().setInputFile("population_carpooling_solved.xml");
 
         PlanCalcScoreConfigGroup.ModeParams carpoolingDriverScore = new PlanCalcScoreConfigGroup.ModeParams(
-                CarpoolingMode.DRIVER);
+                Carpooling.DRIVER_MODE);
         config.planCalcScore().addModeParams(carpoolingDriverScore);
         PlanCalcScoreConfigGroup.ModeParams carpoolingPassengerScore = new PlanCalcScoreConfigGroup.ModeParams(
-                CarpoolingMode.PASSENGER);
+                Carpooling.PASSENGER_MODE);
         config.planCalcScore().addModeParams(carpoolingPassengerScore);
 
         Set<String> networkModes = Sets.newHashSet(config.plansCalcRoute().getNetworkModes());
-        networkModes.addAll(CarpoolingMode.ALL);
+        networkModes.add(Carpooling.DRIVER_MODE);
         config.plansCalcRoute().setNetworkModes(Lists.newArrayList(networkModes));
 
         Set<String> mainModes = Sets.newHashSet(config.qsim().getMainModes());
-        mainModes.addAll(CarpoolingMode.ALL);
+        mainModes.add(Carpooling.DRIVER_MODE);
         config.qsim().setMainModes(Lists.newArrayList(mainModes));
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
