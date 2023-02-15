@@ -1,5 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import org.junit.jupiter.api.Test;
@@ -13,16 +14,35 @@ import org.matsim.core.network.NetworkUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+
 @SuppressWarnings("all")
 
 class RequestZonalRegistryTest {
 
-    Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(),new CarpoolingConfigGroup("cfgGroup").cellSize);
-    RequestZonalRegistry zonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,true);
-    CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1540)),null);
-    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class),null,null,8*60*60,null, network.getLinks().get(Id.createLinkId(1037)),null);
-    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class),null,null,8*60*60,null,network.getLinks().get(Id.createLinkId(1674)),null);
+    static Network network;
+    static ZonalSystem zonalSystem;
+    static CarpoolingRequest request1, request2, request3;
+    RequestZonalRegistry zonalRegistry;
+
+    @BeforeAll
+    public static void setup() {
+        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
+        Carpooling.addCarpoolingDriverToCarLinks(network);
+        zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup("cfgGroup").cellSize);
+        request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1540)), null);
+        request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1037)), null);
+        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+                network.getLinks().get(Id.createLinkId(1674)), null);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        zonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem, true);
+    }
 
     @Test
     void testGetZoneIdForNeighboringRequests(){

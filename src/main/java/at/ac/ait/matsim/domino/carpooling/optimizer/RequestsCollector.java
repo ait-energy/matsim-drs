@@ -1,5 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -33,7 +34,7 @@ public class RequestsCollector {
                 List<Leg> legs = trip.getLegsOnly();
                 for (Leg leg: legs) {
                     String mode = leg.getMode();
-                    if (mode.equals("carpoolingPassenger")){
+                    if (mode.equals(Carpooling.PASSENGER_MODE)) {
                         Activity startActivity = trip.getOriginActivity();
                         Link fromLink;
                         if (startActivity.getLinkId()==null){
@@ -53,7 +54,7 @@ public class RequestsCollector {
                         CarpoolingRequest passengerRequest = new CarpoolingRequest(Id.create(passengerRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);
                         passengersRequests.add(passengerRequest);
                     }
-                    if (mode.equals("carpoolingDriver")){
+                    if (mode.equals(Carpooling.DRIVER_MODE)) {
                         Activity startActivity = trip.getOriginActivity();
                         Link fromLink;
                         if (startActivity.getLinkId()==null){

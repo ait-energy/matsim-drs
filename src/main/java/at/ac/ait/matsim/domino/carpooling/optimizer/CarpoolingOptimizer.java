@@ -1,11 +1,10 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import org.matsim.api.core.v01.population.Leg;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 
 public class CarpoolingOptimizer {
     private final RequestsCollector requestsCollector;

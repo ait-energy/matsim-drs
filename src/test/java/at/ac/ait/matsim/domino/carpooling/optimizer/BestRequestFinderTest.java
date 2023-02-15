@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -27,25 +28,25 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.FacilitiesUtils;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-
-@SuppressWarnings("all")
 
 class BestRequestFinderTest {
     static Network network;
     static CarpoolingRequest driverRequest, request2, request3, request4, request5;
     static List<? extends PlanElement> request2Route, request3Route, request4Route, request5Route;
-    static RoutingRequest  toRequest2, toRequest3, toRequest4, toRequest5;
-    static List<CarpoolingRequest> filteredPassengersRequests;
+    static RoutingRequest toRequest2, toRequest3, toRequest4, toRequest5;
     static BestRequestFinder bestRequestFinder;
+    List<CarpoolingRequest> filteredPassengersRequests;
 
     @BeforeAll
     static void setup() {
-        network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
+            network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
+            Carpooling.addCarpoolingDriverToCarLinks(network);
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule("carpoolingDriver", PopulationUtils.getFactory(), network,
+        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
                 dijkstra);
         bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup("cfgGroup"));
 
@@ -79,7 +80,10 @@ class BestRequestFinderTest {
                 FacilitiesUtils.wrapLink(request5.getFromLink()), FacilitiesUtils.wrapLink(request5.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request5Route = router.calcRoute(toRequest5);
+}
 
+@BeforeEach
+public void beforeEach() {
         filteredPassengersRequests = new ArrayList<>();
     }
 

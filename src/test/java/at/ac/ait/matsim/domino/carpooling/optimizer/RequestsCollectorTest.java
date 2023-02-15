@@ -1,6 +1,10 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
@@ -12,11 +16,24 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RequestsCollectorTest {
-    Population population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
-    Population populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
-    Network network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
-    RequestsCollector requestsCollector = new RequestsCollector(population,network);
-    RequestsCollector requestsCollectorNoRequests = new RequestsCollector(populationWithZeroCarpoolingDrivers,NetworkUtils.createNetwork());
+    static Population population, populationWithZeroCarpoolingDrivers;
+    static Network network;
+    RequestsCollector requestsCollector, requestsCollectorNoRequests;
+
+    @BeforeAll
+    static void setup() {
+        population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
+        populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
+        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
+        Carpooling.addCarpoolingDriverToCarLinks(network);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        requestsCollector = new RequestsCollector(population, network);
+        requestsCollectorNoRequests = new RequestsCollector(populationWithZeroCarpoolingDrivers,
+                NetworkUtils.createNetwork());
+    }
 
     @Test
     void testNumberOfRequests(){
@@ -35,13 +52,13 @@ class RequestsCollectorTest {
 
         assertEquals("1",driversRequests.get(0).getId().toString());
         assertEquals(5*60*60 ,driversRequests.get(0).getDepartureTime());
-        assertEquals("carpoolingDriver",driversRequests.get(0).getMode());
+        assertEquals(Carpooling.DRIVER_MODE, driversRequests.get(0).getMode());
         assertEquals("1540" ,driversRequests.get(0).getFromLink().getId().toString());
         assertEquals("688",driversRequests.get(0).getToLink().getId().toString());
 
         assertEquals("1",passengersRequests.get(0).getId().toString());
         assertEquals(5*60*60,passengersRequests.get(0).getDepartureTime());
-        assertEquals("carpoolingPassenger",passengersRequests.get(0).getMode());
+        assertEquals(Carpooling.PASSENGER_MODE, passengersRequests.get(0).getMode());
         assertEquals("1541" ,passengersRequests.get(0).getFromLink().getId().toString());
         assertEquals("688",passengersRequests.get(0).getToLink().getId().toString());
 

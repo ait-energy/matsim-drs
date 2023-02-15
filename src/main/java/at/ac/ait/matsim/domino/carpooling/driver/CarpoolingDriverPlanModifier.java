@@ -1,5 +1,7 @@
 package at.ac.ait.matsim.domino.carpooling.driver;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.Carpooling.ActivityType;
 import at.ac.ait.matsim.domino.carpooling.optimizer.*;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
@@ -40,12 +42,13 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
     }
 
     void modifyPlans(ControlerEvent event) {
+        LOGGER.info("modify carpooling plans");
 
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
         Network network = eventScenario.getNetwork();
         CarpoolingConfigGroup cfgGroup = new CarpoolingConfigGroup("cfgGroup");
-        RoutingModule router = tripRouter.getRoutingModule("carpoolingDriver");
+        RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
         ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(),cfgGroup.cellSize);
         RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,true);
         RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,false);
@@ -80,31 +83,37 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         Leg legToCustomer= (Leg) legToCustomerList.get(0);
         for (PlanElement planElement : legToCustomerList) {
             if (planElement instanceof Leg){
-                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+                planElement.getAttributes().putAttribute("routingMode", Carpooling.DRIVER_MODE);
             }
         }
         double pickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
-        Activity pickup = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getFromLink().getId());
+        Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
+                passengerRequest.getFromLink().getId());
         pickup.setEndTime(pickupTime);
+        Carpooling.setActivityType(pickup, ActivityType.pickup);
+        Carpooling.setPassengerId(pickup, passengerRequest.getPerson().getId());
 
         RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), pickupTime, driverRequest.getPerson());
         List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
         Leg legWithCustomer= (Leg) legWithCustomerList.get(0);
         for (PlanElement planElement : legWithCustomerList) {
             if (planElement instanceof Leg){
-                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+                TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
             }
         }
 
         double dropoffTime = pickupTime+ legWithCustomer.getTravelTime().seconds();
-        Activity dropoff = factory.createActivityFromLinkId("carpoolingDriver interaction",passengerRequest.getToLink().getId());
+        Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
+                passengerRequest.getToLink().getId());
         dropoff.setEndTime(dropoffTime);
+        Carpooling.setActivityType(dropoff, ActivityType.dropoff);
+        Carpooling.setPassengerId(dropoff, passengerRequest.getPerson().getId());
 
         RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
         for (PlanElement planElement : legAfterCustomerList) {
             if (planElement instanceof Leg){
-                planElement.getAttributes().putAttribute("routingMode","carpoolingDriver");
+                TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
             }
         }
 
@@ -132,7 +141,7 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
                 List<Leg> legs = trip.getLegsOnly();
                 for (Leg leg: legs) {
                     String mode = leg.getMode();
-                    if (mode.equals("carpoolingDriver")){
+                    if (mode.equals(Carpooling.DRIVER_MODE)) {
                         ArrayList<PlanElement> oldRoute = new ArrayList<>();
                         oldRoute.add(leg);
                         TripRouter.insertTrip(person.getSelectedPlan(), startActivity, oldRoute, endActivity);
