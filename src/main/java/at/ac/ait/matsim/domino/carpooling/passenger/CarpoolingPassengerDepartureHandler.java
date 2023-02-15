@@ -66,7 +66,6 @@ public class CarpoolingPassengerDepartureHandler implements DepartureHandler {
         if (agent.getCurrentLinkId().toString().equals(Objects.requireNonNull(getRightPassengerRequest(matchedRequests, agent)).getToLink().getId().toString())){
             agent.notifyArrivalOnLinkByNonNetworkMode(agent.getDestinationLinkId());
             agent.endLegAndComputeNextState(now);
-
             internalInterface.arrangeNextAgentState(agent);
             return true;
         }

@@ -6,6 +6,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.contrib.dvrp.optimizer.Request;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.TripStructureUtils;
 import java.util.*;
 
@@ -34,9 +35,19 @@ public class RequestsCollector {
                     String mode = leg.getMode();
                     if (mode.equals("carpoolingPassenger")){
                         Activity startActivity = trip.getOriginActivity();
-                        Link fromLink = network.getLinks().get(startActivity.getLinkId());
+                        Link fromLink;
+                        if (startActivity.getLinkId()==null){
+                            fromLink = NetworkUtils.getNearestLink(network,startActivity.getCoord());
+                        }else {
+                            fromLink = network.getLinks().get(startActivity.getLinkId());
+                        }
                         Activity endActivity = trip.getDestinationActivity();
-                        Link toLink = network.getLinks().get(endActivity.getLinkId());
+                        Link toLink;
+                        if (startActivity.getLinkId()==null){
+                            toLink = NetworkUtils.getNearestLink(network, endActivity.getCoord());
+                        }else {
+                            toLink = network.getLinks().get(endActivity.getLinkId());
+                        }
                         double activityEndTime = startActivity.getEndTime().seconds();
                         passengerRequestID = passengerRequestID+1;
                         CarpoolingRequest passengerRequest = new CarpoolingRequest(Id.create(passengerRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);
@@ -44,9 +55,19 @@ public class RequestsCollector {
                     }
                     if (mode.equals("carpoolingDriver")){
                         Activity startActivity = trip.getOriginActivity();
-                        Link fromLink = network.getLinks().get(startActivity.getLinkId());
+                        Link fromLink;
+                        if (startActivity.getLinkId()==null){
+                            fromLink = NetworkUtils.getNearestLink(network,startActivity.getCoord());
+                        }else {
+                            fromLink = network.getLinks().get(startActivity.getLinkId());
+                        }
                         Activity endActivity = trip.getDestinationActivity();
-                        Link toLink = network.getLinks().get(endActivity.getLinkId());
+                        Link toLink;
+                        if (startActivity.getLinkId()==null){
+                            toLink = NetworkUtils.getNearestLink(network, endActivity.getCoord());
+                        }else {
+                            toLink = network.getLinks().get(endActivity.getLinkId());
+                        }
                         double activityEndTime = startActivity.getEndTime().seconds();
                         driverRequestID = driverRequestID+1;
                         CarpoolingRequest driverRequest = new CarpoolingRequest(Id.create(driverRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);
