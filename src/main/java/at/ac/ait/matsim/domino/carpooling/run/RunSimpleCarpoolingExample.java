@@ -1,8 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
-import at.ac.ait.matsim.domino.carpooling.driver.CarpoolingDriverPlanModifier;
-import at.ac.ait.matsim.salabim.util.CarFirstLinkAssigner;
-import at.ac.ait.matsim.salabim.util.SalabimUtil;
+import java.util.Set;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
@@ -15,6 +13,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import at.ac.ait.matsim.domino.carpooling.Carpooling;
+import at.ac.ait.matsim.salabim.util.CarFirstLinkAssigner;
+import at.ac.ait.matsim.salabim.util.SalabimUtil;
 
 public class RunSimpleCarpoolingExample {
     public static void main(String[] args) {

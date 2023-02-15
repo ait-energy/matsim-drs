@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
-import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.MobsimAgent;
@@ -28,7 +27,6 @@ import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
 
 import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.Carpooling.ActivityType;
-import at.ac.ait.matsim.domino.carpooling.passenger.CarpoolingPassengerDepartureHandler;
 
 /**
  * Heavily inspired by
