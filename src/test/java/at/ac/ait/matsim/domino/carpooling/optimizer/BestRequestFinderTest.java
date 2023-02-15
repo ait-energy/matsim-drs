@@ -27,6 +27,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.FacilitiesUtils;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -45,7 +46,7 @@ class BestRequestFinderTest {
         network = NetworkUtils.readNetwork("data/floridsdorf/network_carpooling.xml");
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule("carpoolingDriver", PopulationUtils.getFactory(), network,
+        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
                 dijkstra);
         bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup("cfgGroup"));
 

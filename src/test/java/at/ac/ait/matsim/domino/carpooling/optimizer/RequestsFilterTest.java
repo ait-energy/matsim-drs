@@ -20,6 +20,7 @@ import org.matsim.core.router.speedy.SpeedyGraph;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
+import at.ac.ait.matsim.domino.carpooling.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -38,7 +39,7 @@ class RequestsFilterTest {
     static void setup() {
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule("carpoolingDriver", PopulationUtils.getFactory(), network,
+        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
                 dijkstra);
         requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"), router);
     }
