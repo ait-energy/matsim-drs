@@ -1,10 +1,11 @@
-package at.ac.ait.matsim.domino.carpooling.driver;
+package at.ac.ait.matsim.domino.carpooling.planModifier;
 
-import at.ac.ait.matsim.domino.carpooling.Carpooling;
-import at.ac.ait.matsim.domino.carpooling.Carpooling.ActivityType;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
 import at.ac.ait.matsim.domino.carpooling.optimizer.*;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import com.google.inject.Inject;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -26,7 +27,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.facilities.FacilitiesUtils;
 
-public class CarpoolingDriverPlanModifier implements StartupListener, ReplanningListener {
+@SuppressWarnings("all")
+
+public class DriverPlanModifier implements StartupListener, ReplanningListener {
     Logger LOGGER = LogManager.getLogger();
     @Inject
     private TripRouter tripRouter;
@@ -65,7 +68,7 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
 
         CarpoolingOptimizer carpoolingOptimizer = new CarpoolingOptimizer(requestsCollector, requestsRegister,nearestRequestsFinder, requestsFilter, bestRequestFinder);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = carpoolingOptimizer.match();
-
+        LOGGER.error(matchMap.size()+" matches happened.");
         PopulationFactory populationFactory = population.getFactory();
 
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
@@ -73,12 +76,12 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         }
     }
 
-    private void modifyPlan(CarpoolingRequest driverRequest,CarpoolingRequest passengerRequest,PopulationFactory factory,RoutingModule router ) {
-        LOGGER.info(driverRequest.getPerson().getId()+" matched with "+passengerRequest.getPerson().getId()+".");
+    private void modifyPlan(CarpoolingRequest driverRequest,CarpoolingRequest riderRequest,PopulationFactory factory,RoutingModule router ) {
+        LOGGER.error(driverRequest.getPerson().getId()+" matched with "+riderRequest.getPerson().getId()+". Pick up at "+riderRequest.getFromLink().getId());
         List<PlanElement> planElements = driverRequest.getPerson().getSelectedPlan().getPlanElements();
         LOGGER.info(driverRequest.getPerson().getId()+" had "+planElements.size()+" plan elements before matching.");
 
-        RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getFromLink()), driverRequest.getDepartureTime(), driverRequest.getPerson());
+        RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverRequest.getFromLink()),FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverRequest.getDepartureTime(), driverRequest.getPerson());
         List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
         Leg legToCustomer= (Leg) legToCustomerList.get(0);
         for (PlanElement planElement : legToCustomerList) {
@@ -88,12 +91,12 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
         }
         double pickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
-                passengerRequest.getFromLink().getId());
+                riderRequest.getFromLink().getId());
         pickup.setEndTime(pickupTime);
-        Carpooling.setActivityType(pickup, ActivityType.pickup);
-        Carpooling.setPassengerId(pickup, passengerRequest.getPerson().getId());
+        CarpoolingUtil.setActivityType(pickup, ActivityType.pickup);
+        CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
 
-        RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getFromLink()),FacilitiesUtils.wrapLink(passengerRequest.getToLink()), pickupTime, driverRequest.getPerson());
+        RoutingRequest withCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(riderRequest.getFromLink()),FacilitiesUtils.wrapLink(riderRequest.getToLink()), pickupTime, driverRequest.getPerson());
         List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
         Leg legWithCustomer= (Leg) legWithCustomerList.get(0);
         for (PlanElement planElement : legWithCustomerList) {
@@ -104,12 +107,12 @@ public class CarpoolingDriverPlanModifier implements StartupListener, Replanning
 
         double dropoffTime = pickupTime+ legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
-                passengerRequest.getToLink().getId());
+                riderRequest.getToLink().getId());
         dropoff.setEndTime(dropoffTime);
-        Carpooling.setActivityType(dropoff, ActivityType.dropoff);
-        Carpooling.setPassengerId(dropoff, passengerRequest.getPerson().getId());
+        CarpoolingUtil.setActivityType(dropoff, ActivityType.dropoff);
+        CarpoolingUtil.setRiderId(dropoff, riderRequest.getPerson().getId());
 
-        RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(passengerRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
+        RoutingRequest afterCustomer= DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(riderRequest.getToLink()),FacilitiesUtils.wrapLink(driverRequest.getToLink()), dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
         for (PlanElement planElement : legAfterCustomerList) {
             if (planElement instanceof Leg){

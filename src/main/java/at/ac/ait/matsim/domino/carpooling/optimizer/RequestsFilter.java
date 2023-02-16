@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.util.DominoUtil;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.network.Link;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import org.matsim.api.core.v01.population.Leg;
@@ -22,20 +22,20 @@ public class RequestsFilter {
         this.router = router;
     }
 
-    public List<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest, List<CarpoolingRequest> passengersRequests) {
-        List<CarpoolingRequest>filteredPassengerRequests = new ArrayList<>();
+    public List<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest, List<CarpoolingRequest> ridersRequests) {
+        List<CarpoolingRequest>filteredRiderRequests = new ArrayList<>();
         Link driverOrigin = driverRequest.getFromLink();
         double driverDepartureTime = driverRequest.getDepartureTime();
-        for (CarpoolingRequest passengerRequest : passengersRequests) {
-            RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverOrigin),FacilitiesUtils.wrapLink(passengerRequest.getFromLink()), driverDepartureTime, driverRequest.getPerson());
+        for (CarpoolingRequest riderRequest : ridersRequests) {
+            RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverOrigin),FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverDepartureTime, driverRequest.getPerson());
             List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
-            Leg legToCustomer= DominoUtil.getFirstLeg(legToCustomerList);
+            Leg legToCustomer= CarpoolingUtil.getFirstLeg(legToCustomerList);
             double expectedPickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
-            boolean withinPassengerDepartureTimeWindow = (passengerRequest.getDepartureTime()-cfgGroup.passengerDepartureTimeAdjustment) < expectedPickupTime && expectedPickupTime < (passengerRequest.getDepartureTime()+cfgGroup.passengerDepartureTimeAdjustment);
-            if (withinPassengerDepartureTimeWindow) {
-                filteredPassengerRequests.add(passengerRequest);
+            boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()-cfgGroup.riderDepartureTimeAdjustment) < expectedPickupTime && expectedPickupTime < (riderRequest.getDepartureTime()+cfgGroup.riderDepartureTimeAdjustment);
+            if (withinRiderDepartureTimeWindow) {
+                filteredRiderRequests.add(riderRequest);
             }
         }
-        return filteredPassengerRequests;
+        return filteredRiderRequests;
     }
 }

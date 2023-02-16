@@ -2,6 +2,7 @@ package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import java.util.*;
 
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -11,7 +12,6 @@ import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
 import org.matsim.facilities.FacilitiesUtils;
 
-import at.ac.ait.matsim.domino.carpooling.util.DominoUtil;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -23,23 +23,23 @@ public class BestRequestFinder {
         this.cfgGroup = cfgGroup;
     }
 
-    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, List<CarpoolingRequest> filteredPassengersRequests) {
+    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, List<CarpoolingRequest> filteredRidersRequests) {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
         double originalRouteTravelTime = getLeg(driverRequest.getFromLink(), driverRequest.getToLink(), driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
-        for (CarpoolingRequest passengerRequest : filteredPassengersRequests){
-            Leg legToCustomer = getLeg(driverRequest.getFromLink(), passengerRequest.getFromLink(),driverRequest.getDepartureTime(), router, driverRequest.getPerson());
+        for (CarpoolingRequest riderRequest : filteredRidersRequests){
+            Leg legToCustomer = getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),driverRequest.getDepartureTime(), router, driverRequest.getPerson());
             double travelTimeToCustomer = legToCustomer.getTravelTime().seconds();
 
-            Leg legWithCustomer = getLeg(passengerRequest.getFromLink(), passengerRequest.getToLink(),driverRequest.getDepartureTime()+travelTimeToCustomer, router, driverRequest.getPerson());
+            Leg legWithCustomer = getLeg(riderRequest.getFromLink(), riderRequest.getToLink(),driverRequest.getDepartureTime()+travelTimeToCustomer, router, driverRequest.getPerson());
             double travelTimeWithCustomer = legWithCustomer.getTravelTime().seconds();
 
-            Leg legAfterCustomer = getLeg(passengerRequest.getToLink(), driverRequest.getToLink(), driverRequest.getDepartureTime()+travelTimeToCustomer+travelTimeWithCustomer, router, driverRequest.getPerson());
+            Leg legAfterCustomer = getLeg(riderRequest.getToLink(), driverRequest.getToLink(), driverRequest.getDepartureTime()+travelTimeToCustomer+travelTimeWithCustomer, router, driverRequest.getPerson());
             double travelTimeAfterCustomer = legAfterCustomer.getTravelTime().seconds();
 
             double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
             double detourFactor = newRouteTravelTime/originalRouteTravelTime;
             if (detourFactor<cfgGroup.maxDetourFactor){
-                bestRequests.put(passengerRequest,detourFactor);
+                bestRequests.put(riderRequest,detourFactor);
             }
         }
         return findRequestWithLeastDetour(bestRequests);
@@ -55,6 +55,6 @@ public class BestRequestFinder {
     private static Leg getLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router, Person driver) {
         RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(fromLink),FacilitiesUtils.wrapLink(toLink), departureTime, driver);
         List<? extends PlanElement> legList = router.calcRoute(routingRequest);
-        return DominoUtil.getFirstLeg(legList);
+        return CarpoolingUtil.getFirstLeg(legList);
     }
 }

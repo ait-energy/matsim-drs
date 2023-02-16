@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import org.matsim.core.router.speedy.SpeedyGraph;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
-import at.ac.ait.matsim.domino.carpooling.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -34,13 +35,15 @@ class RequestsFilterTest {
     @BeforeAll
     static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        Carpooling.addCarpoolingDriverToCarLinks(network);
+        CarpoolingUtil.addNewAllowedModeToCarLinks(network,Carpooling.DRIVER_MODE);
 
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
                 dijkstra);
-        requestsFilter = new RequestsFilter(new CarpoolingConfigGroup("cfgGroup"), router);
+        CarpoolingConfigGroup cfg =new CarpoolingConfigGroup("cfgGroup");
+        cfg.riderDepartureTimeAdjustment=  0.05*60*60;
+        requestsFilter = new RequestsFilter(cfg, router);
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)), null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,

@@ -1,8 +1,9 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -29,7 +30,7 @@ class RequestZonalRegistryTest {
     @BeforeAll
     public static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        Carpooling.addCarpoolingDriverToCarLinks(network);
+        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
         zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup("cfgGroup").cellSize);
         request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null);

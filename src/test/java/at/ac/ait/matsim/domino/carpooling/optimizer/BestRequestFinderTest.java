@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.FacilitiesUtils;
 
-import at.ac.ait.matsim.domino.carpooling.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -43,7 +44,7 @@ class BestRequestFinderTest {
     @BeforeAll
     static void setup() {
             network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-            Carpooling.addCarpoolingDriverToCarLinks(network);
+            CarpoolingUtil.addNewAllowedModeToCarLinks(network,Carpooling.DRIVER_MODE);
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
@@ -106,7 +107,6 @@ public void beforeEach() {
         filteredPassengersRequests.add(request3);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("3",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
-        filteredPassengersRequests.removeAll(filteredPassengersRequests);
     }
 
     @Test
@@ -117,6 +117,5 @@ public void beforeEach() {
         filteredPassengersRequests.add(request2);
         assertNotNull(bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests));
         assertEquals("2",bestRequestFinder.findBestRequest(driverRequest,filteredPassengersRequests).getId().toString());
-        filteredPassengersRequests.removeAll(filteredPassengersRequests);
     }
 }

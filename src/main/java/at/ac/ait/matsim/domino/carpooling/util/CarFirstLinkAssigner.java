@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.salabim.util;
+package at.ac.ait.matsim.domino.carpooling.util;
 
 import java.util.Locale;
 import java.util.Map;
@@ -22,19 +22,19 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Tries to assign links to all activities of a population.
  * For multimodal networks it first tries to find a car link.
- * 
  * This should help with problems in MATSim v14 where a population initially
  * without links gets pt link assigned to facilities - which later causes
  * troubles with vehicles that actually have a proper route on the car network
  * but the previous facility has pt link assigned. In such cases you get the
  * following exception:
- * 
  * - DefaultTurnAcceptanceLogic:57 Cannot move vehicle ...
  */
+
 public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
-    private static Logger LOGGER = LogManager.getLogger();
-    private Network network, carNetwork;
-    private int radius = 500;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final Network network;
+    private final Network carNetwork;
+    int radius = 500;
 
     public CarFirstLinkAssigner(Network network) {
         this.network = network;
@@ -58,7 +58,6 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
     private void assignLink(Id<Person> personId, Activity act) {
         Map<Double, Set<Link>> closestLinks = NetworkTools.findClosestLinks(carNetwork, act.getCoord(), radius, null);
         if (closestLinks.isEmpty()) {
-            // no car link found, try the whole network
             closestLinks = NetworkTools.findClosestLinks(network, act.getCoord(), radius, null);
         }
         if (closestLinks.isEmpty()) {

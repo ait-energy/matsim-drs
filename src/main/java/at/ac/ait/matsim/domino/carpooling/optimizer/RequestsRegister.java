@@ -13,16 +13,16 @@ public class RequestsRegister {
         this.timeSegmentRegistry = timeSegmentRegistry;
     }
 
-    public void addRequest(CarpoolingRequest passengersRequest) {
-        originZonalRegistry.addRequest(passengersRequest);
-        destinationZonalRegistry.addRequest(passengersRequest);
-        timeSegmentRegistry.addRequest(passengersRequest);
+    public void addRequest(CarpoolingRequest riderRequest) {
+        originZonalRegistry.addRequest(riderRequest);
+        destinationZonalRegistry.addRequest(riderRequest);
+        timeSegmentRegistry.addRequest(riderRequest);
     }
 
-    public void removeRequest(CarpoolingRequest passengersRequest) {
-        originZonalRegistry.removeRequest(passengersRequest);
-        destinationZonalRegistry.removeRequest(passengersRequest);
-        timeSegmentRegistry.removeRequest(passengersRequest);
+    public void removeRequest(CarpoolingRequest riderRequest) {
+        originZonalRegistry.removeRequest(riderRequest);
+        destinationZonalRegistry.removeRequest(riderRequest);
+        timeSegmentRegistry.removeRequest(riderRequest);
     }
 
     public RequestZonalRegistry getOriginZonalRegistry() {
