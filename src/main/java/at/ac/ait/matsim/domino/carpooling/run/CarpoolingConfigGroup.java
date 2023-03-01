@@ -4,11 +4,17 @@ import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSet
 
 public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
-    public int cellSize = 800; //in
+    public int cellSize = 800;
     public int neighbourhoodSize = 30;
-    public double riderDepartureTimeAdjustment = 0.01*60*60;
+    public double riderDepartureTimeAdjustment = 0.25*60*60;
     public int timeSegmentLength = 2*60*60;
-    public double maxDetourFactor = 1.5;
+
+    //MaxDetourFactor is a function of the trip total travel time
+    //MaxDetourFactor = K-m(TotalTravelTime)
+    public double constant = 1.7;
+    public double slope = 0.01;
+
+
 
 
 

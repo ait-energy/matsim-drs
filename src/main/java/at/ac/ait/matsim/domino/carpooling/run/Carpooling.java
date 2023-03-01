@@ -3,11 +3,13 @@ package at.ac.ait.matsim.domino.carpooling.run;
 import java.util.Set;
 
 import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
+import at.ac.ait.matsim.domino.carpooling.scoring.CarpoolingScoringFunctionFactory;
 import at.ac.ait.matsim.domino.carpooling.util.CarFirstLinkAssigner;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 
 import com.google.common.collect.Lists;
@@ -19,7 +21,8 @@ public class Carpooling {
 
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
     public static final String RIDER_INTERACTION = RIDER_MODE + " interaction";
-
+    public static final String ORIGINAL_DEP_TIME = "originalDepTime";
+    public static final String LINKED_REQUEST = "linkedRequest";
     public static final String RIDER_ID_ATTRIB = "riderId";
     public static final String ACTIVITY_TYPE_ATTRIB = "type";
 
@@ -53,5 +56,11 @@ public class Carpooling {
     public static void prepareController(Controler controller) {
         controller.addOverridingModule(new CarpoolingModule());
         controller.configureQSimComponents(components -> components.addNamedComponent(CarpoolingEngine.COMPONENT_NAME));
+        /*controller.addOverridingModule(new AbstractModule() {
+            @Override
+            public void install() {
+                bindScoringFunctionFactory().to(CarpoolingScoringFunctionFactory.class);
+            }
+        });*/
     }
 }

@@ -80,7 +80,7 @@
 
 	<person id="person5_carpoolingRider">
 		<plan selected="yes">
-			<activity type="home" link="1541" end_time="05:00:00" >
+			<activity type="home" link="1541" end_time="05:10:00" >
 			</activity>
 			<leg mode="carpoolingRider">
 			</leg>

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,23 +34,28 @@ public class CarpoolingOptimizer {
         Collections.shuffle(driversRequests);
         List<CarpoolingRequest> ridersRequests = requestsCollector.getRidersRequests();
         Collections.shuffle(ridersRequests);
+
         for (CarpoolingRequest ridersRequest : ridersRequests) {
             requestsRegister.addRequest(ridersRequest);
         }
+
         for(Iterator<CarpoolingRequest> iterator = driversRequests.iterator(); iterator.hasNext(); ) {
             CarpoolingRequest driverRequest = iterator.next();
             List<CarpoolingRequest> nearestRequests = nearestRequestsFinder.findRegistryIntersections(driverRequest.getFromLink().getFromNode(),driverRequest.getToLink().getFromNode(),driverRequest.getDepartureTime());
-            LOGGER.error(driverRequest.getPerson().getId()+" had "+nearestRequests.size()+" near requests.");
+            //LOGGER.error(driverRequest.getPerson().getId()+" had "+nearestRequests.size()+" near requests.");
             List<CarpoolingRequest> filteredRidersRequests = requestsFilter.filterRequests(driverRequest,nearestRequests);
-            LOGGER.error(driverRequest.getPerson().getId()+" had "+filteredRidersRequests.size()+" filtered requests.");
+            //LOGGER.error(driverRequest.getPerson().getId()+" had "+filteredRidersRequests.size()+" filtered requests.");
             CarpoolingRequest bestRiderRequest = bestRequestFinder.findBestRequest(driverRequest, filteredRidersRequests);
             if (!(bestRiderRequest == null)) {
-                LOGGER.error(driverRequest.getPerson().getId()+"'s best rider match is "+bestRiderRequest.getPerson().getId()+" pickup point is "+bestRiderRequest.getFromLink().getId());
+                CarpoolingUtil.setLinkageActivityToRiderRequest(bestRiderRequest);
+                LOGGER.warn(driverRequest.getPerson().getId()+"'s best rider match is "+bestRiderRequest.getPerson().getId()+" pickup point is "+bestRiderRequest.getFromLink().getId());
                 matchedRequests.put(driverRequest, bestRiderRequest);
                 iterator.remove();
                 requestsRegister.removeRequest(bestRiderRequest);
             }
         }
+
         return matchedRequests;
     }
+
 }

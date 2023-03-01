@@ -70,9 +70,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     @Override
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
         //Todo: get the matched and unmatched riders, matched riders get to wait, unmatched are aborted or teleported
-        LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
+        //LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
-            LOGGER.info("agent {} waits on link {} for carpooling driver", agent.getId(), id);
+            //LOGGER.info("agent {} waits on link {} for carpooling driver", agent.getId(), id);
             waitingRiders.put(agent.getId(), id);
             return true;
         }
@@ -88,7 +88,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
-        LOGGER.debug("handleActivity agent {}", agent.getId());
+        //LOGGER.debug("handleActivity agent {}", agent.getId());
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
@@ -110,7 +110,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 }
             } else if (act.getType().equals(Carpooling.RIDER_INTERACTION)) {
                 // TODO not necessary to handle this?
-                LOGGER.info("handleActivity {} {}", act.getType(), agent.getId());
+                //LOGGER.info("handleActivity {} {}", act.getType(), agent.getId());
             }
         }
         return false;
@@ -119,13 +119,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.info(
-                    "driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
-                    driver.getId(), rider.getId(), linkId);
+            //LOGGER.info("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle", driver.getId(), rider.getId(), linkId);
             return;
         }
 
-        LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        //LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);
         eventsManager.processEvent(
@@ -143,8 +141,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
             return;
         }
 
-        LOGGER.info("driver {} picks up rider {} from link {}", driver.getId(), rider.getId(),
-                linkId);
+        //LOGGER.info("driver {} picks up rider {} from link {}", driver.getId(), rider.getId(), linkId);
 
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());

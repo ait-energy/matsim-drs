@@ -26,6 +26,8 @@ public class BestRequestFinder {
     public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest, List<CarpoolingRequest> filteredRidersRequests) {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
         double originalRouteTravelTime = getLeg(driverRequest.getFromLink(), driverRequest.getToLink(), driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
+        double maxDetourFactor = cfgGroup.constant-(cfgGroup.slope*(originalRouteTravelTime/60));
+
         for (CarpoolingRequest riderRequest : filteredRidersRequests){
             Leg legToCustomer = getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),driverRequest.getDepartureTime(), router, driverRequest.getPerson());
             double travelTimeToCustomer = legToCustomer.getTravelTime().seconds();
@@ -38,21 +40,21 @@ public class BestRequestFinder {
 
             double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
             double detourFactor = newRouteTravelTime/originalRouteTravelTime;
-            if (detourFactor<cfgGroup.maxDetourFactor){
+            if (detourFactor<maxDetourFactor){
                 bestRequests.put(riderRequest,detourFactor);
             }
         }
         return findRequestWithLeastDetour(bestRequests);
     }
 
-    private static CarpoolingRequest findRequestWithLeastDetour(Map<CarpoolingRequest, Double> bestRequests) {
+    static CarpoolingRequest findRequestWithLeastDetour(Map<CarpoolingRequest, Double> bestRequests) {
         if (!bestRequests.isEmpty()){
             return Collections.min(bestRequests.entrySet(), Map.Entry.comparingByValue()).getKey();
         }else {
             return null;
         }
     }
-    private static Leg getLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router, Person driver) {
+    static Leg getLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router, Person driver) {
         RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(fromLink),FacilitiesUtils.wrapLink(toLink), departureTime, driver);
         List<? extends PlanElement> legList = router.calcRoute(routingRequest);
         return CarpoolingUtil.getFirstLeg(legList);

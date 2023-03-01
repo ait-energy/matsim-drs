@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import com.google.common.collect.Sets;
 import org.matsim.api.core.v01.Id;
@@ -89,4 +90,44 @@ public class CarpoolingUtil {
 		}
 	}
 
+	public static Double getActivityOriginalDepartureTime(Activity activity) {
+		return (Double) activity.getAttributes().getAttribute(Carpooling.ORIGINAL_DEP_TIME);
+	}
+
+	public static void setActivityOriginalDepartureTime(Activity activity, double originalDepartureTime) {
+			activity.getAttributes().putAttribute(Carpooling.ORIGINAL_DEP_TIME, originalDepartureTime);
+	}
+	public static void removeActivityOriginalDepartureTime(Activity activity) {
+		activity.getAttributes().removeAttribute(Carpooling.ORIGINAL_DEP_TIME);
+	}
+
+	public static void setLinkageActivityToRiderRequest(CarpoolingRequest riderRequest) {
+		for (PlanElement planElement : riderRequest.getPerson().getSelectedPlan().getPlanElements()) {
+			if (planElement instanceof Activity){
+				if (((Activity) planElement).getEndTime().isDefined()){
+					if (((Activity) planElement).getEndTime().seconds()==riderRequest.getDepartureTime()){
+						planElement.getAttributes().putAttribute(Carpooling.LINKED_REQUEST, riderRequest.getId().toString());
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	public static String getLinkageActivityToRiderRequest(Activity activity) {
+		return (String) activity.getAttributes().getAttribute(Carpooling.LINKED_REQUEST);
+	}
+
+	public static void removeLinkageActivityToRiderRequest(Activity activity) {
+		activity.getAttributes().removeAttribute(Carpooling.LINKED_REQUEST);
+	}
+
+
+	public static void setRoutingMode(List<? extends PlanElement> legList){
+		for (PlanElement planElement : legList) {
+			if (planElement instanceof Leg){
+				TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
+			}
+		}
+	}
 }

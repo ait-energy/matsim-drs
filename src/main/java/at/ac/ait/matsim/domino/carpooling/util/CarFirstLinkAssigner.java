@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.algorithms.AbstractPersonAlgorithm;
 import org.matsim.pt2matsim.tools.NetworkTools;
 
@@ -48,13 +49,16 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
                 if (pe instanceof Activity) {
                     Activity act = (Activity) pe;
                     if (act.getLinkId() == null) {
-                        assignLink(person.getId(), act);
+                        assignLinkEyad(act);
                     }
                 }
             }
         }
     }
 
+    private void assignLinkEyad(Activity act){
+        act.setLinkId(NetworkUtils.getNearestLink(carNetwork,act.getCoord()).getId());
+    }
     private void assignLink(Id<Person> personId, Activity act) {
         Map<Double, Set<Link>> closestLinks = NetworkTools.findClosestLinks(carNetwork, act.getCoord(), radius, null);
         if (closestLinks.isEmpty()) {
