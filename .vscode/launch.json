@@ -12,13 +12,6 @@
         },
         {
             "type": "java",
-            "name": "Launch Main",
-            "request": "launch",
-            "mainClass": "at.ac.ait.matsim.domino.carpooling.run.Main",
-            "projectName": "domino-carpooling"
-        },
-        {
-            "type": "java",
             "name": "Launch RunSimpleCarpoolingExample",
             "request": "launch",
             "mainClass": "at.ac.ait.matsim.domino.carpooling.run.RunSimpleCarpoolingExample",
