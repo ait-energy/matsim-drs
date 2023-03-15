@@ -1,0 +1,39 @@
+# Adapted from GitLab's template for Maven
+
+# Environment variables
+variables:
+  # This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
+  # `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+# Cache downloaded dependencies and plugins
+cache:
+  key: maven-cache-key # same key for all runs (also in branches) -> same cache as well
+  paths:
+    - .m2/repository
+
+build-salabim-jar:
+  script:
+    - 'mvn $MAVEN_CLI_OPTS clean verify source:jar deploy'
+  # specify which runner should be used (selection happens automagically based on matching tags)
+  tags:
+    - openjdk17
+  # don't run for tags and during the release process
+  # because we want to deploy releases manually (with mvn release:prepare and release:perform)
+  rules:
+    - if: $CI_COMMIT_TAG != null
+      when: never
+    - if: $CI_COMMIT_MESSAGE =~ /.*maven-release-plugin.*/
+      when: never
+    - when: always
+  # what data should be exposed via the GitLab web interface
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - target
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
