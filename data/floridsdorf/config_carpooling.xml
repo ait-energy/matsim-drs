@@ -114,7 +114,7 @@
 			<param name="weight" value="0.1"/>
 		</parameterset>
 		<parameterset type="strategysettings">
-			<param name="strategyName" value="ExtendedSubtourModeChoice"/>
+			<param name="strategyName" value="SubtourModeChoiceForCarpooling"/>
 			<param name="weight" value="0.1"/>
 		</parameterset>
 	</module>

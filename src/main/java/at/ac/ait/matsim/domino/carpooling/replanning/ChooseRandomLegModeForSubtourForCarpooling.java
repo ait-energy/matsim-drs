@@ -28,9 +28,9 @@ import org.matsim.core.router.TripStructureUtils.Trip;
  * Based on
  * {@link org.matsim.core.population.algorithms.ChooseRandomLegModeForSubtour}
  */
-public final class ExtendedChooseRandomLegModeForSubtour implements PlanAlgorithm {
+public final class ChooseRandomLegModeForSubtourForCarpooling implements PlanAlgorithm {
 
-    private static final Logger logger = Logger.getLogger(ExtendedChooseRandomLegModeForSubtour.class);
+    private static final Logger logger = Logger.getLogger(ChooseRandomLegModeForSubtourForCarpooling.class);
 
     private static class Candidate {
         final Subtour subtour;
@@ -54,7 +54,7 @@ public final class ExtendedChooseRandomLegModeForSubtour implements PlanAlgorith
 
     private PermissibleModesCalculator permissibleModesCalculator;
 
-    public ExtendedChooseRandomLegModeForSubtour(
+    public ChooseRandomLegModeForSubtourForCarpooling(
             final MainModeIdentifier mainModeIdentifier,
             final PermissibleModesCalculator permissibleModesCalculator,
             final String[] modes,

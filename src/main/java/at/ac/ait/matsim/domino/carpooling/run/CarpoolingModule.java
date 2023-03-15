@@ -3,14 +3,14 @@ package at.ac.ait.matsim.domino.carpooling.run;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.mobsim.qsim.AbstractQSimModule;
 import org.matsim.core.population.algorithms.PermissibleModesCalculator;
-import org.matsim.core.population.algorithms.PermissibleModesCalculatorImpl;
 
 import at.ac.ait.matsim.domino.carpooling.analysis.PlanElementsStatsListener;
 import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
 import at.ac.ait.matsim.domino.carpooling.planHandler.PlansModifier;
 import at.ac.ait.matsim.domino.carpooling.planHandler.UndoPlans;
-import at.ac.ait.matsim.domino.carpooling.replanning.ExtendedSubtourModeChoice;
-import at.ac.ait.matsim.domino.carpooling.replanning.ExtendedSubtourModeChoicePlanStrategyProvider;
+import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoicePlanStrategyProviderForCarpooling;
 
 public final class CarpoolingModule extends AbstractModule {
 	@Override
@@ -19,10 +19,9 @@ public final class CarpoolingModule extends AbstractModule {
 		addControlerListenerBinding().to(UndoPlans.class);
 		addControlerListenerBinding().to(PlanElementsStatsListener.class);
 
-		// TODO create our own implementation
-		bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorImpl.class);
-		addPlanStrategyBinding(ExtendedSubtourModeChoice.STRATEGY_NAME)
-				.toProvider(ExtendedSubtourModeChoicePlanStrategyProvider.class);
+		bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
+		addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
+				.toProvider(SubtourModeChoicePlanStrategyProviderForCarpooling.class);
 		installQSimModule(new AbstractQSimModule() {
 			@Override
 			protected void configureQSim() {

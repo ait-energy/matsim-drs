@@ -10,16 +10,16 @@ import org.matsim.core.router.TripStructureUtils;
 /**
  * Based on {@link org.matsim.core.replanning.modules.SubtourModeChoice}
  */
-public class ExtendedSubtourModeChoice extends AbstractMultithreadedModule {
+public class SubtourModeChoiceForCarpooling extends AbstractMultithreadedModule {
 
-    public static final String STRATEGY_NAME = "ExtendedSubtourModeChoice";
+    public static final String STRATEGY_NAME = "SubtourModeChoiceForCarpooling";
 
     private final PermissibleModesCalculator permissibleModesCalculator;
 
     private final String[] chainBasedModes;
     private final String[] modes;
 
-    public ExtendedSubtourModeChoice(GlobalConfigGroup globalConfigGroup,
+    public SubtourModeChoiceForCarpooling(GlobalConfigGroup globalConfigGroup,
             PermissibleModesCalculator permissibleModesCalculator) {
         this(globalConfigGroup.getNumberOfThreads(),
                 new String[] { "car", "bike", "pt", "walk" },
@@ -27,7 +27,7 @@ public class ExtendedSubtourModeChoice extends AbstractMultithreadedModule {
                 permissibleModesCalculator);
     }
 
-    ExtendedSubtourModeChoice(
+    SubtourModeChoiceForCarpooling(
             final int numberOfThreads,
             final String[] modes,
             final String[] chainBasedModes,
@@ -45,7 +45,7 @@ public class ExtendedSubtourModeChoice extends AbstractMultithreadedModule {
     @Override
     public PlanAlgorithm getPlanAlgoInstance() {
 
-        final ExtendedChooseRandomLegModeForSubtour chooseRandomLegMode = new ExtendedChooseRandomLegModeForSubtour(
+        final ChooseRandomLegModeForSubtourForCarpooling chooseRandomLegMode = new ChooseRandomLegModeForSubtourForCarpooling(
                 TripStructureUtils.getRoutingModeIdentifier(),
                 this.permissibleModesCalculator,
                 this.modes,

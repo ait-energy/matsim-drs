@@ -12,7 +12,7 @@ import org.matsim.core.replanning.PlanStrategyImpl;
 import org.matsim.core.replanning.PlanStrategyImpl.Builder;
 import org.matsim.core.replanning.selectors.RandomPlanSelector;
 
-public class ExtendedSubtourModeChoicePlanStrategyProvider implements Provider<PlanStrategy> {
+public class SubtourModeChoicePlanStrategyProviderForCarpooling implements Provider<PlanStrategy> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -25,7 +25,7 @@ public class ExtendedSubtourModeChoicePlanStrategyProvider implements Provider<P
     public PlanStrategy get() {
         LOGGER.info("providing the extended plan strategy!");
         PlanStrategyImpl.Builder builder = new Builder(new RandomPlanSelector<>());
-        builder.addStrategyModule(new ExtendedSubtourModeChoice(globalConfigGroup,
+        builder.addStrategyModule(new SubtourModeChoiceForCarpooling(globalConfigGroup,
                 permissibleModesCalculator));
         // builder.addStrategyModule(new ReRoute(facilities, tripRouterProvider,
         // globalConfigGroup, timeInterpretation));
