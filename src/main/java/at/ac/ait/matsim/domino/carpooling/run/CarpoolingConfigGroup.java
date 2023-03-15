@@ -14,7 +14,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public double constant = 1.7;
     public double slope = 0.01;
 
+    public double driverMoneyPerKM = 0.2;
 
+    public double riderMoneyPerKM = 0;
 
 
 

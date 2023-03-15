@@ -7,14 +7,17 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
+import org.matsim.api.core.v01.events.PersonMoneyEvent;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.MobsimAgent;
@@ -36,6 +39,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     public static final String COMPONENT_NAME = "carpoolingEngine";
 
+    private final CarpoolingConfigGroup cfgGroup = new CarpoolingConfigGroup("cfgGroup");
     private static final Logger LOGGER = LogManager.getLogger();
 
     private InternalInterface internalInterface;
@@ -102,7 +106,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
-                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now);
+                        // TODO: Get the previous leg and calculate its distance, add the distance to
+                        // handleDropOff() method
+                        Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
+                        double distance = previousLeg.getRoute().getDistance();
+                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, distance);
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
@@ -119,12 +127,20 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     }
 
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
-            double now) {
+            double now, double distance) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            // LOGGER.info("driver {} wanted to drop off rider {} on link {}, but it never
-            // entered the vehicle", driver.getId(), rider.getId(), linkId);
+            LOGGER.info("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+                    driver.getId(), rider.getId(), linkId);
             return;
         }
+        LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+
+        // TODO: eventsManager.processEvent(new MoneyEvent(for the driver and the rider?
+        // using the distance travelled))
+        eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
+                (cfgGroup.driverMoneyPerKM / 1000) * distance, "Carpooling", rider.getId().toString(), null));
+        eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
+                (cfgGroup.riderMoneyPerKM / 1000) * distance, "Carpooling", driver.getId().toString(), null));
 
         // LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(),
         // rider.getId(), linkId);
@@ -140,13 +156,12 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.info("driver {} wanted to pick up rider {} from link {}, but it was not there",
-                    driver.getId(), rider.getId(), linkId);
+            LOGGER.info("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+                    driver.getId(), rider.getId(), now, linkId);
             return;
         }
 
-        // LOGGER.info("driver {} picks up rider {} from link {}", driver.getId(),
-        // rider.getId(), linkId);
+        LOGGER.info("driver {} picks up rider {} at {} from link {}", driver.getId(), rider.getId(), now, linkId);
 
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());

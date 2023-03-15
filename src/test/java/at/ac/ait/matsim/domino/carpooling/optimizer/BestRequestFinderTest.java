@@ -51,31 +51,31 @@ class BestRequestFinderTest {
                 dijkstra);
         bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup("cfgGroup"));
 
-        driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
+        driverRequest = new CarpoolingRequest(matched, Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)), network.getLinks().get(Id.createLinkId(186)));
 
-        request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+        request2 = new CarpoolingRequest(matched, Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1541)), network.getLinks().get(Id.createLinkId(186)));
         toRequest2 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request2.getFromLink()), FacilitiesUtils.wrapLink(request2.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request2Route = router.calcRoute(toRequest2);
 
-        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+        request3 = new CarpoolingRequest(matched, Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1037)), network.getLinks().get(Id.createLinkId(186)));
         toRequest3 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request3.getFromLink()), FacilitiesUtils.wrapLink(request3.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request3Route = router.calcRoute(toRequest3);
 
-        request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
+        request4 = new CarpoolingRequest(matched, Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(186)), network.getLinks().get(Id.createLinkId(1037)));
         toRequest4 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request4.getFromLink()), FacilitiesUtils.wrapLink(request4.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
         request4Route = router.calcRoute(toRequest4);
 
-        request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
+        request5 = new CarpoolingRequest(matched, Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(688)), network.getLinks().get(Id.createLinkId(1540)));
         toRequest5 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request5.getFromLink()), FacilitiesUtils.wrapLink(request5.getToLink()),

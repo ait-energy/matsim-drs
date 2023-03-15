@@ -11,7 +11,7 @@
 	</module>
 
 	<module name="plans">
-		<param name="inputPlansFile" value="./testPopulation.xml" />
+		<param name="inputPlansFile" value="./population.xml.gz" />
 	</module>
 
 	<module name="controler">

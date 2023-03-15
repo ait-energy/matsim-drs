@@ -37,7 +37,6 @@ public class RequestsCollector {
                         Link fromLink = network.getLinks().get(startActivity.getLinkId());
                         Activity endActivity = trip.getDestinationActivity();
                         Link toLink = network.getLinks().get(endActivity.getLinkId());
-
                         double activityEndTime = startActivity.getEndTime().seconds();
                         riderRequestID = riderRequestID +1;
                         CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);

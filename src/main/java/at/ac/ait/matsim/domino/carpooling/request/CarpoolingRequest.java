@@ -7,6 +7,7 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.router.TripStructureUtils;
 
 public class CarpoolingRequest implements Request {
+    private boolean matched;
     private final Id<Request> id;
     private final Person person;
     private final TripStructureUtils.Trip trip;
@@ -16,6 +17,7 @@ public class CarpoolingRequest implements Request {
     private final Link toLink;
 
     public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime, String mode, Link fromLink, Link toLink) {
+        this.matched = false;
         this.id = id;
         this.person = person;
         this.trip = trip;
@@ -45,4 +47,12 @@ public class CarpoolingRequest implements Request {
     public double getSubmissionTime() {
         return 0;
     }
+
+    public boolean isMatched() {
+        return matched;
+    }
+    public void setMatched(){
+        this.matched=true;
+    }
+
 }

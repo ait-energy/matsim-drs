@@ -13,6 +13,7 @@ The main components of this extension are the following:
 2-Modifying agents plans before each iteration  
 3-Handling agents departures and arrivals in QSim  
 4-Scoring carpooling trips
+5-Undoing modifications in agents' plans at the end of each iteration
 
 ### Matching Algorithm  
 Before each iteration, drivers and riders requests are created for agents who are carpooling.  
@@ -22,7 +23,8 @@ The matching algorithm looks for the best rider for each driver and consists of 
 2. Registering riders requests in time segments according to the requests departure times.  
 3. Finding riders requests that lay within same origin zone, destination zone and departure time segment of the driver.    
 4. Filtering out riders which departure times are not within driver arrival time to pickup point +- `riderDepartureTimeAdjustment`.  
-5. Filtering out riders which would lead to detourFactor higher than `maxDetourFactor` and finding out the rider with the least detour factor.
+5. Filtering out riders which would lead to detourFactor higher than `maxDetourFactor`.
+6. Finding out the rider with the least detour factor.
 
 ### Modifying agents plans before each iteration
 - In case of a matched driver: Two new interaction activities with the pickup and dropoff info will be added to the driver's plan.  
@@ -34,6 +36,10 @@ The matching algorithm looks for the best rider for each driver and consists of 
 
 ### Scoring carpooling trips
 .......................................................................................
+
+### Undoing modifications in agents' plans  at the end of each iteration
+- Undoing the changes of rider's plan by restoring the original departure time of rider's activity.
+- Undoing the changes of driver's plan by removing the extra plan elements added to the plan.
 
 ## Usage
 
