@@ -26,10 +26,7 @@ build-salabim-jar:
       when: never
     - if: $CI_COMMIT_MESSAGE =~ /.*maven-release-plugin.*/
       when: never
-    - changes:
-      - **/*
-      when: always
-    - when: never
+    - when: always
   # what data should be exposed via the GitLab web interface
   artifacts:
     when: always
