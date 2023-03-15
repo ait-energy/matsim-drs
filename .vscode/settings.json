@@ -3,5 +3,5 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.dependency.syncWithFolderExplorer": true,
     "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "modifications"
+    "editor.formatOnSaveMode": "file"
 }

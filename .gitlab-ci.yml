@@ -13,7 +13,7 @@ cache:
   paths:
     - .m2/repository
 
-build-salabim-jar:
+run-tests:
   script:
     - 'mvn $MAVEN_CLI_OPTS clean verify source:jar deploy'
   # specify which runner should be used (selection happens automagically based on matching tags)

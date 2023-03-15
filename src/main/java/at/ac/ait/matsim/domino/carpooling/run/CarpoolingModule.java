@@ -1,12 +1,16 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
-import at.ac.ait.matsim.domino.carpooling.analysis.MatchStatsControlerListener;
-import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
-import at.ac.ait.matsim.domino.carpooling.planHandler.UndoPlans;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.mobsim.qsim.AbstractQSimModule;
+import org.matsim.core.population.algorithms.PermissibleModesCalculator;
 
+import at.ac.ait.matsim.domino.carpooling.analysis.MatchStatsControlerListener;
+import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
 import at.ac.ait.matsim.domino.carpooling.planHandler.PlansModifier;
+import at.ac.ait.matsim.domino.carpooling.planHandler.UndoPlans;
+import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoicePlanStrategyProviderForCarpooling;
 
 public final class CarpoolingModule extends AbstractModule {
 	@Override
@@ -14,6 +18,11 @@ public final class CarpoolingModule extends AbstractModule {
 		addControlerListenerBinding().to(PlansModifier.class);
 		addControlerListenerBinding().to(UndoPlans.class);
 		addControlerListenerBinding().to(MatchStatsControlerListener.class);
+
+		bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
+		addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
+				.toProvider(SubtourModeChoicePlanStrategyProviderForCarpooling.class);
+
 		installQSimModule(new AbstractQSimModule() {
 			@Override
 			protected void configureQSim() {

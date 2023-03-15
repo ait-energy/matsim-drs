@@ -22,7 +22,7 @@
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="stderr" />
 		</Logger>
-		<Root level="warn">
+		<Root level="info">
 			<AppenderRef ref="stdout" />
 			<AppenderRef ref="stderr" />
 		</Root>

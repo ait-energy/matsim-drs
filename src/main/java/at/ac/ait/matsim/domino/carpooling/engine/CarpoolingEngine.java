@@ -72,8 +72,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     @Override
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
-        //Todo: get the matched and unmatched riders, matched riders get to wait, unmatched are aborted or teleported
-        //LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
+        // TODO: get the matched and unmatched riders, matched riders get to wait,
+        // unmatched are aborted or teleported
+        LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
             waitingRiders.put(agent.getId(), id);
             return true;
@@ -84,13 +85,13 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     /**
      * Will always return false so that the default activity handler properly
      * handles the activities of the driver.
-
+     * 
      * Not sure if this is a clean approach, but duplicating code from
      * ActivityEngineDefaultImpl.handleActivity seems not so great too.
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
-        //LOGGER.debug("handleActivity agent {}", agent.getId());
+        LOGGER.debug("handleActivity agent {}", agent.getId());
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
@@ -102,10 +103,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
-                        //TODO: Get the previous leg and calculate its distance, add the distance to handleDropOff() method
+                        // TODO: Get the previous leg and calculate its distance, add the distance to
+                        // handleDropOff() method
                         Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
                         double distance = previousLeg.getRoute().getDistance();
-                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now,distance);
+                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, distance);
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
@@ -115,7 +117,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 }
             } else if (act.getType().equals(Carpooling.RIDER_INTERACTION)) {
                 // TODO not necessary to handle this?
-                //LOGGER.info("handleActivity {} {}", act.getType(), agent.getId());
+                LOGGER.debug("handleActivity {} {}", act.getType(), agent.getId());
             }
         }
         return false;
@@ -124,15 +126,18 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, double distance) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.info("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle", driver.getId(), rider.getId(), linkId);
+            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+                    driver.getId(), rider.getId(), linkId);
             return;
         }
-        LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
-
-        //TODO: eventsManager.processEvent(new MoneyEvent(for the driver and the rider? using the distance travelled))
-        eventsManager.processEvent(new PersonMoneyEvent(now,driver.getId(),(cfgGroup.driverMoneyPerKM/1000)*distance,"Carpooling",rider.getId().toString(),null));
-        eventsManager.processEvent(new PersonMoneyEvent(now,rider.getId(),(cfgGroup.riderMoneyPerKM/1000)*distance,"Carpooling",driver.getId().toString(),null));
+        // TODO: eventsManager.processEvent(new MoneyEvent(for the driver and the rider?
+        // using the distance travelled))
+        eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
+                (cfgGroup.driverMoneyPerKM / 1000) * distance, "Carpooling", rider.getId().toString(), null));
+        eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
+                (cfgGroup.riderMoneyPerKM / 1000) * distance, "Carpooling", driver.getId().toString(), null));
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);
@@ -146,12 +151,12 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.info("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
-                    driver.getId(), rider.getId(),now, linkId);
+            LOGGER.debug("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+                    driver.getId(), rider.getId(), now, linkId);
             return;
         }
 
-        LOGGER.info("driver {} picks up rider {} at {} from link {}", driver.getId(), rider.getId(),now, linkId);
+        LOGGER.debug("driver {} picks up rider {} at {} from link {}", driver.getId(), rider.getId(), now, linkId);
 
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());
