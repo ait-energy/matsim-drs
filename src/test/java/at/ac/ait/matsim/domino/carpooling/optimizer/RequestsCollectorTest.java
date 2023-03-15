@@ -58,7 +58,7 @@ class RequestsCollectorTest {
         assertEquals("688",driversRequests.get(0).getToLink().getId().toString());
 
         assertEquals("1",ridersRequests.get(0).getId().toString());
-        assertEquals(5*60*60,ridersRequests.get(0).getDepartureTime());
+        assertEquals(18600,ridersRequests.get(0).getDepartureTime());
         assertEquals(Carpooling.RIDER_MODE, ridersRequests.get(0).getMode());
         assertEquals("1541" ,ridersRequests.get(0).getFromLink().getId().toString());
         assertEquals("688",ridersRequests.get(0).getToLink().getId().toString());
