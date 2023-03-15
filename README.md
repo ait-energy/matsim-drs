@@ -9,11 +9,11 @@ carpoolingDriver mode and those who are willing to ride should be given carpooli
 
 The main components of this extension are the following:  
 
-1-Matching algorithm  
-2-Modifying agents plans before each iteration  
-3-Handling agents departures and arrivals in QSim  
-4-Scoring carpooling trips
-5-Undoing modifications in agents' plans at the end of each iteration
+1. Matching algorithm  
+2. Modifying agents plans before each iteration  
+3. Handling agents departures and arrivals in QSim  
+4. Scoring carpooling trips
+5. Undoing modifications in agents' plans at the end of each iteration
 
 ### Matching Algorithm  
 Before each iteration, drivers and riders requests are created for agents who are carpooling.  

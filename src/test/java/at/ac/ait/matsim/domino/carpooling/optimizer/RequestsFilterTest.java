@@ -35,22 +35,24 @@ class RequestsFilterTest {
     @BeforeAll
     static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network,Carpooling.DRIVER_MODE);
+        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
 
-        LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network), new FreeSpeedTravelTime(),
+        LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network),
+                new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(), network,
+        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
+                network,
                 dijkstra);
-        CarpoolingConfigGroup cfg =new CarpoolingConfigGroup("cfgGroup");
-        cfg.riderDepartureTimeAdjustment=  0.05*60*60;
+        CarpoolingConfigGroup cfg = new CarpoolingConfigGroup("cfgGroup");
+        cfg.riderDepartureTimeAdjustment = 0.05 * 60 * 60;
         requestsFilter = new RequestsFilter(cfg, router);
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)), null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1674)), null);
-        request3 = new CarpoolingRequest( Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null);
-        request4 = new CarpoolingRequest( Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
+        request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null);
         request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null);
@@ -64,27 +66,27 @@ class RequestsFilterTest {
     }
 
     @Test
-    void testDriverArrivesTooLateToPassengerDueToDistance(){
+    void testDriverArrivesTooLateToPassengerDueToDistance() {
         passengersRequests.add(request2);
-        assertEquals(0,requestsFilter.filterRequests(driverRequest,passengersRequests).size());
+        assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
     }
 
     @Test
-    void testDriverArrivesTooLateToPassengerDueToTime(){
+    void testDriverArrivesTooLateToPassengerDueToTime() {
         passengersRequests.add(request3);
-        assertEquals(0,requestsFilter.filterRequests(driverRequest,passengersRequests).size());
+        assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
     }
 
     @Test
-    void testDriverArrivesTooEarlyToPassengerDueToTime(){
+    void testDriverArrivesTooEarlyToPassengerDueToTime() {
         passengersRequests.add(request4);
-        assertEquals(0,requestsFilter.filterRequests(driverRequest,passengersRequests).size());
+        assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
     }
 
     @Test
-    void testDriverArrivesOnTime(){
+    void testDriverArrivesOnTime() {
         passengersRequests.add(request5);
         passengersRequests.add(request6);
-        assertEquals(2,requestsFilter.filterRequests(driverRequest,passengersRequests).size());
+        assertEquals(2, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
     }
 }

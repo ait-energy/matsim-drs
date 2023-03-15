@@ -7,7 +7,8 @@ public class RequestsRegister {
     private final RequestZonalRegistry destinationZonalRegistry;
     private final RequestTimeSegmentRegistry timeSegmentRegistry;
 
-    public RequestsRegister(RequestZonalRegistry originZonalRegistry, RequestZonalRegistry destinationZonalRegistry, RequestTimeSegmentRegistry timeSegmentRegistry) {
+    public RequestsRegister(RequestZonalRegistry originZonalRegistry, RequestZonalRegistry destinationZonalRegistry,
+            RequestTimeSegmentRegistry timeSegmentRegistry) {
         this.originZonalRegistry = originZonalRegistry;
         this.destinationZonalRegistry = destinationZonalRegistry;
         this.timeSegmentRegistry = timeSegmentRegistry;

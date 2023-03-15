@@ -24,19 +24,20 @@ public class RequestZonalRegistry {
         }
     }
 
-    public static RequestZonalRegistry createRequestZonalRegistry(ZonalSystem zonalSystem, boolean isOriginZonalRegistry){
-        return new RequestZonalRegistry(zonalSystem,isOriginZonalRegistry);
+    public static RequestZonalRegistry createRequestZonalRegistry(ZonalSystem zonalSystem,
+            boolean isOriginZonalRegistry) {
+        return new RequestZonalRegistry(zonalSystem, isOriginZonalRegistry);
     }
 
     public void addRequest(CarpoolingRequest request) {
-        Id<Zone> zoneId = getZoneId(request,isOriginZonalRegistry,zonalSystem);
+        Id<Zone> zoneId = getZoneId(request, isOriginZonalRegistry, zonalSystem);
         if (requestsInZones.get(zoneId).put(request.getId(), request) != null) {
             throw new IllegalStateException(request + " is already in the registry");
         }
     }
 
     public void removeRequest(CarpoolingRequest request) {
-        Id<Zone> zoneId = getZoneId(request,isOriginZonalRegistry,zonalSystem);
+        Id<Zone> zoneId = getZoneId(request, isOriginZonalRegistry, zonalSystem);
         if (requestsInZones.get(zoneId).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
@@ -50,10 +51,10 @@ public class RequestZonalRegistry {
         return requestsInZones;
     }
 
-    static Id<Zone> getZoneId(CarpoolingRequest request,boolean isOriginZonalRegistry, ZonalSystem zonalSystem) {
-        if(isOriginZonalRegistry){
+    static Id<Zone> getZoneId(CarpoolingRequest request, boolean isOriginZonalRegistry, ZonalSystem zonalSystem) {
+        if (isOriginZonalRegistry) {
             return zonalSystem.getZone(request.getFromLink().getFromNode()).getId();
-        }else {
+        } else {
             return zonalSystem.getZone(request.getToLink().getFromNode()).getId();
         }
     }

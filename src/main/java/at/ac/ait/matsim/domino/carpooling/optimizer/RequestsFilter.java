@@ -17,21 +17,27 @@ import java.util.List;
 public class RequestsFilter {
     private final CarpoolingConfigGroup cfgGroup;
     private final RoutingModule router;
+
     public RequestsFilter(CarpoolingConfigGroup cfgGroup, RoutingModule router) {
         this.cfgGroup = cfgGroup;
         this.router = router;
     }
 
-    public List<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest, List<CarpoolingRequest> ridersRequests) {
-        List<CarpoolingRequest>filteredRiderRequests = new ArrayList<>();
+    public List<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest,
+            List<CarpoolingRequest> ridersRequests) {
+        List<CarpoolingRequest> filteredRiderRequests = new ArrayList<>();
         Link driverOrigin = driverRequest.getFromLink();
         double driverDepartureTime = driverRequest.getDepartureTime();
         for (CarpoolingRequest riderRequest : ridersRequests) {
-            RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverOrigin),FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverDepartureTime, driverRequest.getPerson());
+            RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverOrigin),
+                    FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverDepartureTime,
+                    driverRequest.getPerson());
             List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
-            Leg legToCustomer= CarpoolingUtil.getFirstLeg(legToCustomerList);
-            double expectedPickupTime = driverRequest.getDepartureTime()+ legToCustomer.getTravelTime().seconds();
-            boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()-cfgGroup.riderDepartureTimeAdjustment) < expectedPickupTime && expectedPickupTime < (riderRequest.getDepartureTime()+cfgGroup.riderDepartureTimeAdjustment);
+            Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
+            double expectedPickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
+            boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()
+                    - cfgGroup.riderDepartureTimeAdjustment) < expectedPickupTime
+                    && expectedPickupTime < (riderRequest.getDepartureTime() + cfgGroup.riderDepartureTimeAdjustment);
             if (withinRiderDepartureTimeWindow) {
                 filteredRiderRequests.add(riderRequest);
             }

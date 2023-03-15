@@ -26,17 +26,18 @@ public class RunViennaExample {
         Carpooling.prepareController(controller);
         controller.run();
     }
-    public static void editPopulation(Population population){
+
+    public static void editPopulation(Population population) {
         Random random = new Random(0);
-        for (Person person : population.getPersons().values()){
-            for (PlanElement planElement:person.getSelectedPlan().getPlanElements()){
-                if (planElement instanceof Leg){
-                    if (((Leg) planElement).getMode().equals("ride")){
-                        if (random.nextDouble()<0.1){
+        for (Person person : population.getPersons().values()) {
+            for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
+                if (planElement instanceof Leg) {
+                    if (((Leg) planElement).getMode().equals("ride")) {
+                        if (random.nextDouble() < 0.1) {
                             ((Leg) planElement).setMode("carpoolingRider");
                         }
                     } else if (((Leg) planElement).getMode().equals("car")) {
-                        if (random.nextDouble()<0.1){
+                        if (random.nextDouble() < 0.1) {
                             ((Leg) planElement).setMode("carpoolingDriver");
                         }
                     }

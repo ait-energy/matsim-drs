@@ -26,7 +26,7 @@ class RequestsCollectorTest {
         population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
         populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network,Carpooling.DRIVER_MODE);
+        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
     }
 
     @BeforeEach
@@ -37,39 +37,39 @@ class RequestsCollectorTest {
     }
 
     @Test
-    void testNumberOfRequests(){
+    void testNumberOfRequests() {
         requestsCollector.collectRequests();
         List<CarpoolingRequest> driversRequests = requestsCollector.getDriversRequests();
-        List<CarpoolingRequest> ridersRequests =requestsCollector.getRidersRequests();
-        assertEquals(6,driversRequests.size());
-        assertEquals(8,ridersRequests.size());
+        List<CarpoolingRequest> ridersRequests = requestsCollector.getRidersRequests();
+        assertEquals(6, driversRequests.size());
+        assertEquals(8, ridersRequests.size());
     }
 
     @Test
-    void testRequestsInfo(){
+    void testRequestsInfo() {
         requestsCollector.collectRequests();
         List<CarpoolingRequest> driversRequests = requestsCollector.getDriversRequests();
-        List<CarpoolingRequest> ridersRequests =requestsCollector.getRidersRequests();
+        List<CarpoolingRequest> ridersRequests = requestsCollector.getRidersRequests();
 
-        assertEquals("1",driversRequests.get(0).getId().toString());
-        assertEquals(5*60*60 ,driversRequests.get(0).getDepartureTime());
+        assertEquals("1", driversRequests.get(0).getId().toString());
+        assertEquals(5 * 60 * 60, driversRequests.get(0).getDepartureTime());
         assertEquals(Carpooling.DRIVER_MODE, driversRequests.get(0).getMode());
-        assertEquals("1540" ,driversRequests.get(0).getFromLink().getId().toString());
-        assertEquals("688",driversRequests.get(0).getToLink().getId().toString());
+        assertEquals("1540", driversRequests.get(0).getFromLink().getId().toString());
+        assertEquals("688", driversRequests.get(0).getToLink().getId().toString());
 
-        assertEquals("1",ridersRequests.get(0).getId().toString());
-        assertEquals(18600,ridersRequests.get(0).getDepartureTime());
+        assertEquals("1", ridersRequests.get(0).getId().toString());
+        assertEquals(18600, ridersRequests.get(0).getDepartureTime());
         assertEquals(Carpooling.RIDER_MODE, ridersRequests.get(0).getMode());
-        assertEquals("1541" ,ridersRequests.get(0).getFromLink().getId().toString());
-        assertEquals("688",ridersRequests.get(0).getToLink().getId().toString());
+        assertEquals("1541", ridersRequests.get(0).getFromLink().getId().toString());
+        assertEquals("688", ridersRequests.get(0).getToLink().getId().toString());
 
     }
 
     @Test
-    void testNoCarpoolingRequests(){
+    void testNoCarpoolingRequests() {
         requestsCollectorNoRequests.collectRequests();
         List<CarpoolingRequest> driversRequests = requestsCollectorNoRequests.getDriversRequests();
-        List<CarpoolingRequest> ridersRequests =requestsCollectorNoRequests.getRidersRequests();
+        List<CarpoolingRequest> ridersRequests = requestsCollectorNoRequests.getRidersRequests();
         assertTrue(driversRequests.isEmpty());
         assertTrue(ridersRequests.isEmpty());
     }

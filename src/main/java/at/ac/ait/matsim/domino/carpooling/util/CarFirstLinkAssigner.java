@@ -56,9 +56,10 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
         }
     }
 
-    private void assignLinkEyad(Activity act){
-        act.setLinkId(NetworkUtils.getNearestLink(carNetwork,act.getCoord()).getId());
+    private void assignLinkEyad(Activity act) {
+        act.setLinkId(NetworkUtils.getNearestLink(carNetwork, act.getCoord()).getId());
     }
+
     private void assignLink(Id<Person> personId, Activity act) {
         Map<Double, Set<Link>> closestLinks = NetworkTools.findClosestLinks(carNetwork, act.getCoord(), radius, null);
         if (closestLinks.isEmpty()) {

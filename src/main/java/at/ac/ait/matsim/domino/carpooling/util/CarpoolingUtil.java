@@ -31,6 +31,7 @@ public class CarpoolingUtil {
 			}
 		});
 	}
+
 	public static void addMissingCoordsToPlanElementsFromLinks(Population population, Network network) {
 		for (Person person : population.getPersons().values()) {
 			for (Plan plan : person.getPlans()) {
@@ -95,18 +96,20 @@ public class CarpoolingUtil {
 	}
 
 	public static void setActivityOriginalDepartureTime(Activity activity, double originalDepartureTime) {
-			activity.getAttributes().putAttribute(Carpooling.ORIGINAL_DEP_TIME, originalDepartureTime);
+		activity.getAttributes().putAttribute(Carpooling.ORIGINAL_DEP_TIME, originalDepartureTime);
 	}
+
 	public static void removeActivityOriginalDepartureTime(Activity activity) {
 		activity.getAttributes().removeAttribute(Carpooling.ORIGINAL_DEP_TIME);
 	}
 
 	public static void setLinkageActivityToRiderRequest(CarpoolingRequest riderRequest) {
 		for (PlanElement planElement : riderRequest.getPerson().getSelectedPlan().getPlanElements()) {
-			if (planElement instanceof Activity){
-				if (((Activity) planElement).getEndTime().isDefined()){
-					if (((Activity) planElement).getEndTime().seconds()==riderRequest.getDepartureTime()){
-						planElement.getAttributes().putAttribute(Carpooling.LINKED_REQUEST, riderRequest.getId().toString());
+			if (planElement instanceof Activity) {
+				if (((Activity) planElement).getEndTime().isDefined()) {
+					if (((Activity) planElement).getEndTime().seconds() == riderRequest.getDepartureTime()) {
+						planElement.getAttributes().putAttribute(Carpooling.LINKED_REQUEST,
+								riderRequest.getId().toString());
 						break;
 					}
 				}
@@ -122,10 +125,9 @@ public class CarpoolingUtil {
 		activity.getAttributes().removeAttribute(Carpooling.LINKED_REQUEST);
 	}
 
-
-	public static void setRoutingMode(List<? extends PlanElement> legList){
+	public static void setRoutingMode(List<? extends PlanElement> legList) {
 		for (PlanElement planElement : legList) {
-			if (planElement instanceof Leg){
+			if (planElement instanceof Leg) {
 				TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
 			}
 		}

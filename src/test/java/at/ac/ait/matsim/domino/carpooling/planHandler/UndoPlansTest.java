@@ -26,8 +26,8 @@ class UndoPlansTest {
     }
 
     @Test
-    void testUndoCarpoolingDriversPlans(){
-        for (Person person : population.getPersons().values()){
+    void testUndoCarpoolingDriversPlans() {
+        for (Person person : population.getPersons().values()) {
             int planSizeOriginal = person.getSelectedPlan().getPlanElements().size();
 
             addPseudoPlanElements(person.getSelectedPlan().getPlanElements());
@@ -36,23 +36,24 @@ class UndoPlansTest {
             UndoPlans.undoDriverPlan(person);
             int planSizeAfterUndoing = person.getSelectedPlan().getPlanElements().size();
 
-            if (person.getId().toString().equals("10254-2_2_2#1")){
-                assertEquals(planSizeAfterUndoing,planSizeOriginal);
-                assertEquals(planSizeAfterUndoing,planSizeAfterModifying-8);
+            if (person.getId().toString().equals("10254-2_2_2#1")) {
+                assertEquals(planSizeAfterUndoing, planSizeOriginal);
+                assertEquals(planSizeAfterUndoing, planSizeAfterModifying - 8);
             }
 
         }
     }
+
     private void addPseudoPlanElements(List<PlanElement> planElements) {
-        ArrayList<PlanElement>legToCustomerList = new ArrayList<>();
+        ArrayList<PlanElement> legToCustomerList = new ArrayList<>();
         Leg legToCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
         legToCustomerList.add(legToCustomer);
 
-        ArrayList<PlanElement>legWithCustomerList = new ArrayList<>();
+        ArrayList<PlanElement> legWithCustomerList = new ArrayList<>();
         Leg legWithCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
         legWithCustomerList.add(legWithCustomer);
 
-        ArrayList<PlanElement>legAfterCustomerList = new ArrayList<>();
+        ArrayList<PlanElement> legAfterCustomerList = new ArrayList<>();
         Leg legAfterCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
         legAfterCustomerList.add(legAfterCustomer);
 

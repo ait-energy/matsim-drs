@@ -24,13 +24,14 @@ public class RequestsCollector {
         driversRequests = new ArrayList<>();
         ridersRequests = new ArrayList<>();
     }
-    public void collectRequests(){
+
+    public void collectRequests() {
         for (Map.Entry<Id<Person>, ? extends Person> entry : population.getPersons().entrySet()) {
             Person person = entry.getValue();
             List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
-            for (TripStructureUtils.Trip trip: trips){
+            for (TripStructureUtils.Trip trip : trips) {
                 List<Leg> legs = trip.getLegsOnly();
-                for (Leg leg: legs) {
+                for (Leg leg : legs) {
                     String mode = leg.getMode();
                     if (mode.equals(Carpooling.RIDER_MODE)) {
                         Activity startActivity = trip.getOriginActivity();
@@ -38,8 +39,9 @@ public class RequestsCollector {
                         Activity endActivity = trip.getDestinationActivity();
                         Link toLink = network.getLinks().get(endActivity.getLinkId());
                         double activityEndTime = startActivity.getEndTime().seconds();
-                        riderRequestID = riderRequestID +1;
-                        CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);
+                        riderRequestID = riderRequestID + 1;
+                        CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class),
+                                person, trip, activityEndTime, mode, fromLink, toLink);
                         ridersRequests.add(riderRequest);
                     }
                     if (mode.equals(Carpooling.DRIVER_MODE)) {
@@ -48,8 +50,10 @@ public class RequestsCollector {
                         Activity endActivity = trip.getDestinationActivity();
                         Link toLink = network.getLinks().get(endActivity.getLinkId());
                         double activityEndTime = startActivity.getEndTime().seconds();
-                        driverRequestID = driverRequestID+1;
-                        CarpoolingRequest driverRequest = new CarpoolingRequest(Id.create(driverRequestID, Request.class), person, trip, activityEndTime,mode, fromLink, toLink);
+                        driverRequestID = driverRequestID + 1;
+                        CarpoolingRequest driverRequest = new CarpoolingRequest(
+                                Id.create(driverRequestID, Request.class), person, trip, activityEndTime, mode,
+                                fromLink, toLink);
                         driversRequests.add(driverRequest);
                     }
                 }

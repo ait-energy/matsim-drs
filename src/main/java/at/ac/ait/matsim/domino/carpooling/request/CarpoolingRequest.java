@@ -16,7 +16,8 @@ public class CarpoolingRequest implements Request {
     private final Link fromLink;
     private final Link toLink;
 
-    public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime, String mode, Link fromLink, Link toLink) {
+    public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
+            String mode, Link fromLink, Link toLink) {
         this.matched = false;
         this.id = id;
         this.person = person;
@@ -27,22 +28,35 @@ public class CarpoolingRequest implements Request {
         this.toLink = toLink;
     }
 
-    public double getDepartureTime() {return departureTime;}
+    public double getDepartureTime() {
+        return departureTime;
+    }
+
     public String getMode() {
         return mode;
     }
+
     public Person getPerson() {
         return person;
     }
+
     public TripStructureUtils.Trip getTrip() {
         return trip;
     }
-    public Link getFromLink() {return fromLink;}
-    public Link getToLink() {return toLink;}
+
+    public Link getFromLink() {
+        return fromLink;
+    }
+
+    public Link getToLink() {
+        return toLink;
+    }
+
     @Override
     public Id<Request> getId() {
         return id;
     }
+
     @Override
     public double getSubmissionTime() {
         return 0;
@@ -51,8 +65,9 @@ public class CarpoolingRequest implements Request {
     public boolean isMatched() {
         return matched;
     }
-    public void setMatched(){
-        this.matched=true;
+
+    public void setMatched() {
+        this.matched = true;
     }
 
 }

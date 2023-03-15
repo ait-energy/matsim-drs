@@ -10,18 +10,19 @@ import java.util.Random;
 public class EditPopulation {
     public static void main(String[] args) {
         Population population = PopulationUtils.readPopulation("data/vienna/population.xml");
-        Population testPopulation = PopulationUtils.createPopulation(ConfigUtils.loadConfig("data/vienna/config_carpooling.xml"));
+        Population testPopulation = PopulationUtils
+                .createPopulation(ConfigUtils.loadConfig("data/vienna/config_carpooling.xml"));
         Random random = new Random(0);
 
-        for (Person person : population.getPersons().values()){
-            for (PlanElement planElement:person.getSelectedPlan().getPlanElements()){
-                if (planElement instanceof Leg){
-                    if (((Leg) planElement).getMode().equals("ride")){
-                        if (random.nextDouble()<0.1){
+        for (Person person : population.getPersons().values()) {
+            for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
+                if (planElement instanceof Leg) {
+                    if (((Leg) planElement).getMode().equals("ride")) {
+                        if (random.nextDouble() < 0.1) {
                             ((Leg) planElement).setMode("carpoolingRider");
                         }
                     } else if (((Leg) planElement).getMode().equals("car")) {
-                        if (random.nextDouble()<0.1){
+                        if (random.nextDouble() < 0.1) {
                             ((Leg) planElement).setMode("carpoolingDriver");
                         }
                     }
@@ -29,22 +30,25 @@ public class EditPopulation {
             }
         }
 
-        for (Person person : population.getPersons().values()){
+        for (Person person : population.getPersons().values()) {
             boolean condition = false;
-            if (person.getSelectedPlan().getPlanElements().size()>5){
-                for (PlanElement planElement:person.getSelectedPlan().getPlanElements() ){
-                    if (planElement instanceof Leg){
+            if (person.getSelectedPlan().getPlanElements().size() > 5) {
+                for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
+                    if (planElement instanceof Leg) {
                         if (Objects.equals(((Leg) planElement).getMode(), "carpoolingDriver")) {
-                            condition =true;
+                            condition = true;
                         }
                     }
                 }
-                if (condition){
-                    if (random.nextDouble()>0.5){ testPopulation.addPerson(person);}}
+                if (condition) {
+                    if (random.nextDouble() > 0.5) {
+                        testPopulation.addPerson(person);
+                    }
+                }
             }
         }
 
         System.out.println(testPopulation.getPersons().size());
-        PopulationUtils.writePopulation(testPopulation,"data/vienna/testPopulation.xml");
+        PopulationUtils.writePopulation(testPopulation, "data/vienna/testPopulation.xml");
     }
 }

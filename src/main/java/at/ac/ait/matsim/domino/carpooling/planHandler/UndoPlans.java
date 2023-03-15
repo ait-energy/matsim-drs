@@ -18,6 +18,7 @@ import java.util.Map;
 
 public class UndoPlans implements IterationEndsListener {
     static Logger LOGGER = LogManager.getLogger();
+
     @Override
     public void notifyIterationEnds(IterationEndsEvent event) {
         undoPlans(event);
@@ -37,13 +38,16 @@ public class UndoPlans implements IterationEndsListener {
     }
 
     static void undoRiderPlan(Person person) {
-        for (PlanElement planElement:person.getSelectedPlan().getPlanElements()){
-            if (planElement instanceof Activity){
-                if (!(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement)==null)){
-                    LOGGER.warn("Before undoing, "+person.getId().toString()+"'s departure time is "+ ((Activity) planElement).getEndTime().seconds());
-                    ((Activity) planElement).setEndTime(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
+        for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
+            if (planElement instanceof Activity) {
+                if (!(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement) == null)) {
+                    LOGGER.warn("Before undoing, " + person.getId().toString() + "'s departure time is "
+                            + ((Activity) planElement).getEndTime().seconds());
+                    ((Activity) planElement)
+                            .setEndTime(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
                     CarpoolingUtil.removeActivityOriginalDepartureTime((Activity) planElement);
-                    LOGGER.warn("After undoing, "+person.getId().toString()+"'s departure time is "+ ((Activity) planElement).getEndTime().seconds());
+                    LOGGER.warn("After undoing, " + person.getId().toString() + "'s departure time is "
+                            + ((Activity) planElement).getEndTime().seconds());
                 }
             }
         }
@@ -66,9 +70,10 @@ public class UndoPlans implements IterationEndsListener {
                 }
             }
         }
-        if (before!= person.getSelectedPlan().getPlanElements().size()){
-            LOGGER.warn("Before undoing, "+ person.getId().toString()+" had "+ before+" plan elements.");
-            LOGGER.warn("After undoing, "+ person.getId().toString()+" had "+ person.getSelectedPlan().getPlanElements().size()+" plan elements.");
+        if (before != person.getSelectedPlan().getPlanElements().size()) {
+            LOGGER.warn("Before undoing, " + person.getId().toString() + " had " + before + " plan elements.");
+            LOGGER.warn("After undoing, " + person.getId().toString() + " had "
+                    + person.getSelectedPlan().getPlanElements().size() + " plan elements.");
         }
     }
 }

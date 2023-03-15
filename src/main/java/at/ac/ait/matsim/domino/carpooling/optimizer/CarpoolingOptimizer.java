@@ -21,7 +21,8 @@ public class CarpoolingOptimizer {
     private final RoutingModule router;
     private final Integer iterationNumber;
 
-    public CarpoolingOptimizer(Network network, CarpoolingConfigGroup cfgGroup, Population population, RoutingModule router, Integer iterationNumber) {
+    public CarpoolingOptimizer(Network network, CarpoolingConfigGroup cfgGroup, Population population,
+            RoutingModule router, Integer iterationNumber) {
         this.network = network;
         this.cfgGroup = cfgGroup;
         this.population = population;
@@ -29,21 +30,23 @@ public class CarpoolingOptimizer {
         this.iterationNumber = iterationNumber;
     }
 
-
     public HashMap<CarpoolingRequest, CarpoolingRequest> optimize() {
 
         LOGGER.info("Matching process started!");
-        ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(),cfgGroup.cellSize);
-        RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,true);
-        RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,false);
+        ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.cellSize);
+        RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem, true);
+        RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
+                false);
         RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(cfgGroup);
 
-        RequestsCollector requestsCollector = new RequestsCollector(population,network);
-        RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry,destinationZonalRegistry,timeSegmentRegistry);
-        NearestRequestsFinder nearestRequestsFinder = new NearestRequestsFinder(cfgGroup,requestsRegister);
+        RequestsCollector requestsCollector = new RequestsCollector(population, network);
+        RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
+                timeSegmentRegistry);
+        NearestRequestsFinder nearestRequestsFinder = new NearestRequestsFinder(cfgGroup, requestsRegister);
         RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, router);
-        BestRequestFinder bestRequestFinder = new BestRequestFinder(router,cfgGroup);
-        MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister,nearestRequestsFinder, requestsFilter, bestRequestFinder, iterationNumber);
+        BestRequestFinder bestRequestFinder = new BestRequestFinder(router, cfgGroup);
+        MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, nearestRequestsFinder,
+                requestsFilter, bestRequestFinder, iterationNumber);
         return matchMaker.match();
     }
 
