@@ -3,13 +3,11 @@ package at.ac.ait.matsim.domino.carpooling.run;
 import java.util.Set;
 
 import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
-import at.ac.ait.matsim.domino.carpooling.scoring.CarpoolingScoringFunctionFactory;
 import at.ac.ait.matsim.domino.carpooling.util.CarFirstLinkAssigner;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
-import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 
 import com.google.common.collect.Lists;
@@ -37,6 +35,7 @@ public class Carpooling {
         PlanCalcScoreConfigGroup.ModeParams carpoolingRiderScore = new PlanCalcScoreConfigGroup.ModeParams(
                 Carpooling.RIDER_MODE);
         config.planCalcScore().addModeParams(carpoolingRiderScore);
+        carpoolingDriverScore.setMonetaryDistanceRate(-1);
 
         Set<String> networkModes = Sets.newHashSet(config.plansCalcRoute().getNetworkModes());
         networkModes.add(Carpooling.DRIVER_MODE);
@@ -56,11 +55,6 @@ public class Carpooling {
     public static void prepareController(Controler controller) {
         controller.addOverridingModule(new CarpoolingModule());
         controller.configureQSimComponents(components -> components.addNamedComponent(CarpoolingEngine.COMPONENT_NAME));
-        /*controller.addOverridingModule(new AbstractModule() {
-            @Override
-            public void install() {
-                bindScoringFunctionFactory().to(CarpoolingScoringFunctionFactory.class);
-            }
-        });*/
+
     }
 }
