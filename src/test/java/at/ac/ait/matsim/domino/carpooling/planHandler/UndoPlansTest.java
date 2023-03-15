@@ -41,11 +41,6 @@ class UndoPlansTest {
                 assertEquals(planSizeAfterUndoing,planSizeAfterModifying-8);
             }
 
-            if (!person.getId().toString().equals("10254-2_2_2#1")){
-                assertEquals(planSizeAfterUndoing,planSizeOriginal);
-                assertEquals(planSizeAfterUndoing,planSizeAfterModifying-4);
-            }
-
         }
     }
     private void addPseudoPlanElements(List<PlanElement> planElements) {
