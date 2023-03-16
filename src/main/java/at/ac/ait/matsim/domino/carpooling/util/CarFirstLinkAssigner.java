@@ -22,23 +22,32 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * Tries to assign links to all activities of a population.
- * For multimodal networks it first tries to find a car link.
+ * For multimodal networks it first tries to find a car link within the given
+ * radius,
+ * if none is available it searches for a different link within the radius.
+ * If this does not succed as well we just take the nearest car link (no matter
+ * how far away).
+ * <p>
  * This should help with problems in MATSim v14 where a population initially
  * without links gets pt link assigned to facilities - which later causes
  * troubles with vehicles that actually have a proper route on the car network
  * but the previous facility has pt link assigned. In such cases you get the
  * following exception:
  * - DefaultTurnAcceptanceLogic:57 Cannot move vehicle ...
+ * <p>
+ * Note that for populations with cordon agents (i.e. agents trying to start a
+ * pt trip far outside the car network) this is imporant - if we simply take the
+ * nearest car link the expected pt trip can not take place!
  */
-
 public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Network network;
     private final Network carNetwork;
-    int radius = 500;
+    private final int radius;
 
-    public CarFirstLinkAssigner(Network network) {
+    public CarFirstLinkAssigner(Network network, int radius) {
         this.network = network;
+        this.radius = radius;
         this.carNetwork = NetworkTools.createFilteredNetworkByLinkMode(network, ImmutableSet.of(TransportMode.car));
     }
 
@@ -49,15 +58,11 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
                 if (pe instanceof Activity) {
                     Activity act = (Activity) pe;
                     if (act.getLinkId() == null) {
-                        assignLinkEyad(act);
+                        assignLink(person.getId(), act);
                     }
                 }
             }
         }
-    }
-
-    private void assignLinkEyad(Activity act) {
-        act.setLinkId(NetworkUtils.getNearestLink(carNetwork, act.getCoord()).getId());
     }
 
     private void assignLink(Id<Person> personId, Activity act) {
@@ -67,7 +72,9 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
         }
         if (closestLinks.isEmpty()) {
             String wkt = String.format(Locale.US, "POINT(%.1f %.1f)", act.getCoord().getX(), act.getCoord().getY());
-            LOGGER.warn("no link within {} m for activity at {} of agent {}", radius, wkt, personId.toString());
+            LOGGER.info("no link within {} m for {} activity at {} of agent {}. Fallback to nearest car link.",
+                    radius, wkt, act.getType(), personId.toString());
+            act.setLinkId(NetworkUtils.getNearestLink(carNetwork, act.getCoord()).getId());
         } else {
             Link closest = closestLinks.values().iterator().next().iterator().next();
             act.setLinkId(closest.getId());

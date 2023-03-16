@@ -10,11 +10,18 @@
             "request": "launch",
             "mainClass": "${file}"
         },
-    {
+        {
             "type": "java",
             "name": "Launch RunSimpleCarpoolingExample",
             "request": "launch",
             "mainClass": "at.ac.ait.matsim.domino.carpooling.run.RunSimpleCarpoolingExample",
+            "projectName": "domino-carpooling"
+        },
+        {
+            "type": "java",
+            "name": "Launch RunViennaExample",
+            "request": "launch",
+            "mainClass": "at.ac.ait.matsim.domino.carpooling.run.RunViennaExample",
             "projectName": "domino-carpooling"
         }
     ]

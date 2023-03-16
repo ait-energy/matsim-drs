@@ -1,5 +1,6 @@
 /output
 /target
+/data/vienna_xl_2023.1
 
 dependency-reduced-pom.xml
 /test/output
