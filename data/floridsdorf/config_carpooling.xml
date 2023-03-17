@@ -116,5 +116,7 @@
 
     <module name="carpooling">
         <param name="cellSize" value="900" />
+        <param name="subtourModeChoiceChainBasedModes" value="car,carpoolingDriver" />
+        <param name="subtourModeChoiceModes" value="car,carpoolingDriver,carpoolingRider" />
     </module>
 </config>

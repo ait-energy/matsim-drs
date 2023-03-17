@@ -2,7 +2,11 @@ package at.ac.ait.matsim.domino.carpooling.run;
 
 import java.util.Map;
 
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
+import org.matsim.core.utils.misc.StringUtils;
+
+import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpooling;
 
 public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
@@ -32,6 +36,14 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
     private double riderFarePerKm = 0;
 
+    public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
+    private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
+            TransportMode.pt, TransportMode.bike, TransportMode.walk };
+
+    public static final String SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES = "subtourModeChoiceChainBasedModes";
+    private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Carpooling.RIDER_MODE,
+            TransportMode.bike };
+
     public CarpoolingConfigGroup() {
         super(GROUP_NAME);
     }
@@ -55,6 +67,12 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of money per kilometre the driver gains when picking a rider");
         map.put(RIDER_FARE_PER_KM,
                 "The amount of money per kilometre the rider pays when being picked up by a driver.");
+        map.put(SUBTOUR_MODE_CHOICE_MODES,
+                "Defines all modes available for '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
+                        + "', including chain-based modes, seperated by commas");
+        map.put(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES,
+                "Defines the chain-based modes for '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
+                        + "', seperated by commas");
         return map;
     }
 
@@ -136,6 +154,63 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(RIDER_FARE_PER_KM)
     public void setRiderFarePerKm(double riderFarePerKm) {
         this.riderFarePerKm = riderFarePerKm;
+    }
+
+    public String[] getSubtourModeChoiceModes() {
+        return subtourModeChoiceModes;
+    }
+
+    @StringGetter(SUBTOUR_MODE_CHOICE_MODES)
+    public String getSubtourModeChoiceModesString() {
+        return toString(subtourModeChoiceModes);
+    }
+
+    public void setSubtourModeChoiceModes(String[] subtourModeChoiceModes) {
+        this.subtourModeChoiceModes = subtourModeChoiceModes;
+    }
+
+    @StringSetter(SUBTOUR_MODE_CHOICE_MODES)
+    public void setSubtourModeChoiceModesString(String subtourModeChoiceModes) {
+        this.subtourModeChoiceModes = toArray(subtourModeChoiceModes);
+    }
+
+    public String[] getSubtourModeChoiceChainBasedModes() {
+        return subtourModeChoiceChainBasedModes;
+    }
+
+    @StringGetter(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES)
+    public String getSubtourModeChoiceChainBasedModesString() {
+        return toString(subtourModeChoiceChainBasedModes);
+    }
+
+    public void setSubtourModeChoiceChainBasedModes(String[] subtourModeChoiceChainBasedModes) {
+        this.subtourModeChoiceChainBasedModes = subtourModeChoiceChainBasedModes;
+    }
+
+    @StringSetter(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES)
+    public void setSubtourModeChoiceChainBasedModesString(String subtourModeChoiceChainBasedModes) {
+        this.subtourModeChoiceChainBasedModes = toArray(subtourModeChoiceChainBasedModes);
+    }
+
+    /** copied from SubtourModeChoiceConfigGroup */
+    private static String toString(final String[] modes) {
+        StringBuilder b = new StringBuilder();
+        if (modes.length > 0)
+            b.append(modes[0]);
+        for (int i = 1; i < modes.length; i++) {
+            b.append(',');
+            b.append(modes[i]);
+        }
+        return b.toString();
+    }
+
+    /** copied from SubtourModeChoiceConfigGroup */
+    private static String[] toArray(final String modes) {
+        String[] parts = StringUtils.explode(modes, ',');
+        for (int i = 0, n = parts.length; i < n; i++) {
+            parts[i] = parts[i].trim().intern();
+        }
+        return parts;
     }
 
 }
