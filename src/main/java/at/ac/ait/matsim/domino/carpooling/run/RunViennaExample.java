@@ -34,11 +34,11 @@ public class RunViennaExample {
                 if (planElement instanceof Leg) {
                     if (((Leg) planElement).getMode().equals("ride")) {
                         if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode("carpoolingRider");
+                            ((Leg) planElement).setMode(Carpooling.RIDER_MODE);
                         }
                     } else if (((Leg) planElement).getMode().equals("car")) {
                         if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode("carpoolingDriver");
+                            ((Leg) planElement).setMode(Carpooling.DRIVER_MODE);
                         }
                     }
                 }

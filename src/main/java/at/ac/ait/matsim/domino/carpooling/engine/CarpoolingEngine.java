@@ -103,8 +103,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
-                        // TODO: Get the previous leg and calculate its distance, add the distance to
-                        // handleDropOff() method
                         Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
                         double distance = previousLeg.getRoute().getDistance();
                         handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, distance);
@@ -116,7 +114,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
             } else if (act.getType().equals(Carpooling.RIDER_INTERACTION)) {
-                // TODO not necessary to handle this?
                 LOGGER.debug("handleActivity {} {}", act.getType(), agent.getId());
             }
         }
@@ -132,8 +129,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         }
         LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
-        // TODO: eventsManager.processEvent(new MoneyEvent(for the driver and the rider?
-        // using the distance travelled))
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.driverMoneyPerKM / 1000) * distance, "Carpooling", rider.getId().toString(), null));
         eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
