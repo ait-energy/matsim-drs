@@ -1,51 +1,141 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
+import java.util.Map;
+
 import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 
 public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
-    //Inspired by Taxi contrib : Limits the number of possible riders requests considered for a driver during
-    //the matching process.
-    //Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results.
-    //To turn off this feature - specify a sufficiently big number (not recommended), the default value is 30.
-    public int neighbourhoodSize = 30;
+    public static final String GROUP_NAME = "carpooling";
 
+    public static final String CELL_SIZE = "cellSize";
+    private int cellSize = 800;
 
-    //Inspired by Taxi contrib : The side length of square zones used in zonal registers of riders requests.
-    //The default value is 1000 m. This value is good for urban areas. For large areas with sparsely
-    //distributed population and low carpooling share, you may consider using a bigger cell size
-    //On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better.
-    public int cellSize = 1000;
+    public static final String NEIGHBOURHOOD_SIZE = "neighbourhoodSize";
+    private int neighbourhoodSize = 30;
 
+    public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT = "riderDepartureTimeAdjustment";
+    private double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
 
-    //The duration of the time segments used in time segment registers of riders requests.
-    //The default value is dividing the day by 2 hour segments. The before and after segments are checked as well.
-    //This is more realistic for the cases that a driver and a rider departure times are
-    //very close but both are at the edges of two different segments.
-    public int timeSegmentLength = 2 * 60 * 60;
+    public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
+    private int timeSegmentLength = 2 * 60 * 60;
 
+    public static final String MAX_DETOUR_FACTOR_CONSTANT = "maxDetourFactorConstant";
+    public double maxDetourFactorConstant = 1.7;
 
-    //The amount of time the riders are willing to adjust their departure times.
-    //During the matching process, the arrival of driver to pick-up point is checked
-    //whether it is within the rider departure time +- the riderDepartureTimeAdjustment.
-    public double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
+    public static final String MAX_DETOUR_FACTOR_SLOPE = "maxDetourFactorSlope";
+    public double maxDetourFactorSlope = 0.01;
 
+    public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
+    private double driverProfitPerKm = 0.2;
 
-    //The components of the max detour factor as a function of total travel time.
-    //The function is currently linear (MaxDetourFactor = -m*(TotalTravelTime)+k").
-    //However the function can be further extended into any other polynomial function.
-    public double constant = 1.7;
-    public double slope = 0.01;
+    public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
+    private double riderFarePerKm = 0;
 
+    public CarpoolingConfigGroup() {
+        super(GROUP_NAME);
+    }
 
-    //The amount of money (in cents) per kilometre the driver gains when picking a rider
-    public double driverMoneyPerKM = 0.2;
+    @Override
+    public Map<String, String> getComments() {
+        Map<String, String> map = super.getComments();
+        map.put(CELL_SIZE,
+                "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low carpooling share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
+        map.put(NEIGHBOURHOOD_SIZE,
+                "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
+        map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT,
+                "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
+        map.put(TIME_SEGMENT_LENGTH,
+                "The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.");
+        map.put(MAX_DETOUR_FACTOR_CONSTANT,
+                "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
+        map.put(MAX_DETOUR_FACTOR_SLOPE,
+                "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
+        map.put(DRIVER_PROFIT_PER_KM,
+                "The amount of money per kilometre the driver gains when picking a rider");
+        map.put(RIDER_FARE_PER_KM,
+                "The amount of money per kilometre the rider pays when being picked up by a driver.");
+        return map;
+    }
 
-    //The amount of money (in cents) per kilometre the rider gains when being picked up by a driver.
-    public double riderMoneyPerKM = 0;
+    @StringGetter(CELL_SIZE)
+    public int getCellSize() {
+        return cellSize;
+    }
 
-    public CarpoolingConfigGroup(String name) {
-        super(name);
+    @StringSetter(CELL_SIZE)
+    public void setCellSize(int cellSize) {
+        this.cellSize = cellSize;
+    }
+
+    @StringGetter(NEIGHBOURHOOD_SIZE)
+    public int getNeighbourhoodSize() {
+        return neighbourhoodSize;
+    }
+
+    @StringSetter(NEIGHBOURHOOD_SIZE)
+    public void setNeighbourhoodSize(int neighbourhoodSize) {
+        this.neighbourhoodSize = neighbourhoodSize;
+    }
+
+    @StringGetter(RIDER_DEPARTURE_TIME_ADJUSTMENT)
+    public double getRiderDepartureTimeAdjustment() {
+        return riderDepartureTimeAdjustment;
+    }
+
+    @StringSetter(RIDER_DEPARTURE_TIME_ADJUSTMENT)
+    public void setRiderDepartureTimeAdjustment(double riderDepartureTimeAdjustment) {
+        this.riderDepartureTimeAdjustment = riderDepartureTimeAdjustment;
+    }
+
+    @StringGetter(TIME_SEGMENT_LENGTH)
+    public int getTimeSegmentLength() {
+        return timeSegmentLength;
+    }
+
+    @StringSetter(TIME_SEGMENT_LENGTH)
+    public void setTimeSegmentLength(int timeSegmentLength) {
+        this.timeSegmentLength = timeSegmentLength;
+    }
+
+    @StringGetter(MAX_DETOUR_FACTOR_CONSTANT)
+    public double getMaxDetourFactorConstant() {
+        return maxDetourFactorConstant;
+    }
+
+    @StringSetter(MAX_DETOUR_FACTOR_CONSTANT)
+    public void setMaxDetourFactorConstant(double maxDetourFactorConstant) {
+        this.maxDetourFactorConstant = maxDetourFactorConstant;
+    }
+
+    @StringGetter(MAX_DETOUR_FACTOR_SLOPE)
+    public double getMaxDetourFactorSlope() {
+        return maxDetourFactorSlope;
+    }
+
+    @StringSetter(MAX_DETOUR_FACTOR_SLOPE)
+    public void setMaxDetourFactorSlope(double maxDetourFactorSlope) {
+        this.maxDetourFactorSlope = maxDetourFactorSlope;
+    }
+
+    @StringGetter(DRIVER_PROFIT_PER_KM)
+    public double getDriverProfitPerKm() {
+        return driverProfitPerKm;
+    }
+
+    @StringSetter(DRIVER_PROFIT_PER_KM)
+    public void setDriverProfitPerKm(double driverProfitPerKm) {
+        this.driverProfitPerKm = driverProfitPerKm;
+    }
+
+    @StringGetter(RIDER_FARE_PER_KM)
+    public double getRiderFarePerKm() {
+        return riderFarePerKm;
+    }
+
+    @StringSetter(RIDER_FARE_PER_KM)
+    public void setRiderFarePerKm(double riderFarePerKm) {
+        this.riderFarePerKm = riderFarePerKm;
     }
 
 }

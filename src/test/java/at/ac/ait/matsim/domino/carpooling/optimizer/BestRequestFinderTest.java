@@ -51,7 +51,7 @@ class BestRequestFinderTest {
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
                 network,
                 dijkstra);
-        bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup("cfgGroup"));
+        bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup());
 
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)),

@@ -29,7 +29,8 @@ public class BestRequestFinder {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
         double originalRouteTravelTime = getLeg(driverRequest.getFromLink(), driverRequest.getToLink(),
                 driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
-        double maxDetourFactor = cfgGroup.constant - (cfgGroup.slope * (originalRouteTravelTime / 60));
+        double maxDetourFactor = cfgGroup.getMaxDetourFactorConstant()
+                - (cfgGroup.getMaxDetourFactorSlope() * (originalRouteTravelTime / 60));
 
         for (CarpoolingRequest riderRequest : filteredRidersRequests) {
             Leg legToCustomer = getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),

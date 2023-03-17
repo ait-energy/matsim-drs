@@ -6,12 +6,10 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
@@ -29,7 +27,10 @@ import org.matsim.core.mobsim.qsim.interfaces.ActivityHandler;
 import org.matsim.core.mobsim.qsim.interfaces.DepartureHandler;
 import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
 
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 /**
  * Heavily inspired by
@@ -38,16 +39,17 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
 public class CarpoolingEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
 
     public static final String COMPONENT_NAME = "carpoolingEngine";
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    private final CarpoolingConfigGroup cfgGroup = new CarpoolingConfigGroup("cfgGroup");
-    Logger LOGGER = LogManager.getLogger();
+    private final CarpoolingConfigGroup cfgGroup;
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
     private final Map<Id<Person>, Id<Link>> waitingRiders = new HashMap<>();
 
     @Inject
-    public CarpoolingEngine(EventsManager eventsManager) {
+    public CarpoolingEngine(Scenario scenario, EventsManager eventsManager) {
         LOGGER.info("constructing new engine.");
+        this.cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
 
@@ -130,9 +132,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
-                (cfgGroup.driverMoneyPerKM / 1000) * distance, "Carpooling", rider.getId().toString(), null));
+                (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "carpooling", rider.getId().toString(), null));
         eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
-                (cfgGroup.riderMoneyPerKM / 1000) * distance, "Carpooling", driver.getId().toString(), null));
+                (cfgGroup.getRiderFarePerKm() * -1 * distance / 1000d), "carpooling", driver.getId().toString(), null));
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);

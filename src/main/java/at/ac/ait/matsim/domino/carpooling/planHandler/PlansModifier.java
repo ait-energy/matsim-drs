@@ -1,38 +1,46 @@
 package at.ac.ait.matsim.domino.carpooling.planHandler;
 
-import at.ac.ait.matsim.domino.carpooling.analysis.StatsCollector;
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import at.ac.ait.matsim.domino.carpooling.optimizer.*;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.api.experimental.events.EventsManager;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.controler.events.ControlerEvent;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.controler.listener.StartupListener;
-import org.matsim.core.events.EventsManagerImpl;
-import org.matsim.core.router.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.matsim.core.router.DefaultRoutingRequest;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.RoutingRequest;
+import org.matsim.core.router.TripRouter;
 import org.matsim.facilities.FacilitiesUtils;
 
-@SuppressWarnings("all")
+import com.google.inject.Inject;
+
+import at.ac.ait.matsim.domino.carpooling.analysis.StatsCollector;
+import at.ac.ait.matsim.domino.carpooling.optimizer.CarpoolingOptimizer;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class PlansModifier implements StartupListener, ReplanningListener {
-    Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @Inject
     private TripRouter tripRouter;
+    @Inject
+    private Scenario scenario;
 
     @Override
     public void notifyReplanning(ReplanningEvent event) {
@@ -45,12 +53,10 @@ public class PlansModifier implements StartupListener, ReplanningListener {
     }
 
     private void preplanDay(ControlerEvent event) {
-        Scenario eventScenario = event.getServices().getScenario();
         StatsCollector.createOutputDirectory(event.getServices().getIterationNumber());
-        Population population = eventScenario.getPopulation();
-        Network network = eventScenario.getNetwork();
-        CarpoolingConfigGroup cfgGroup = new CarpoolingConfigGroup("cfgGroup");
-        EventsManager eventsManager = new EventsManagerImpl();
+        Population population = scenario.getPopulation();
+        Network network = scenario.getNetwork();
+        CarpoolingConfigGroup cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
 
         RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router,

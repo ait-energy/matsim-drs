@@ -33,9 +33,11 @@ public class CarpoolingOptimizer {
     public HashMap<CarpoolingRequest, CarpoolingRequest> optimize() {
 
         LOGGER.info("Matching process started!");
-        ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.cellSize);
-        RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem, true);
-        RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
+        ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.getCellSize());
+        RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
+                true);
+        RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(
+                zonalSystem,
                 false);
         RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(cfgGroup);
 

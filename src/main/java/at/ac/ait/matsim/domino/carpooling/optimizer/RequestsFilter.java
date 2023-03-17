@@ -36,8 +36,9 @@ public class RequestsFilter {
             Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
             double expectedPickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
             boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()
-                    - cfgGroup.riderDepartureTimeAdjustment) < expectedPickupTime
-                    && expectedPickupTime < (riderRequest.getDepartureTime() + cfgGroup.riderDepartureTimeAdjustment);
+                    - cfgGroup.getRiderDepartureTimeAdjustment()) < expectedPickupTime
+                    && expectedPickupTime < (riderRequest.getDepartureTime()
+                            + cfgGroup.getRiderDepartureTimeAdjustment());
             if (withinRiderDepartureTimeWindow) {
                 filteredRiderRequests.add(riderRequest);
             }

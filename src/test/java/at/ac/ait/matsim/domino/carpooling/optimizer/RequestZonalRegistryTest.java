@@ -18,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-@SuppressWarnings("all")
-
 class RequestZonalRegistryTest {
 
     static Network network;
@@ -31,7 +29,7 @@ class RequestZonalRegistryTest {
     public static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
         CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
-        zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup("cfgGroup").cellSize);
+        zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup().getCellSize());
         request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,

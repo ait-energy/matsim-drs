@@ -43,8 +43,8 @@ class RequestsFilterTest {
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
                 network,
                 dijkstra);
-        CarpoolingConfigGroup cfg = new CarpoolingConfigGroup("cfgGroup");
-        cfg.riderDepartureTimeAdjustment = 0.05 * 60 * 60;
+        CarpoolingConfigGroup cfg = new CarpoolingConfigGroup();
+        cfg.setRiderDepartureTimeAdjustment(0.05 * 60 * 60);
         requestsFilter = new RequestsFilter(cfg, router);
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)), null);

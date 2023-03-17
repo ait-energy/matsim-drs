@@ -15,18 +15,22 @@ class NearestRequestsFinderTest {
     List<CarpoolingRequest> originNearRequests = new ArrayList<>();
     List<CarpoolingRequest> destinationNearRequests = new ArrayList<>();
     List<CarpoolingRequest> temporalNearRequests = new ArrayList<>();
-    CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
+    CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
+            null,
             null);
-    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
+    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+            null,
             null);
-    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null, null,
+    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+            null,
             null);
 
     @Test
     void testEmptyStreamsIntersection() {
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup("cfgGroup"),
-                        originNearRequests.stream(), destinationNearRequests.stream(), temporalNearRequests.stream())
+                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                        originNearRequests.stream(), destinationNearRequests.stream(),
+                        temporalNearRequests.stream())
                         .size());
     }
 
@@ -36,8 +40,9 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup("cfgGroup"),
-                        originNearRequests.stream(), destinationNearRequests.stream(), temporalNearRequests.stream())
+                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                        originNearRequests.stream(), destinationNearRequests.stream(),
+                        temporalNearRequests.stream())
                         .size());
     }
 
@@ -48,8 +53,9 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup("cfgGroup"),
-                        originNearRequests.stream(), destinationNearRequests.stream(), temporalNearRequests.stream())
+                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                        originNearRequests.stream(), destinationNearRequests.stream(),
+                        temporalNearRequests.stream())
                         .size());
     }
 
@@ -61,8 +67,9 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(1,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup("cfgGroup"),
-                        originNearRequests.stream(), destinationNearRequests.stream(), temporalNearRequests.stream())
+                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                        originNearRequests.stream(), destinationNearRequests.stream(),
+                        temporalNearRequests.stream())
                         .size());
     }
 }

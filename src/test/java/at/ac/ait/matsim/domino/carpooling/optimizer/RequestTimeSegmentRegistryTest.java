@@ -8,11 +8,9 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("all")
-
 class RequestTimeSegmentRegistryTest {
     RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(
-            new CarpoolingConfigGroup("cfgGroup"));
+            new CarpoolingConfigGroup());
     CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
             null);
     CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,

@@ -13,8 +13,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("all")
-
 class UndoPlansTest {
     static Population population;
     PopulationFactory factory = population.getFactory();

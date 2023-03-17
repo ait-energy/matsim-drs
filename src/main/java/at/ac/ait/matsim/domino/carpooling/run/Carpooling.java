@@ -2,16 +2,18 @@ package at.ac.ait.matsim.domino.carpooling.run;
 
 import java.util.Set;
 
-import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
-import at.ac.ait.matsim.domino.carpooling.util.CarFirstLinkAssigner;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.controler.Controler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
+import at.ac.ait.matsim.domino.carpooling.util.CarFirstLinkAssigner;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class Carpooling {
     public static final String DRIVER_MODE = "carpoolingDriver";
@@ -44,6 +46,15 @@ public class Carpooling {
         Set<String> mainModes = Sets.newHashSet(config.qsim().getMainModes());
         mainModes.add(Carpooling.DRIVER_MODE);
         config.qsim().setMainModes(Lists.newArrayList(mainModes));
+    }
+
+    public static CarpoolingConfigGroup addOrGetConfigGroup(Scenario scenario) {
+        return ConfigUtils.addOrGetModule(scenario.getConfig(), CarpoolingConfigGroup.GROUP_NAME,
+                CarpoolingConfigGroup.class);
+    }
+
+    public static CarpoolingConfigGroup addOrGetConfigGroup(Config config) {
+        return ConfigUtils.addOrGetModule(config, CarpoolingConfigGroup.GROUP_NAME, CarpoolingConfigGroup.class);
     }
 
     public static void prepareScenario(Scenario scenario) {
