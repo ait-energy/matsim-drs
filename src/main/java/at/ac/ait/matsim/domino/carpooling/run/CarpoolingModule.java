@@ -13,23 +13,23 @@ import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpool
 import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoicePlanStrategyProviderForCarpooling;
 
 public final class CarpoolingModule extends AbstractModule {
-	@Override
-	public void install() {
-		addControlerListenerBinding().to(PlansModifier.class);
-		addControlerListenerBinding().to(UndoPlans.class);
-		addControlerListenerBinding().to(MatchStatsControlerListener.class);
+    @Override
+    public void install() {
+        addControlerListenerBinding().to(PlansModifier.class);
+        addControlerListenerBinding().to(UndoPlans.class);
+        addControlerListenerBinding().to(MatchStatsControlerListener.class);
 
-		bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
-		addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
-				.toProvider(SubtourModeChoicePlanStrategyProviderForCarpooling.class);
+        bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
+        addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
+                .toProvider(SubtourModeChoicePlanStrategyProviderForCarpooling.class);
 
-		installQSimModule(new AbstractQSimModule() {
-			@Override
-			protected void configureQSim() {
-				bind(CarpoolingEngine.class).asEagerSingleton();
-				addQSimComponentBinding(CarpoolingEngine.COMPONENT_NAME).to(CarpoolingEngine.class);
-			}
-		});
-	}
+        installQSimModule(new AbstractQSimModule() {
+            @Override
+            protected void configureQSim() {
+                bind(CarpoolingEngine.class).asEagerSingleton();
+                addQSimComponentBinding(CarpoolingEngine.COMPONENT_NAME).to(CarpoolingEngine.class);
+            }
+        });
+    }
 
 }
