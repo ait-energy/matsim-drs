@@ -21,10 +21,17 @@ public class Carpooling {
 
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
     public static final String RIDER_INTERACTION = RIDER_MODE + " interaction";
-    public static final String ORIGINAL_DEP_TIME = "originalDepTime";
-    public static final String LINKED_REQUEST = "linkedRequest";
-    public static final String RIDER_ID_ATTRIB = "riderId";
-    public static final String ACTIVITY_TYPE_ATTRIB = "type";
+
+    public static final String ATTRIB_ORIGINAL_DEP_TIME = "originalDepTime";
+    public static final String ATTRIB_LINKED_REQUEST = "linkedRequest";
+    public static final String ATTRIB_RIDER_ID = "riderId";
+    public static final String ATTRIB_ACTIVITY_TYPE = "type";
+    public static final String ATTRIB_AFFINITY = "carpoolingAffinity";
+
+    public static final String AFFINITY_DRIVER_OR_RIDER = "driverOrRider";
+    public static final String AFFINITY_DRIVER_ONLY = "driverOnly";
+    public static final String AFFINITY_RIDER_ONLY = "riderOnly";
+    public static final String AFFINITY_NONE = "none";
 
     public enum ActivityType {
         pickup, dropoff

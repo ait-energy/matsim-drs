@@ -5,12 +5,9 @@ import org.junit.jupiter.api.Test;
 
 public class RunSimpleCarpoolingExampleTest {
 
-    /**
-     * Simply check if the example runs without throwing an exception
-     */
     @Test
     @Tag("IntegrationTest")
-    public void testThatRoutingModeFromOutputPopulationIsRetained() {
+    public void testRunWithoutExceptions() {
         RunSimpleCarpoolingExample.main(new String[] {});
     }
 }
