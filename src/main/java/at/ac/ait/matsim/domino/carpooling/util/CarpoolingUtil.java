@@ -107,7 +107,7 @@ public class CarpoolingUtil {
         activity.getAttributes().putAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME, originalDepartureTime);
     }
 
-    // TOOD refactor some of these methods to work like get/setActivityType
+    // TODO refactor like get/setActivityType
     public static void removeActivityOriginalDepartureTime(Activity activity) {
         activity.getAttributes().removeAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
     }
@@ -130,6 +130,7 @@ public class CarpoolingUtil {
         return (String) activity.getAttributes().getAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
     }
 
+    // TODO refactor like get/setActivityType
     public static void removeLinkageActivityToRiderRequest(Activity activity) {
         activity.getAttributes().removeAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
     }
