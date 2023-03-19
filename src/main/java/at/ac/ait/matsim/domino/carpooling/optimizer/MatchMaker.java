@@ -11,6 +11,8 @@ import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.PlanElement;
 
 public class MatchMaker {
     Logger LOGGER = LogManager.getLogger();
@@ -63,7 +65,17 @@ public class MatchMaker {
                     filteredRidersRequests, bestRiderRequest);
 
             if (!(bestRiderRequest == null)) {
-                CarpoolingUtil.setLinkageActivityToRiderRequest(bestRiderRequest);
+                for (PlanElement planElement : bestRiderRequest.getPerson().getSelectedPlan().getPlanElements()) {
+                    if (planElement instanceof Activity) {
+                        if (((Activity) planElement).getEndTime().isDefined()) {
+                            if (((Activity) planElement).getEndTime().seconds() == bestRiderRequest.getDepartureTime()) {
+                                CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,bestRiderRequest.getId().toString());
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 LOGGER.warn(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());

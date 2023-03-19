@@ -45,7 +45,8 @@ public class UndoPlans implements IterationEndsListener {
                             + ((Activity) planElement).getEndTime().seconds());
                     ((Activity) planElement)
                             .setEndTime(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
-                    CarpoolingUtil.removeActivityOriginalDepartureTime((Activity) planElement);
+                    CarpoolingUtil.setActivityOriginalDepartureTime((Activity)planElement
+                            ,CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
                     LOGGER.warn("After undoing, " + person.getId().toString() + "'s departure time is "
                             + ((Activity) planElement).getEndTime().seconds());
                 }

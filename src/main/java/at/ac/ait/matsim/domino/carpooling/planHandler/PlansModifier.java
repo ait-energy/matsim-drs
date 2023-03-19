@@ -139,14 +139,14 @@ public class PlansModifier implements StartupListener, ReplanningListener {
             for (PlanElement planElement : planElements) {
                 if (planElement instanceof Activity) {
                     if (!(CarpoolingUtil.getLinkageActivityToRiderRequest((Activity) planElement) == null)) {
-                        if (CarpoolingUtil.getLinkageActivityToRiderRequest((Activity) planElement) == riderRequest
-                                .getId().toString()) {
+                        if (CarpoolingUtil.getLinkageActivityToRiderRequest((Activity) planElement).equals(riderRequest
+                                .getId().toString())) {
                             CarpoolingUtil.setActivityOriginalDepartureTime((Activity) planElement,
                                     riderRequest.getDepartureTime());
                             LOGGER.warn("Before matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             ((Activity) planElement).setEndTime(pickupTime);
-                            CarpoolingUtil.removeLinkageActivityToRiderRequest((Activity) planElement);
+                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,riderRequest.getId().toString());
                             LOGGER.warn("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             break;

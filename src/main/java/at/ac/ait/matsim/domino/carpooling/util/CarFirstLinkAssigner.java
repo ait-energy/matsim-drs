@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableSet;
  * For multimodal networks it first tries to find a car link within the given
  * radius,
  * if none is available it searches for a different link within the radius.
- * If this does not succed as well we just take the nearest car link (no matter
+ * If this does not succeed as well we just take the nearest car link (no matter
  * how far away).
  * <p>
  * This should help with problems in MATSim v14 where a population initially
@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  * - DefaultTurnAcceptanceLogic:57 Cannot move vehicle ...
  * <p>
  * Note that for populations with cordon agents (i.e. agents trying to start a
- * pt trip far outside the car network) this is imporant - if we simply take the
+ * pt trip far outside the car network) this is important - if we simply take the
  * nearest car link the expected pt trip can not take place!
  */
 public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
