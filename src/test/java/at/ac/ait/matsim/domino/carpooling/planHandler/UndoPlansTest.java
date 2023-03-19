@@ -19,8 +19,7 @@ class UndoPlansTest {
 
     @BeforeAll
     static void setup() {
-        population = PopulationUtils.readPopulation("data/vienna/testPopulation.xml");
-
+        population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
     }
 
     @Test
@@ -34,7 +33,7 @@ class UndoPlansTest {
             UndoPlans.undoDriverPlan(person);
             int planSizeAfterUndoing = person.getSelectedPlan().getPlanElements().size();
 
-            if (person.getId().toString().equals("10254-2_2_2#1")) {
+            if (person.getId().toString().equals("person2_carpoolingDriver")) {
                 assertEquals(planSizeAfterUndoing, planSizeOriginal);
                 assertEquals(planSizeAfterUndoing, planSizeAfterModifying - 8);
             }
