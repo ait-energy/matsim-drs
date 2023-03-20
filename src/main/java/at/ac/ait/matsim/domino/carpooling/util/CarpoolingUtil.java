@@ -102,11 +102,11 @@ public class CarpoolingUtil {
         return (Double) activity.getAttributes().getAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
     }
 
-    public static void setActivityOriginalDepartureTime(Activity activity, double originalDepartureTime) {
-        if (activity.getAttributes().getAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME) != null) {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
-        } else {
+    public static void setActivityOriginalDepartureTime(Activity activity, Double originalDepartureTime) {
+        if (originalDepartureTime != null) {
             activity.getAttributes().putAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME, originalDepartureTime);
+        } else {
+            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
         }
     }
 
@@ -114,12 +114,11 @@ public class CarpoolingUtil {
         return (String) activity.getAttributes().getAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
     }
 
-    public static void setLinkageActivityToRiderRequest(Activity activity, String riderRequestID) {
-        if (activity.getAttributes().getAttribute(Carpooling.ATTRIB_LINKED_REQUEST) != null) {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
+    public static void setLinkageActivityToRiderRequest(Activity activity, String riderRequestId) {
+        if (riderRequestId != null) {
+            activity.getAttributes().putAttribute(Carpooling.ATTRIB_LINKED_REQUEST, riderRequestId);
         } else {
-            activity.getAttributes().putAttribute(Carpooling.ATTRIB_LINKED_REQUEST,
-                    riderRequestID);
+            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
         }
     }
 
