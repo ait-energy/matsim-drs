@@ -88,7 +88,7 @@ public class PlansModifier implements StartupListener, ReplanningListener {
     void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
             PopulationFactory factory, RoutingModule router, List<? extends PlanElement> legToCustomerList) {
         Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
-        CarpoolingUtil.setRoutingMode(legToCustomerList);
+        CarpoolingUtil.setRoutingModeToDriver(legToCustomerList);
 
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
@@ -102,7 +102,7 @@ public class PlansModifier implements StartupListener, ReplanningListener {
                 FacilitiesUtils.wrapLink(riderRequest.getToLink()), pickupTime, driverRequest.getPerson());
         List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
         Leg legWithCustomer = CarpoolingUtil.getFirstLeg(legWithCustomerList);
-        CarpoolingUtil.setRoutingMode(legWithCustomerList);
+        CarpoolingUtil.setRoutingModeToDriver(legWithCustomerList);
 
         double dropoffTime = pickupTime + legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
@@ -115,7 +115,7 @@ public class PlansModifier implements StartupListener, ReplanningListener {
                 FacilitiesUtils.wrapLink(riderRequest.getToLink()), FacilitiesUtils.wrapLink(driverRequest.getToLink()),
                 dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
-        CarpoolingUtil.setRoutingMode(legAfterCustomerList);
+        CarpoolingUtil.setRoutingModeToDriver(legAfterCustomerList);
 
         ArrayList<PlanElement> newRoute = new ArrayList<>();
         newRoute.addAll(legToCustomerList);
@@ -146,7 +146,8 @@ public class PlansModifier implements StartupListener, ReplanningListener {
                             LOGGER.warn("Before matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             ((Activity) planElement).setEndTime(pickupTime);
-                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,riderRequest.getId().toString());
+                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,
+                                    riderRequest.getId().toString());
                             LOGGER.warn("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             break;
