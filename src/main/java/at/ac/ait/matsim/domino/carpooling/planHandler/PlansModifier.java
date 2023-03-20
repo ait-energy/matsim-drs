@@ -145,9 +145,9 @@ public class PlansModifier implements StartupListener, ReplanningListener {
                                     riderRequest.getDepartureTime());
                             LOGGER.warn("Before matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            ((Activity) planElement).setEndTime(pickupTime);
+                            ((Activity) planElement).setEndTime(pickupTime+(15*60));
                             CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,
-                                    riderRequest.getId().toString());
+                                    null);
                             LOGGER.warn("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             break;

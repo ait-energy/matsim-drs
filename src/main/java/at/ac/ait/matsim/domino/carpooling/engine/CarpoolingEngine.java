@@ -74,10 +74,10 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     @Override
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
-        // TODO: get the matched and unmatched riders, matched riders get to wait,
-        // unmatched are aborted or teleported
         LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
+            // TODO: get the matched and unmatched riders, matched riders get to wait,
+            // unmatched are aborted or teleported
             waitingRiders.put(agent.getId(), id);
             return true;
         }
@@ -87,7 +87,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     /**
      * Will always return false so that the default activity handler properly
      * handles the activities of the driver.
-     * 
      * Not sure if this is a clean approach, but duplicating code from
      * ActivityEngineDefaultImpl.handleActivity seems not so great too.
      */
@@ -111,6 +110,12 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
+                        //Todo:make handlePickup return boolean. if it returns true then break,
+                        //Todo:if returns false then shift the activityEndTime to 1 more minute.
+                        //Todo:Keep on doing that until it reaches max wait time.
+                        //Todo:Create a map that has the activity and the amount of waiting time.
+                        //Todo:Get the waiting time and if it is exceeding the max wait time then driver leaves
+
                         break;
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
@@ -125,11 +130,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, double distance) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+            LOGGER.warn("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
             return;
         }
-        LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        LOGGER.warn("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "carpooling", rider.getId().toString(), null));
