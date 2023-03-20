@@ -126,10 +126,10 @@ public class PlansModifier implements StartupListener, ReplanningListener {
         Activity startActivity = driverRequest.getTrip().getOriginActivity();
         Activity endActivity = driverRequest.getTrip().getDestinationActivity();
         List<PlanElement> planElements = driverRequest.getPerson().getSelectedPlan().getPlanElements();
-        LOGGER.warn("Before matching " + driverRequest.getPerson().getId().toString() + " had "
+        LOGGER.debug("Before matching " + driverRequest.getPerson().getId().toString() + " had "
                 + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
         TripRouter.insertTrip(planElements, startActivity, newRoute, endActivity);
-        LOGGER.warn("After matching " + driverRequest.getPerson().getId().toString() + " had "
+        LOGGER.debug("After matching " + driverRequest.getPerson().getId().toString() + " had "
                 + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
     }
 
@@ -143,12 +143,11 @@ public class PlansModifier implements StartupListener, ReplanningListener {
                                 .getId().toString())) {
                             CarpoolingUtil.setActivityOriginalDepartureTime((Activity) planElement,
                                     riderRequest.getDepartureTime());
-                            LOGGER.warn("Before matching " + riderRequest.getPerson().getId().toString()
+                            LOGGER.debug("Before matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            ((Activity) planElement).setEndTime(pickupTime+(15*60));
-                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,
-                                    null);
-                            LOGGER.warn("After matching " + riderRequest.getPerson().getId().toString()
+                            ((Activity) planElement).setEndTime(pickupTime);
+                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement, null);
+                            LOGGER.debug("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                             break;
                         }

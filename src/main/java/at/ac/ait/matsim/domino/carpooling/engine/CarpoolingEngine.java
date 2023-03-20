@@ -48,7 +48,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     @Inject
     public CarpoolingEngine(Scenario scenario, EventsManager eventsManager) {
-        LOGGER.info("constructing new engine.");
+        LOGGER.info("Constructing new CarpoolingEngine.");
         this.cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
@@ -110,11 +110,12 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
-                        //Todo:make handlePickup return boolean. if it returns true then break,
-                        //Todo:if returns false then shift the activityEndTime to 1 more minute.
-                        //Todo:Keep on doing that until it reaches max wait time.
-                        //Todo:Create a map that has the activity and the amount of waiting time.
-                        //Todo:Get the waiting time and if it is exceeding the max wait time then driver leaves
+                        // Todo:make handlePickup return boolean. if it returns true then break,
+                        // Todo:if returns false then shift the activityEndTime to 1 more minute.
+                        // Todo:Keep on doing that until it reaches max wait time.
+                        // Todo:Create a map that has the activity and the amount of waiting time.
+                        // Todo:Get the waiting time and if it is exceeding the max wait time then
+                        // driver leaves
 
                         break;
                     default:
@@ -134,7 +135,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     driver.getId(), rider.getId(), linkId);
             return;
         }
-        LOGGER.warn("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "carpooling", rider.getId().toString(), null));

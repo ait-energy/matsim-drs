@@ -68,15 +68,17 @@ public class MatchMaker {
                 for (PlanElement planElement : bestRiderRequest.getPerson().getSelectedPlan().getPlanElements()) {
                     if (planElement instanceof Activity) {
                         if (((Activity) planElement).getEndTime().isDefined()) {
-                            if (((Activity) planElement).getEndTime().seconds() == bestRiderRequest.getDepartureTime()) {
-                                CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,bestRiderRequest.getId().toString());
+                            if (((Activity) planElement).getEndTime().seconds() == bestRiderRequest
+                                    .getDepartureTime()) {
+                                CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,
+                                        bestRiderRequest.getId().toString());
                                 break;
                             }
                         }
                     }
                 }
 
-                LOGGER.warn(driverRequest.getPerson().getId() + "'s best rider match is "
+                LOGGER.info(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());
                 matchedRequests.put(driverRequest, bestRiderRequest);

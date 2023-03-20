@@ -10,7 +10,6 @@ import at.ac.ait.matsim.domino.carpooling.planHandler.PlansModifier;
 import at.ac.ait.matsim.domino.carpooling.planHandler.UndoPlans;
 import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
 import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpooling;
-import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoicePlanStrategyProviderForCarpooling;
 
 public final class CarpoolingModule extends AbstractModule {
     @Override
@@ -21,7 +20,7 @@ public final class CarpoolingModule extends AbstractModule {
 
         bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
         addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
-                .toProvider(SubtourModeChoicePlanStrategyProviderForCarpooling.class);
+                .toProvider(SubtourModeChoiceForCarpooling.Provider.class);
 
         installQSimModule(new AbstractQSimModule() {
             @Override

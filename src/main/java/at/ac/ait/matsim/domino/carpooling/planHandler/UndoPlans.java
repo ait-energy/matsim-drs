@@ -25,7 +25,7 @@ public class UndoPlans implements IterationEndsListener {
     }
 
     private void undoPlans(IterationEndsEvent event) {
-        LOGGER.info("undoing carpooling plans started");
+        LOGGER.debug("undoing carpooling plans started");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 
@@ -34,20 +34,19 @@ public class UndoPlans implements IterationEndsListener {
             undoDriverPlan(person);
             undoRiderPlan(person);
         }
-        LOGGER.info("undoing carpooling plans finished");
+        LOGGER.debug("undoing carpooling plans finished");
     }
 
     static void undoRiderPlan(Person person) {
         for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
             if (planElement instanceof Activity) {
                 if (!(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement) == null)) {
-                    LOGGER.warn("Before undoing, " + person.getId().toString() + "'s departure time is "
+                    LOGGER.debug("Before undoing, " + person.getId().toString() + "'s departure time is "
                             + ((Activity) planElement).getEndTime().seconds());
                     ((Activity) planElement)
                             .setEndTime(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
-                    CarpoolingUtil.setActivityOriginalDepartureTime((Activity)planElement
-                            ,null);
-                    LOGGER.warn("After undoing, " + person.getId().toString() + "'s departure time is "
+                    CarpoolingUtil.setActivityOriginalDepartureTime((Activity) planElement, null);
+                    LOGGER.debug("After undoing, " + person.getId().toString() + "'s departure time is "
                             + ((Activity) planElement).getEndTime().seconds());
                 }
             }
@@ -72,8 +71,8 @@ public class UndoPlans implements IterationEndsListener {
             }
         }
         if (before != person.getSelectedPlan().getPlanElements().size()) {
-            LOGGER.warn("Before undoing, " + person.getId().toString() + " had " + before + " plan elements.");
-            LOGGER.warn("After undoing, " + person.getId().toString() + " had "
+            LOGGER.debug("Before undoing, " + person.getId().toString() + " had " + before + " plan elements.");
+            LOGGER.debug("After undoing, " + person.getId().toString() + " had "
                     + person.getSelectedPlan().getPlanElements().size() + " plan elements.");
         }
     }
