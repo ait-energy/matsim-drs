@@ -1,153 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
 <population>
-	<attributes>
-		<attribute name="coordinateReferenceSystem" class="java.lang.String" >epsg:31256</attribute>
-	</attributes>
-	<!-- ====================================================================== -->
+    <attributes>
+        <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
+    </attributes>
+    <!-- ====================================================================== -->
 
-	<person id="person1_carDriver">
-		<plan selected="yes">
-			<activity type="home" link="1511" end_time="04:00:00" >
-			</activity>
-			<leg mode="car">
-			</leg>
-			<activity type="work" link="1364" start_time="04:45:00" end_time="12:00:00" >
-			</activity>
-			<leg mode="car">
-			</leg>
-			<activity type="home" link="1511" start_time="12:45:00" >
-			</activity>
-		</plan>
+    <person id="person1_carDriver">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1511" end_time="04:00:00">
+            </activity>
+            <leg mode="car">
+            </leg>
+            <activity type="work" link="1364" start_time="04:45:00" end_time="12:00:00">
+            </activity>
+            <leg mode="car">
+            </leg>
+            <activity type="home" link="1511" start_time="12:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person2_carpoolingDriver">
-		<plan selected="yes">
-			<activity type="home" link="1540" end_time="05:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="home" link="1540" start_time="13:45:00" >
-			</activity>
-		</plan>
+    <person id="person2_carpoolingDriver">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1540" end_time="05:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="home" link="1540" start_time="13:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person3_carpoolingDriver">
-		<plan selected="yes">
-			<activity type="home" link="186" end_time="05:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="work" link="574" start_time="05:45:00" end_time="13:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="home" link="186" start_time="13:45:00" >
-			</activity>
-		</plan>
+    <person id="person3_carpoolingDriver">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="186" end_time="05:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="work" link="574" start_time="05:45:00" end_time="13:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="home" link="186" start_time="13:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person4_carpoolingDriver">
-		<plan selected="yes">
-			<activity type="home" link="1540" end_time="03:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="work" link="688" start_time="03:45:00" end_time="11:00:00" >
-			</activity>
-			<leg mode="carpoolingDriver">
-			</leg>
-			<activity type="home" link="1540" start_time="11:45:00" >
-			</activity>
-		</plan>
+    <person id="person4_carpoolingDriver">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1540" end_time="03:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="work" link="688" start_time="03:45:00" end_time="11:00:00">
+            </activity>
+            <leg mode="carpoolingDriver">
+            </leg>
+            <activity type="home" link="1540" start_time="11:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person5_carpoolingRider">
-		<plan selected="yes">
-			<activity type="home" link="1541" end_time="05:10:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:10:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="home" link="1541" start_time="13:45:00" >
-			</activity>
-		</plan>
+    <person id="person5_carpoolingRider">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1541" end_time="05:10:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="work" link="688" start_time="05:45:00" end_time="13:10:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="home" link="1541" start_time="13:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person6_carpoolingRider">
-		<plan selected="yes">
-			<activity type="home" link="1037" end_time="05:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="home" link="1037" start_time="13:45:00" >
-			</activity>
-		</plan>
+    <person id="person6_carpoolingRider">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1037" end_time="05:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="home" link="1037" start_time="13:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person7_carpoolingRider">
-		<plan selected="yes">
-			<activity type="home" link="1871" end_time="05:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="work" link="454" start_time="05:45:00" end_time="13:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="home" link="1871" start_time="13:45:00" >
-			</activity>
-		</plan>
+    <person id="person7_carpoolingRider">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1871" end_time="05:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="work" link="454" start_time="05:45:00" end_time="13:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="home" link="1871" start_time="13:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
-	<person id="person8_carpoolingRider">
-		<plan selected="yes">
-			<activity type="home" link="1037" end_time="08:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="work" link="688" start_time="08:45:00" end_time="16:00:00" >
-			</activity>
-			<leg mode="carpoolingRider">
-			</leg>
-			<activity type="home" link="1037" start_time="16:45:00" >
-			</activity>
-		</plan>
+    <person id="person8_carpoolingRider">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1037" end_time="08:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="work" link="688" start_time="08:45:00" end_time="16:00:00">
+            </activity>
+            <leg mode="carpoolingRider">
+            </leg>
+            <activity type="home" link="1037" start_time="16:45:00">
+            </activity>
+        </plan>
 
-	</person>
+    </person>
 
-	<!-- ====================================================================== -->
+    <!-- ====================================================================== -->
 
 </population>

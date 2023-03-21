@@ -22,7 +22,8 @@
             "name": "Launch RunViennaExample",
             "request": "launch",
             "mainClass": "at.ac.ait.matsim.domino.carpooling.run.RunViennaExample",
-            "projectName": "domino-carpooling"
+            "projectName": "domino-carpooling",
+            "vmArgs": "-Xmx16g -Xss128m"
         }
     ]
 }

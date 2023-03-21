@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import com.google.common.collect.Sets;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
@@ -17,9 +17,18 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.core.config.Config;
+import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.TripStructureUtils;
 
+import com.google.common.collect.Sets;
+
+import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+
 public class CarpoolingUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
@@ -128,6 +137,27 @@ public class CarpoolingUtil {
                 TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
             }
         }
+    }
+
+    public static void addDriverPlanForEligibleAgents(Population population, Config config) {
+        PermissibleModesCalculatorForCarpooling permissible = new PermissibleModesCalculatorForCarpooling(config);
+        int count = 0;
+        for (Person person : population.getPersons().values()) {
+            Plan plan = person.getSelectedPlan();
+            if (permissible.getPermissibleModes(plan).contains(Carpooling.DRIVER_MODE)) {
+                Plan newPlan = PopulationUtils.createPlan();
+                PopulationUtils.copyFromTo(plan, newPlan);
+                for (Leg leg : PopulationUtils.getLegs(newPlan)) {
+                    // TODO actually we need to remove interaction activities as well
+                    leg.setMode(Carpooling.DRIVER_MODE);
+                    leg.setRoute(null);
+                }
+                newPlan.setPerson(person);
+                person.addPlan(newPlan);
+                count++;
+            }
+        }
+        LOGGER.info("added initial carpooling driver plan to {} agents", count);
     }
 
 }

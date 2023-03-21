@@ -68,6 +68,7 @@ public class Carpooling {
         new CarFirstLinkAssigner(scenario.getNetwork(), 500).run(scenario.getPopulation());
         CarpoolingUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         CarpoolingUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Carpooling.DRIVER_MODE);
+        CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
     }
 
     public static void prepareController(Controler controller) {

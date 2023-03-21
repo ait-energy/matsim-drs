@@ -1,15 +1,13 @@
 # Carpooling
 
-## Main features
-
-This extension simulates dynamic carpooling where carpooling agents including both drivers and riders send their requests before the day starts.
+This extension simulates dynamic carpooling.
+The assignment of carpooling driver to rider is done before each QSim iteration.
 
 The simulated modes of transport are:
 - `carpoolingDriver`
 - `carpoolingRider`
 
-In the population file, agents who are willing to pickup other agents should be given
-carpoolingDriver mode and those who are willing to ride should be given carpoolingRider mode.
+## Main features
 
 The main components of this extension are the following:
 
@@ -49,11 +47,34 @@ The matching algorithm looks for the best rider for each driver and consists of 
 
 Main method of the `RunSimpleCarpoolingExample` class takes only the config file as an input in order to run the carpooling extension.
 
+It automatically
+- adds/registers the two carpooling modes (`carpoolingRider` as main mode)
+- kickstarts all potential carpooling driver agents,
+  i.e. with an according `carpoolingAffinity` + car + license availability,
+  with a carpooling driver plan.
+  This should assure, that at the begin of the simulation many drivers are present 
+  and "starvation" of the people choosing rider mode is avoided.
+  (MATSim guarantees to try out / score all unscored plans of an agent - see `RandomUnscoredPlanSelector` - 
+  before a different plan is selected e.g. via `SelectPlanExpBeta`)
+
+**population preparation**
+
+- add attribute `carpoolingAffinity`
+
+**mode innovation**
+
+Mode innovation relies on an adapted version of the innovation strategy `SubtourModeChoice` named `SubtourModeChoiceForCarpooling`.
+`SubtourModeChoiceForCarpooling` will by default add the carpooling driver and rider mode to the mix
+and can also be configured via the relevant paramters in the `carpooling` config group.
+
 ## Output
 
 Output files are located in each iteration folder and contain the following information:
 ........................................................................................
 
+## Limitations
+
+- only one rider is supported per a driver's leg (but a driver may have different riders on different legs)
 
 ## Credits
 
