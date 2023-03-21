@@ -6,32 +6,37 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import at.ac.ait.matsim.domino.carpooling.analysis.StatsCollector;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
+
+import at.ac.ait.matsim.domino.carpooling.analysis.StatsCollector;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class MatchMaker {
-    Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private final RequestsCollector requestsCollector;
     private final RequestsRegister requestsRegister;
     private final NearestRequestsFinder nearestRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
-    private final Integer iterationNumber;
+    private final Integer iteration;
+    private final OutputDirectoryHierarchy output;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
             NearestRequestsFinder nearestRequestsFinder, RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder, Integer iterationNumber) {
+            BestRequestFinder bestRequestFinder, Integer iteration, OutputDirectoryHierarchy output) {
         this.requestsCollector = requestsCollector;
         this.requestsRegister = requestsRegister;
         this.nearestRequestsFinder = nearestRequestsFinder;
         this.requestsFilter = requestsFilter;
         this.bestRequestFinder = bestRequestFinder;
-        this.iterationNumber = iterationNumber;
+        this.iteration = iteration;
+        this.output = output;
     }
 
     public HashMap<CarpoolingRequest, CarpoolingRequest> match() {
@@ -48,8 +53,8 @@ public class MatchMaker {
             requestsRegister.addRequest(ridersRequest);
         }
 
-        BufferedWriter bufferedWriter1 = StatsCollector.createWriter(
-                "output/CarpoolingStats/ITERS/it." + iterationNumber + "/driverRequests.txt",
+        BufferedWriter driverWriter = StatsCollector.createWriter(
+                output.getIterationFilename(iteration, "carpooling_driverRequests.txt"),
                 "Driver request,Person id,Departure time,OriginX,OriginY,DestinationX,DestinationY,Matched,Filtered requests,Nearest requests");
         for (Iterator<CarpoolingRequest> iterator = driversRequests.iterator(); iterator.hasNext();) {
             CarpoolingRequest driverRequest = iterator.next();
@@ -61,7 +66,7 @@ public class MatchMaker {
             CarpoolingRequest bestRiderRequest = bestRequestFinder.findBestRequest(driverRequest,
                     filteredRidersRequests);
 
-            StatsCollector.collectDriversRequestsStats(bufferedWriter1, driverRequest, nearestRequests,
+            StatsCollector.collectDriversRequestsStats(driverWriter, driverRequest, nearestRequests,
                     filteredRidersRequests, bestRiderRequest);
 
             if (!(bestRiderRequest == null)) {
@@ -88,12 +93,12 @@ public class MatchMaker {
                 requestsRegister.removeRequest(bestRiderRequest);
             }
         }
-        BufferedWriter bufferedWriter2 = StatsCollector.createWriter(
-                "output/CarpoolingStats/ITERS/it." + iterationNumber + "/riderRequests.txt",
+        BufferedWriter riderWriter = StatsCollector.createWriter(
+                output.getIterationFilename(iteration, "carpooling_riderRequests.txt"),
                 "Rider request,Person id,Departure time,OriginX,OriginY,DestinationX,DestinationY,Matched");
-        StatsCollector.collectRidersRequestsStats(bufferedWriter2, ridersRequests);
-        StatsCollector.close(bufferedWriter2);
-        StatsCollector.close(bufferedWriter1);
+        StatsCollector.collectRidersRequestsStats(riderWriter, ridersRequests);
+        StatsCollector.close(riderWriter);
+        StatsCollector.close(driverWriter);
         LOGGER.info(matchedRequests.size() + " matches happened.");
         LOGGER.info("Matching process finished!");
         return matchedRequests;

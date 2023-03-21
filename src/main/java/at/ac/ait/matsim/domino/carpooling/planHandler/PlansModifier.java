@@ -14,11 +14,9 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.core.controler.events.ControlerEvent;
-import org.matsim.core.controler.events.ReplanningEvent;
-import org.matsim.core.controler.events.StartupEvent;
-import org.matsim.core.controler.listener.ReplanningListener;
-import org.matsim.core.controler.listener.StartupListener;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.controler.events.IterationStartsEvent;
+import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
@@ -27,40 +25,35 @@ import org.matsim.facilities.FacilitiesUtils;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.domino.carpooling.analysis.StatsCollector;
 import at.ac.ait.matsim.domino.carpooling.optimizer.CarpoolingOptimizer;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
-public class PlansModifier implements StartupListener, ReplanningListener {
+public class PlansModifier implements IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Inject
     private TripRouter tripRouter;
     @Inject
     private Scenario scenario;
+    @Inject
+    private OutputDirectoryHierarchy output;
 
     @Override
-    public void notifyReplanning(ReplanningEvent event) {
-        preplanDay(event);
+    public void notifyIterationStarts(IterationStartsEvent event) {
+        preplanDay(event.getIteration());
     }
 
-    @Override
-    public void notifyStartup(StartupEvent event) {
-        preplanDay(event);
-    }
-
-    private void preplanDay(ControlerEvent event) {
-        StatsCollector.createOutputDirectory(event.getServices().getIterationNumber());
+    private void preplanDay(int iteration) {
         Population population = scenario.getPopulation();
         Network network = scenario.getNetwork();
         CarpoolingConfigGroup cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
 
         RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
-        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router,
-                event.getServices().getIterationNumber());
+        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router, iteration,
+                output);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
 
         PopulationFactory populationFactory = population.getFactory();
@@ -156,4 +149,5 @@ public class PlansModifier implements StartupListener, ReplanningListener {
             }
         }
     }
+
 }

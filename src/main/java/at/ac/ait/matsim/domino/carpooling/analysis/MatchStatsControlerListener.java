@@ -13,11 +13,18 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.jfree.chart.axis.CategoryLabelPositions;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.ShutdownEvent;
 import org.matsim.core.controler.listener.ShutdownListener;
 import org.matsim.core.utils.charts.StackedBarChart;
 
+import com.google.inject.Inject;
+
 public class MatchStatsControlerListener implements ShutdownListener {
+
+    @Inject
+    private OutputDirectoryHierarchy output;
+
     @Override
     public void notifyShutdown(ShutdownEvent shutdownEvent) {
         try {
@@ -30,15 +37,17 @@ public class MatchStatsControlerListener implements ShutdownListener {
     private void collectMatchStats(ShutdownEvent shutdownEvent) throws FileNotFoundException {
         double lastIteration = shutdownEvent.getIteration();
         BufferedWriter driversRequestMatchWriter = StatsCollector.createWriter(
-                "output/CarpoolingStats/driversRequestMatch.csv", "Iteration,MatchedRequests,RequestsTotalNumber");
+                output.getOutputFilename("carpooling_driversRequestMatch.csv"),
+                "Iteration,MatchedRequests,RequestsTotalNumber");
         BufferedWriter ridersRequestMatchWriter = StatsCollector.createWriter(
-                "output/CarpoolingStats/ridersRequestMatch.csv", "Iteration,MatchedRequests,RequestsTotalNumber");
+                output.getOutputFilename("carpooling_ridersRequestMatch.csv"),
+                "Iteration,MatchedRequests,RequestsTotalNumber");
         Map<Integer, Map<String, Double>> driversMatchStatsMap = new HashMap<>();
         Map<Integer, Map<String, Double>> ridersMatchStatsMap = new HashMap<>();
 
         for (int i = 0; i <= lastIteration; i++) {
-            Scanner scanner1 = new Scanner(new File("output/CarpoolingStats/ITERS/it." + i + "/driverRequests.txt"));
-            Scanner scanner2 = new Scanner(new File("output/CarpoolingStats/ITERS/it." + i + "/riderRequests.txt"));
+            Scanner scanner1 = new Scanner(new File(output.getIterationFilename(i, "carpooling_driverRequests.txt")));
+            Scanner scanner2 = new Scanner(new File(output.getIterationFilename(i, "carpooling_riderRequests.txt")));
             driversMatchStatsMap.put(i, readAndSaveInfoInMap(scanner1));
             ridersMatchStatsMap.put(i, readAndSaveInfoInMap(scanner2));
         }
@@ -106,7 +115,7 @@ public class MatchStatsControlerListener implements ShutdownListener {
         return matchStatsMap;
     }
 
-    static void createPng(Map<Integer, Map<String, Double>> matchStatsMap, String string) {
+    private void createPng(Map<Integer, Map<String, Double>> matchStatsMap, String string) {
         Set<String> matchedAndNotMatched = matchStatsMap.values().stream()
                 .flatMap(map -> map.keySet().stream())
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -128,6 +137,6 @@ public class MatchStatsControlerListener implements ShutdownListener {
         }
 
         chart.addMatsimLogo();
-        chart.saveAsPng("output/CarpoolingStats/" + string + "RequestsMatch.png", 1024, 768);
+        chart.saveAsPng(output.getOutputFilename("carpooling_" + string + "RequestsMatch.png"), 1024, 768);
     }
 }

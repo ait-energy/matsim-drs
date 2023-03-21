@@ -1,7 +1,0 @@
-{
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.dependency.syncWithFolderExplorer": true,
-    "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file"
-}

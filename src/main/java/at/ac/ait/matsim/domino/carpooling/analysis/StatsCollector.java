@@ -1,29 +1,15 @@
 package at.ac.ait.matsim.domino.carpooling.analysis;
 
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import org.matsim.core.utils.io.IOUtils;
-
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.matsim.core.utils.io.IOUtils;
+
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+
 public class StatsCollector {
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void createOutputDirectory(Integer iterationNumber) {
-        File subSubFile;
-        if (iterationNumber == 0) {
-            File file = new File("output/CarpoolingStats");
-            File subFile = new File("output/CarpoolingStats/ITERS");
-            subSubFile = new File("output/CarpoolingStats/ITERS/it." + iterationNumber);
-            file.mkdir();
-            subFile.mkdir();
-            subSubFile.mkdir();
-        }
-        subSubFile = new File("output/CarpoolingStats/ITERS/it." + iterationNumber);
-        subSubFile.mkdir();
-    }
 
     public static BufferedWriter createWriter(String path, String header) {
         BufferedWriter writer = IOUtils.getBufferedWriter(path);
