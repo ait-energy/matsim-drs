@@ -83,7 +83,7 @@ public class MatchMaker {
                     }
                 }
 
-                LOGGER.info(driverRequest.getPerson().getId() + "'s best rider match is "
+                LOGGER.debug(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());
                 matchedRequests.put(driverRequest, bestRiderRequest);

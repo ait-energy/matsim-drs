@@ -157,7 +157,7 @@ public class CarpoolingUtil {
                 count++;
             }
         }
-        LOGGER.info("added initial carpooling driver plan to {} agents", count);
+        LOGGER.debug("added initial carpooling driver plan to {} agents", count);
     }
 
 }

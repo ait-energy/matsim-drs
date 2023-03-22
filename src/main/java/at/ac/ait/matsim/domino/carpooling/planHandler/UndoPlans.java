@@ -25,7 +25,7 @@ public class UndoPlans implements IterationEndsListener {
     }
 
     private void undoPlans(IterationEndsEvent event) {
-        LOGGER.debug("undoing carpooling plans started");
+        LOGGER.info("undoing carpooling plans started");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 
@@ -34,7 +34,7 @@ public class UndoPlans implements IterationEndsListener {
             undoDriverPlan(person);
             undoRiderPlan(person);
         }
-        LOGGER.debug("undoing carpooling plans finished");
+        LOGGER.info("undoing carpooling plans finished");
     }
 
     static void undoRiderPlan(Person person) {

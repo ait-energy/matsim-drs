@@ -74,7 +74,7 @@ public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
         }
         if (closestLinks.isEmpty()) {
             String wkt = String.format(Locale.US, "POINT(%.1f %.1f)", act.getCoord().getX(), act.getCoord().getY());
-            LOGGER.info("no link within {} m for {} activity at {} of agent {}. Fallback to nearest car link.",
+            LOGGER.debug("no link within {} m for {} activity at {} of agent {}. Fallback to nearest car link.",
                     radius, act.getType(), wkt, personId.toString());
             act.setLinkId(NetworkUtils.getNearestLink(carNetwork, act.getCoord()).getId());
         } else {

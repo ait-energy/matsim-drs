@@ -76,14 +76,15 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
         LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
-            // TODO: get the matched and unmatched riders, matched riders get to wait,
-            // unmatched are aborted or teleported
+            // TODO: Add Mobility guarantee option for unmatched riders
             waitingRiders.put(agent.getId(), id);
             return true;
         }
         return false;
     }
 
+
+    //TODO: Delete comment in case the handleActivity returns true
     /**
      * Will always return false so that the default activity handler properly
      * handles the activities of the driver.
@@ -110,13 +111,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
-                        // Todo:make handlePickup return boolean. if it returns true then break,
-                        // Todo:if returns false then shift the activityEndTime to 1 more minute.
-                        // Todo:Keep on doing that until it reaches max wait time.
-                        // Todo:Create a map that has the activity and the amount of waiting time.
-                        // Todo:Get the waiting time and if it is exceeding the max wait time then
-                        // driver leaves
-
                         break;
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
@@ -131,11 +125,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, double distance) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.warn("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
             return;
         }
-        LOGGER.info("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "carpooling", rider.getId().toString(), null));
