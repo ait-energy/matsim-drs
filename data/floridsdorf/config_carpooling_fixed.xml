@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
-<!-- example config with mode innovation and a "regular" population not containing initial carpoolingDriver/Riders -->
+<!-- example config without mode innovation and tweaked population already containing initial carpoolingDriver/Riders -->
 <config>
     <module name="global">
         <param name="numberOfThreads" value="3" />
@@ -12,11 +12,11 @@
     </module>
 
     <module name="plans">
-        <param name="inputPlansFile" value="./population.xml" />
+        <param name="inputPlansFile" value="./population_carpooling.xml" />
     </module>
 
     <module name="controler">
-        <param name="outputDirectory" value="./output-floridsdorf-carpooling" />
+        <param name="outputDirectory" value="./output-floridsdorf-carpooling-fixed" />
         <param name="overwriteFiles" value="deleteDirectoryIfExists" />
         <param name="firstIteration" value="0" />
         <param name="lastIteration" value="2" />
@@ -102,21 +102,15 @@
         <param name="maxAgentPlanMemorySize" value="0" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
-            <param name="weight" value="0.8"/>
+            <param name="weight" value="0.9"/>
         </parameterset>
         <parameterset type="strategysettings">
             <param name="strategyName" value="ReRoute"/>
-            <param name="weight" value="0.1"/>
-        </parameterset>
-        <parameterset type="strategysettings">
-            <param name="strategyName" value="SubtourModeChoiceForCarpooling"/>
             <param name="weight" value="0.1"/>
         </parameterset>
     </module>
 
     <module name="carpooling">
         <param name="cellSize" value="900" />
-        <param name="subtourModeChoiceChainBasedModes" value="car,carpoolingDriver,bike" />
-        <param name="subtourModeChoiceModes" value="car,carpoolingDriver,carpoolingRider,bike,pt" />
     </module>
 </config>

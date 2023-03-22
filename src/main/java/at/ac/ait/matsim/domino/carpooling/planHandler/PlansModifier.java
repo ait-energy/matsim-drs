@@ -15,8 +15,8 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
-import org.matsim.core.controler.events.IterationStartsEvent;
-import org.matsim.core.controler.listener.IterationStartsListener;
+import org.matsim.core.controler.events.ReplanningEvent;
+import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
@@ -31,7 +31,7 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
-public class PlansModifier implements IterationStartsListener {
+public class PlansModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Inject
@@ -42,7 +42,7 @@ public class PlansModifier implements IterationStartsListener {
     private OutputDirectoryHierarchy output;
 
     @Override
-    public void notifyIterationStarts(IterationStartsEvent event) {
+    public void notifyReplanning(ReplanningEvent event) {
         preplanDay(event.getIteration());
     }
 
