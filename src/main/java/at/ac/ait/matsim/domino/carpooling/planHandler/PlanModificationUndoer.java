@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class UndoPlans implements IterationStartsListener {
+public class PlanModificationUndoer implements IterationStartsListener {
     static Logger LOGGER = LogManager.getLogger();
 
     @Override

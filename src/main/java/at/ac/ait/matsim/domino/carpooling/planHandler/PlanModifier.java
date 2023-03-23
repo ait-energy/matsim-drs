@@ -30,14 +30,14 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
-public class PlansModifier implements ReplanningListener {
+public class PlanModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Scenario scenario;
     private final TripRouter tripRouter;
 
     @Inject
-    public PlansModifier (Scenario scenario, TripRouter tripRouter) {
+    public PlanModifier(Scenario scenario, TripRouter tripRouter) {
         this.scenario = scenario;
         this.tripRouter = tripRouter;
     }
@@ -78,7 +78,7 @@ public class PlansModifier implements ReplanningListener {
         adjustRiderDepartureTime(riderRequest, pickupTime);
     }
 
-    void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
+    static void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
             PopulationFactory factory, RoutingModule router, List<? extends PlanElement> legToCustomerList) {
         Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
         CarpoolingUtil.setRoutingModeToDriver(legToCustomerList);
@@ -125,7 +125,7 @@ public class PlansModifier implements ReplanningListener {
                 + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
     }
 
-    void adjustRiderDepartureTime(CarpoolingRequest riderRequest, double pickupTime) {
+    static void adjustRiderDepartureTime(CarpoolingRequest riderRequest, double pickupTime) {
         if (riderRequest.getDepartureTime() > pickupTime) {
             List<PlanElement> planElements = riderRequest.getPerson().getSelectedPlan().getPlanElements();
             for (PlanElement planElement : planElements) {

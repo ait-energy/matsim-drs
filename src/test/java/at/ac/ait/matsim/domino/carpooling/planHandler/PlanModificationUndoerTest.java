@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UndoPlansTest {
+class PlanModificationUndoerTest {
     static Population population;
     PopulationFactory factory = population.getFactory();
 
@@ -30,7 +30,7 @@ class UndoPlansTest {
             addPseudoPlanElements(person.getSelectedPlan().getPlanElements());
             int planSizeAfterModifying = person.getSelectedPlan().getPlanElements().size();
 
-            UndoPlans.undoDriverPlan(person);
+            PlanModificationUndoer.undoDriverPlan(person);
             int planSizeAfterUndoing = person.getSelectedPlan().getPlanElements().size();
 
             if (person.getId().toString().equals("person2_carpoolingDriver")) {

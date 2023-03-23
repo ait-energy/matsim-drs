@@ -6,16 +6,16 @@ import org.matsim.core.mobsim.qsim.AbstractQSimModule;
 import org.matsim.core.population.algorithms.PermissibleModesCalculator;
 
 import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
-import at.ac.ait.matsim.domino.carpooling.planHandler.PlansModifier;
-import at.ac.ait.matsim.domino.carpooling.planHandler.UndoPlans;
+import at.ac.ait.matsim.domino.carpooling.planHandler.PlanModifier;
+import at.ac.ait.matsim.domino.carpooling.planHandler.PlanModificationUndoer;
 import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
 import at.ac.ait.matsim.domino.carpooling.replanning.SubtourModeChoiceForCarpooling;
 
 public final class CarpoolingModule extends AbstractModule {
     @Override
     public void install() {
-        addControlerListenerBinding().to(PlansModifier.class);
-        addControlerListenerBinding().to(UndoPlans.class);
+        addControlerListenerBinding().to(PlanModifier.class);
+        addControlerListenerBinding().to(PlanModificationUndoer.class);
         addControlerListenerBinding().to(RiderRequestStatsControlerListener.class);
 
         bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
