@@ -156,14 +156,14 @@ public class CarpoolingUtil {
     }
 
     public static String getLegStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Carpooling.REQUEST_STATUS);
+        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
     }
 
     public static void setLegStatus(Leg leg, String status) {
         if (status == null) {
-            leg.getAttributes().removeAttribute(Carpooling.REQUEST_STATUS);
+            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
         } else {
-            leg.getAttributes().putAttribute(Carpooling.REQUEST_STATUS, status);
+            leg.getAttributes().putAttribute(Carpooling.ATTRIB_REQUEST_STATUS, status);
         }
     }
 }

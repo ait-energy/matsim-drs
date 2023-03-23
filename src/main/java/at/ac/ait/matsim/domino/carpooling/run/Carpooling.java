@@ -24,11 +24,12 @@ public class Carpooling {
     public static final String ATTRIB_LINKED_REQUEST = "linkedRequest";
     public static final String ATTRIB_RIDER_ID = "riderId";
     public static final String ATTRIB_ACTIVITY_TYPE = "type";
+    public static final  String ATTRIB_REQUEST_STATUS = "requestStatus" ;
     public static final String ATTRIB_AFFINITY = "carpoolingAffinity";
     public static final String AFFINITY_DRIVER_OR_RIDER = "driverOrRider";
     public static final String AFFINITY_DRIVER_ONLY = "driverOnly";
     public static final String AFFINITY_RIDER_ONLY = "riderOnly";
-    public static final  String REQUEST_STATUS = "requestStatus" ;
+
 
     public enum ActivityType {
         pickup, dropoff

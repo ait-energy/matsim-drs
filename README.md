@@ -11,14 +11,13 @@ The simulated modes of transport are:
 
 The main components of this extension are the following:
 
-1. Matching algorithm
-2. Modifying agents plans before each iteration
-3. Handling agents departures and arrivals in QSim
-4. Scoring carpooling trips
-5. Undoing modifications in agents' plans at the end of each iteration
+1. Matching algorithm.
+2. Modifying agents plans after replanning.
+3. Handling agents departures and arrivals in QSim.
+4. Undoing modifications in agents' plans before iteration starts.
 
 ### Matching Algorithm
-Before each iteration, drivers and riders requests are created for agents who are carpooling.
+Drivers and riders requests are created for agents who are carpooling.
 The matching algorithm looks for the best rider for each driver and consists of the following steps:
 
 1. Registering riders requests in zones in a zonal system (for both origin and destination) according to the requests origins and destinations.
@@ -28,16 +27,15 @@ The matching algorithm looks for the best rider for each driver and consists of 
 5. Filtering out riders which would lead to detourFactor higher than `maxDetourFactor`.
 6. Finding out the rider with the least detour factor.
 
-### Modifying agents plans before each iteration
+### Modifying agents plans after replanning
 - In case of a matched driver: Two new interaction activities with the pickup and dropoff info will be added to the driver's plan.
 - In case of a matched rider: Rider departure time will be adjusted to the driver's expected arrival time to pickup point.
 
-### Handling agents departures and arrivals in QSim
-- Riders wait until they get picked up by the right driver and drop off when arriving at the dropoff point.
+### Handling agents departures and activities in QSim
+- In case of a matched rider, rider will wait until he gets picked up by the right driver and drop off when arriving at the dropoff point.
+- In case of a not matched rider, rider will be aborted or teleported in case `mobilityGuaranteeOption` is set to true in config.
 - Driver pickup the right rider from the pickup point and drop him off in the dropoff point and then drives to his next activity.
-
-### Scoring carpooling trips
-.......................................................................................
+- In case rider doesn't show up on time at the pickup point, driver would wait until `maxWaitingTime`. If rider doesn't show up at all, driver will skip dropoff activity and drive directly to destination.
 
 ### Undoing modifications in agents' plans  at the end of each iteration
 - Undoing the changes of rider's plan by restoring the original departure time of rider's activity.
@@ -48,24 +46,20 @@ The matching algorithm looks for the best rider for each driver and consists of 
 Main method of the `RunSimpleCarpoolingExample` class takes only the config file as an input in order to run the carpooling extension.
 
 It automatically
-- adds/registers the two carpooling modes (`carpoolingRider` as main mode)
-- kickstarts all potential carpooling driver agents,
-  i.e. with an according `carpoolingAffinity` + car + license availability,
-  with a carpooling driver plan.
-  This should assure, that at the begin of the simulation many drivers are present 
-  and "starvation" of the people choosing rider mode is avoided.
-  (MATSim guarantees to try out / score all unscored plans of an agent - see `RandomUnscoredPlanSelector` - 
-  before a different plan is selected e.g. via `SelectPlanExpBeta`)
+- Adds/registers the two carpooling modes (`carpoolingRider` and `carpoolingDriver` as main mode)
+- kick-starts all potential carpooling driver agents, i.e. with an according `carpoolingAffinity` + car + license availability, with a carpooling driver plan.
+  
+- This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
+  (MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` - before a different plan is selected e.g. via `SelectPlanExpBeta`).
 
-**population preparation**
+### Population preparation
 
-- add attribute `carpoolingAffinity`
+- Attribute `carpoolingAffinity` needs to be added for each agent
 
-**mode innovation**
+### Mode innovation
 
 Mode innovation relies on an adapted version of the innovation strategy `SubtourModeChoice` named `SubtourModeChoiceForCarpooling`.
-`SubtourModeChoiceForCarpooling` will by default add the carpooling driver and rider mode to the mix
-and can also be configured via the relevant paramters in the `carpooling` config group.
+`SubtourModeChoiceForCarpooling` will by default add the carpooling driver and rider mode to the mix and can also be configured via the relevant parameters in the `carpooling` config group.
 
 ## Output
 
@@ -74,7 +68,7 @@ Output files are located in each iteration folder and contain the following info
 
 ## Limitations
 
-- only one rider is supported per a driver's leg (but a driver may have different riders on different legs)
+- Only one rider is supported per a driver's leg (but a driver may have different riders on different legs)
 
 ## Credits
 

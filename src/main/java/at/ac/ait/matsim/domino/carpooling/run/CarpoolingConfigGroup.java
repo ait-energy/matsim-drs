@@ -36,7 +36,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
     private double riderFarePerKm = 0;
 
-    public static final String MOBILITY_GUARANTEE_OPTION = "mobilityGuarantee";
+    public static final String MOBILITY_GUARANTEE_OPTION = "mobilityGuaranteeOption";
     private boolean mobilityGuarantee = false;
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
     private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
