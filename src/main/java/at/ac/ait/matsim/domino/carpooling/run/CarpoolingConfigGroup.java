@@ -36,6 +36,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
     private double riderFarePerKm = 0;
 
+    public static final String MOBILITY_GUARANTEE_OPTION = "mobilityGuarantee";
+    private boolean mobilityGuarantee = false;
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
     private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
             TransportMode.pt, TransportMode.bike, TransportMode.walk };
@@ -67,6 +69,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of money per kilometre the driver gains when picking a rider");
         map.put(RIDER_FARE_PER_KM,
                 "The amount of money per kilometre the rider pays when being picked up by a driver.");
+        map.put(MOBILITY_GUARANTEE_OPTION,
+                "The possibility for the unmatched riders to be teleported to their destination");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
@@ -154,6 +158,16 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(RIDER_FARE_PER_KM)
     public void setRiderFarePerKm(double riderFarePerKm) {
         this.riderFarePerKm = riderFarePerKm;
+    }
+
+    @StringGetter(MOBILITY_GUARANTEE_OPTION)
+    public boolean getMobilityGuarantee() {
+        return mobilityGuarantee;
+    }
+
+    @StringSetter(MOBILITY_GUARANTEE_OPTION)
+    public void setMobilityGuarantee(boolean mobilityGuarantee) {
+        this.mobilityGuarantee = mobilityGuarantee;
     }
 
     public String[] getSubtourModeChoiceModes() {

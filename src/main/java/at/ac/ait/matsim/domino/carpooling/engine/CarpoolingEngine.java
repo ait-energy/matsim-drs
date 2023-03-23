@@ -76,8 +76,17 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
         LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
-            // TODO: Add Mobility guarantee option for unmatched riders
-            waitingRiders.put(agent.getId(), id);
+            Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
+            if (Objects.equals(CarpoolingUtil.getLegStatus(currentLeg), "matched")){
+                waitingRiders.put(agent.getId(), id);
+            }else {
+                if(cfgGroup.getMobilityGuarantee()){
+                    //TODO: Add Mobility guarantee option for unmatched riders
+
+                }else{
+                    //TODO: Abort or leave them??
+                }
+            }
             return true;
         }
         return false;
