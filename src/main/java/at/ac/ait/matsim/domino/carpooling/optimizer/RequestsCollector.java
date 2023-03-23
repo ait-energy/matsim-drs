@@ -41,7 +41,7 @@ public class RequestsCollector {
                         double activityEndTime = startActivity.getEndTime().seconds();
                         riderRequestID = riderRequestID + 1;
                         CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class),
-                                person, trip, activityEndTime, mode, fromLink, toLink);
+                                person, trip, activityEndTime, mode, fromLink, toLink, leg);
                         ridersRequests.add(riderRequest);
                     }
                     if (mode.equals(Carpooling.DRIVER_MODE)) {
@@ -53,7 +53,7 @@ public class RequestsCollector {
                         driverRequestID = driverRequestID + 1;
                         CarpoolingRequest driverRequest = new CarpoolingRequest(
                                 Id.create(driverRequestID, Request.class), person, trip, activityEndTime, mode,
-                                fromLink, toLink);
+                                fromLink, toLink, leg);
                         driversRequests.add(driverRequest);
                     }
                 }

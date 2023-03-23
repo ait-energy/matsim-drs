@@ -7,6 +7,11 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Heavily inspired by
+ * org.matsim.contrib.taxi.optimizer.rules.UnplannedRequestZonalRegistry
+ */
+
 public class RequestTimeSegmentRegistry {
     private final Map<Integer, Map<Id<Request>, CarpoolingRequest>> requestsInTimeSegments;
     private final CarpoolingConfigGroup cfgGroup;

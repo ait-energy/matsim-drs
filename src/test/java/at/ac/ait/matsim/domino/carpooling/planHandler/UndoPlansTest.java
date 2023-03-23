@@ -56,8 +56,7 @@ class UndoPlansTest {
 
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION, null);
         Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION, null);
-        ArrayList<PlanElement> newRoute = new ArrayList<>();
-        newRoute.addAll(legToCustomerList);
+        ArrayList<PlanElement> newRoute = new ArrayList<>(legToCustomerList);
         newRoute.add(pickup);
         newRoute.addAll(legWithCustomerList);
         newRoute.add(dropoff);

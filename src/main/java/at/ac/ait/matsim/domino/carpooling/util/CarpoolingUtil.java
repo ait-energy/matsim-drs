@@ -27,9 +27,7 @@ import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorF
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolingUtil {
-
     private static final Logger LOGGER = LogManager.getLogger();
-
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
             if (l.getAllowedModes().contains(TransportMode.car)) {
@@ -73,9 +71,6 @@ public class CarpoolingUtil {
         return legs.get(0);
     }
 
-    /**
-     * @return affinity string if present (empty string otherwise)
-     */
     public static String getCarpoolingAffinity(Person person) {
         Object affinity = person.getAttributes().getAttribute(Carpooling.ATTRIB_AFFINITY);
         return affinity == null ? "" : affinity.toString();
@@ -160,4 +155,15 @@ public class CarpoolingUtil {
         LOGGER.debug("added initial carpooling driver plan to {} agents", count);
     }
 
+    public static String getLegStatus(Leg leg) {
+        return (String) leg.getAttributes().getAttribute(Carpooling.REQUEST_STATUS);
+    }
+
+    public static void setLegStatus(Leg leg, String status) {
+        if (status == null) {
+            leg.getAttributes().removeAttribute(Carpooling.REQUEST_STATUS);
+        } else {
+            leg.getAttributes().putAttribute(Carpooling.REQUEST_STATUS, status);
+        }
+    }
 }

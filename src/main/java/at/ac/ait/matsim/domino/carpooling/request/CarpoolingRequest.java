@@ -2,12 +2,12 @@ package at.ac.ait.matsim.domino.carpooling.request;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.router.TripStructureUtils;
 
 public class CarpoolingRequest implements Request {
-    private boolean matched;
     private final Id<Request> id;
     private final Person person;
     private final TripStructureUtils.Trip trip;
@@ -15,10 +15,11 @@ public class CarpoolingRequest implements Request {
     private final String mode;
     private final Link fromLink;
     private final Link toLink;
+    private final Leg leg;
 
     public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
-            String mode, Link fromLink, Link toLink) {
-        this.matched = false;
+                             String mode, Link fromLink, Link toLink, Leg leg) {
+        this.leg = leg;
         this.id = id;
         this.person = person;
         this.trip = trip;
@@ -62,12 +63,7 @@ public class CarpoolingRequest implements Request {
         return 0;
     }
 
-    public boolean isMatched() {
-        return matched;
+    public Leg getLeg() {
+        return leg;
     }
-
-    public void setMatched() {
-        this.matched = true;
-    }
-
 }

@@ -47,17 +47,17 @@ class RequestsFilterTest {
         cfg.setRiderDepartureTimeAdjustment(0.05 * 60 * 60);
         requestsFilter = new RequestsFilter(cfg, router);
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
-                null, network.getLinks().get(Id.createLinkId(1540)), null);
+                null, network.getLinks().get(Id.createLinkId(1540)), null, null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1674)), null);
+                network.getLinks().get(Id.createLinkId(1674)), null, null);
         request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1540)), null);
+                network.getLinks().get(Id.createLinkId(1540)), null, null);
         request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1540)), null);
+                network.getLinks().get(Id.createLinkId(1540)), null, null);
         request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1540)), null);
+                network.getLinks().get(Id.createLinkId(1540)), null, null);
         request6 = new CarpoolingRequest(Id.create(6, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1037)), null);
+                network.getLinks().get(Id.createLinkId(1037)), null, null);
     }
 
     @BeforeEach

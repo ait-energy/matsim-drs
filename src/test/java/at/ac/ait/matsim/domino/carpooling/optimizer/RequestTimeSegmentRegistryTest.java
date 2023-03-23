@@ -12,11 +12,11 @@ class RequestTimeSegmentRegistryTest {
     RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(
             new CarpoolingConfigGroup());
     CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
-            null);
-    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
-            null);
-    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
             null, null);
+    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
+            null, null);
+    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+            null, null, null);
 
     @Test
     void testDepartureTimeEdges() {

@@ -10,6 +10,11 @@ import org.matsim.contrib.zone.Zone;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Heavily inspired by
+ * org.matsim.contrib.taxi.optimizer.rules.UnplannedRequestZonalRegistry
+ */
+
 public class RequestZonalRegistry {
     private final ZonalSystem zonalSystem;
     private final boolean isOriginZonalRegistry;

@@ -48,7 +48,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     @Inject
     public CarpoolingEngine(Scenario scenario, EventsManager eventsManager) {
-        LOGGER.info("Constructing new CarpoolingEngine.");
+        LOGGER.info("Constructing new CarpoolingEngine");
         this.cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
@@ -125,7 +125,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, double distance) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+            LOGGER.warn("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
             return;
         }
@@ -148,7 +148,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.debug("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
                     driver.getId(), rider.getId(), now, linkId);
             return;
         }

@@ -5,10 +5,10 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.*;
-import org.matsim.core.controler.events.IterationEndsEvent;
-import org.matsim.core.controler.listener.IterationEndsListener;
+import org.matsim.core.controler.events.IterationStartsEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 
@@ -16,16 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class UndoPlans implements IterationEndsListener {
+public class UndoPlans implements IterationStartsListener {
     static Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void notifyIterationEnds(IterationEndsEvent event) {
-        undoPlans(event);
+    public void notifyIterationStarts(IterationStartsEvent iterationStartsEvent) {
+        undoPlans(iterationStartsEvent);
     }
 
-    private void undoPlans(IterationEndsEvent event) {
-        LOGGER.info("undoing carpooling plans started");
+    private void undoPlans(IterationStartsEvent event) {
+        LOGGER.info("undoing carpooling plans at the beginning of the iteration before replanning happens");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 

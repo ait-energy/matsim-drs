@@ -31,11 +31,11 @@ class RequestZonalRegistryTest {
         CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
         zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup().getCellSize());
         request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1540)), null);
+                network.getLinks().get(Id.createLinkId(1540)), null, null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1037)), null);
+                network.getLinks().get(Id.createLinkId(1037)), null, null);
         request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1674)), null);
+                network.getLinks().get(Id.createLinkId(1674)), null, null);
     }
 
     @BeforeEach

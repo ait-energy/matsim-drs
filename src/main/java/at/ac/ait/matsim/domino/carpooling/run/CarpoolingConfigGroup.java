@@ -69,10 +69,10 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of money per kilometre the rider pays when being picked up by a driver.");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
-                        + "' strategy, including chain-based modes, seperated by commas");
+                        + "' strategy, including chain-based modes, separated by commas");
         map.put(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES,
                 "Defines the chain-based modes for the'" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
-                        + "' strategy, seperated by commas");
+                        + "' strategy, separated by commas");
         return map;
     }
 
@@ -212,5 +212,4 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         }
         return parts;
     }
-
 }

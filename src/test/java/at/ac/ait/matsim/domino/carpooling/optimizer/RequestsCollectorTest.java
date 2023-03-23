@@ -20,7 +20,6 @@ class RequestsCollectorTest {
     static Population population, populationWithZeroCarpoolingDrivers;
     static Network network;
     RequestsCollector requestsCollector, requestsCollectorNoRequests;
-
     @BeforeAll
     static void setup() {
         population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");

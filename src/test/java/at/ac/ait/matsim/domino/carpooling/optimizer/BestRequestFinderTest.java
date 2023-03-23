@@ -55,11 +55,11 @@ class BestRequestFinderTest {
 
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)),
-                network.getLinks().get(Id.createLinkId(186)));
+                network.getLinks().get(Id.createLinkId(186)), null);
 
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1541)),
-                network.getLinks().get(Id.createLinkId(186)));
+                network.getLinks().get(Id.createLinkId(186)), null);
         toRequest2 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request2.getFromLink()),
                 FacilitiesUtils.wrapLink(request2.getToLink()),
@@ -68,7 +68,7 @@ class BestRequestFinderTest {
 
         request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1037)),
-                network.getLinks().get(Id.createLinkId(186)));
+                network.getLinks().get(Id.createLinkId(186)), null);
         toRequest3 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request3.getFromLink()),
                 FacilitiesUtils.wrapLink(request3.getToLink()),
@@ -77,7 +77,7 @@ class BestRequestFinderTest {
 
         request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(186)),
-                network.getLinks().get(Id.createLinkId(1037)));
+                network.getLinks().get(Id.createLinkId(1037)), null);
         toRequest4 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request4.getFromLink()),
                 FacilitiesUtils.wrapLink(request4.getToLink()),
@@ -86,7 +86,7 @@ class BestRequestFinderTest {
 
         request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(688)),
-                network.getLinks().get(Id.createLinkId(1540)));
+                network.getLinks().get(Id.createLinkId(1540)), null);
         toRequest5 = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(request5.getFromLink()),
                 FacilitiesUtils.wrapLink(request5.getToLink()),

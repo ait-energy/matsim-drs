@@ -14,7 +14,6 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.router.DefaultRoutingRequest;
@@ -34,26 +33,27 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 public class PlansModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @Inject
-    private TripRouter tripRouter;
-    @Inject
-    private Scenario scenario;
-    @Inject
-    private OutputDirectoryHierarchy output;
+    private final Scenario scenario;
+    private final TripRouter tripRouter;
 
-    @Override
-    public void notifyReplanning(ReplanningEvent event) {
-        preplanDay(event.getIteration());
+    @Inject
+    public PlansModifier (Scenario scenario, TripRouter tripRouter) {
+        this.scenario = scenario;
+        this.tripRouter = tripRouter;
     }
 
-    private void preplanDay(int iteration) {
+    @Override
+    public void notifyReplanning(ReplanningEvent replanningEvent) {
+        preplanDay();
+    }
+
+    private void preplanDay() {
         Population population = scenario.getPopulation();
         Network network = scenario.getNetwork();
         CarpoolingConfigGroup cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
 
         RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
-        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router, iteration,
-                output);
+        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
 
         PopulationFactory populationFactory = population.getFactory();
@@ -110,8 +110,7 @@ public class PlansModifier implements ReplanningListener {
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
         CarpoolingUtil.setRoutingModeToDriver(legAfterCustomerList);
 
-        ArrayList<PlanElement> newRoute = new ArrayList<>();
-        newRoute.addAll(legToCustomerList);
+        ArrayList<PlanElement> newRoute = new ArrayList<>(legToCustomerList);
         newRoute.add(pickup);
         newRoute.addAll(legWithCustomerList);
         newRoute.add(dropoff);
@@ -149,5 +148,4 @@ public class PlansModifier implements ReplanningListener {
             }
         }
     }
-
 }

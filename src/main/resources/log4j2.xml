@@ -32,6 +32,10 @@
             <AppenderRef ref="stdout" />
             <AppenderRef ref="stderr" />
         </Logger>
+        <Logger name="at.ac.ait.matsim" level="warn" additivity="false">
+            <AppenderRef ref="stdout" />
+            <AppenderRef ref="stderr" />
+        </Logger>
     </Loggers>
 
 </Configuration>

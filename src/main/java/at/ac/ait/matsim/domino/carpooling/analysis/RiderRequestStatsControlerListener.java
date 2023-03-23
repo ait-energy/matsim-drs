@@ -30,7 +30,6 @@ public class RiderRequestStatsControlerListener implements StartupListener, Afte
     Map<Integer, Map<String, Integer>> iterationHistories = new HashMap<>();
     private final Map<String, Integer> requestCount = new TreeMap<>();
 
-
     @Inject
     public RiderRequestStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population, OutputDirectoryHierarchy controlerIO) {
         this.population = population;

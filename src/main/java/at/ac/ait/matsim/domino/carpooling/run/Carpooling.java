@@ -18,20 +18,17 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 public class Carpooling {
     public static final String DRIVER_MODE = "carpoolingDriver";
     public static final String RIDER_MODE = "carpoolingRider";
-
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
     public static final String RIDER_INTERACTION = RIDER_MODE + " interaction";
-
     public static final String ATTRIB_ORIGINAL_DEP_TIME = "originalDepTime";
     public static final String ATTRIB_LINKED_REQUEST = "linkedRequest";
     public static final String ATTRIB_RIDER_ID = "riderId";
     public static final String ATTRIB_ACTIVITY_TYPE = "type";
     public static final String ATTRIB_AFFINITY = "carpoolingAffinity";
-
     public static final String AFFINITY_DRIVER_OR_RIDER = "driverOrRider";
     public static final String AFFINITY_DRIVER_ONLY = "driverOnly";
     public static final String AFFINITY_RIDER_ONLY = "riderOnly";
-    public static final String AFFINITY_NONE = "none";
+    public static final  String REQUEST_STATUS = "requestStatus" ;
 
     public enum ActivityType {
         pickup, dropoff
@@ -44,7 +41,6 @@ public class Carpooling {
         PlanCalcScoreConfigGroup.ModeParams carpoolingRiderScore = new PlanCalcScoreConfigGroup.ModeParams(
                 Carpooling.RIDER_MODE);
         config.planCalcScore().addModeParams(carpoolingRiderScore);
-        carpoolingDriverScore.setMonetaryDistanceRate(-1);
 
         Set<String> networkModes = Sets.newHashSet(config.plansCalcRoute().getNetworkModes());
         networkModes.add(Carpooling.DRIVER_MODE);
@@ -74,6 +70,5 @@ public class Carpooling {
     public static void prepareController(Controler controller) {
         controller.addOverridingModule(new CarpoolingModule());
         controller.configureQSimComponents(components -> components.addNamedComponent(CarpoolingEngine.COMPONENT_NAME));
-
     }
 }
