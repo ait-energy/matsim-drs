@@ -63,8 +63,9 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 ## Output
 
-Output files are located in each iteration folder and contain the following information:
-........................................................................................
+- `rider_request_stats.txt` and `rider_request_stats_stackedbar.png`
+- `vkt_stats.txt` and `vkt_stats_stackedbar.png` 
+- `output_carpoolin_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis
 
 ## Limitations
 

@@ -8,9 +8,7 @@ import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
-import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
-import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.utils.charts.StackedBarChart;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.core.utils.io.UncheckedIOException;
@@ -20,8 +18,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class RiderRequestStatsControlerListener implements StartupListener, AfterMobsimListener {
-    public static final String FILENAME_REQUESTSTATS = "riderrequeststats";
+public class RiderRequestStatsControlerListener implements AfterMobsimListener {
+
+    public static final String FILENAME_REQUESTSTATS = "rider_request_stats";
     public static final String MATCHED = "matched";
     public static final String NOT_MATCHED = "not matched";
     private final Population population;
@@ -38,21 +37,17 @@ public class RiderRequestStatsControlerListener implements StartupListener, Afte
     }
 
     @Override
-    public void notifyStartup(StartupEvent event) {
-    }
-    @Override
     public void notifyAfterMobsim(AfterMobsimEvent afterMobsimEvent) {
         this.collectRequestStatsInfo(afterMobsimEvent);
     }
-
 
     private void collectRequestStatsInfo(AfterMobsimEvent event) {
         for (Person person: population.getPersons().values()){
             for (PlanElement planElement :person.getSelectedPlan().getPlanElements()){
                 if (planElement instanceof Leg){
                     if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)){
-                        if (Objects.equals(CarpoolingUtil.getLegStatus((Leg) planElement), MATCHED)){
-                            if (requestCount.get(MATCHED)==null){
+                        if (Objects.equals(CarpoolingUtil.getRequestStatus((Leg) planElement), MATCHED)){
+                             if (requestCount.get(MATCHED)==null){
                                 this.requestCount.put(MATCHED, 1);
                             }else {
                                 this.requestCount.put(MATCHED, requestCount.get(MATCHED) + 1);
@@ -64,7 +59,7 @@ public class RiderRequestStatsControlerListener implements StartupListener, Afte
                                 this.requestCount.put(NOT_MATCHED, requestCount.get(NOT_MATCHED) + 1);
                             }
                         }
-                        CarpoolingUtil.setLegStatus((Leg) planElement,null);
+                        CarpoolingUtil.setRequestStatus((Leg) planElement,null);
                     }
                 }
             }

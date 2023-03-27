@@ -155,15 +155,27 @@ public class CarpoolingUtil {
         LOGGER.debug("added initial carpooling driver plan to {} agents", count);
     }
 
-    public static String getLegStatus(Leg leg) {
+    public static String getRequestStatus(Leg leg) {
         return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
     }
 
-    public static void setLegStatus(Leg leg, String status) {
-        if (status == null) {
-            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
-        } else {
+    public static void setRequestStatus(Leg leg, String status) {
+        if (status != null) {
             leg.getAttributes().putAttribute(Carpooling.ATTRIB_REQUEST_STATUS, status);
+        } else {
+            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
+        }
+    }
+
+    public static String getDropoffStatus(Leg leg) {
+        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS);
+    }
+
+    public static void setDropoffStatus(Leg leg, String status) {
+        if (status != null) {
+            leg.getAttributes().putAttribute(Carpooling.ATTRIB_LEG_STATUS, status);
+        } else {
+            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_LEG_STATUS);
         }
     }
 }

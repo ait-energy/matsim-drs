@@ -31,16 +31,15 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
+import org.matsim.core.population.PopulationUtils;
 
 /**
  * Heavily inspired by
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
  */
 public class CarpoolingEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
-
     public static final String COMPONENT_NAME = "carpoolingEngine";
     private static final Logger LOGGER = LogManager.getLogger();
-
     private final CarpoolingConfigGroup cfgGroup;
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
@@ -77,14 +76,16 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
-            if (Objects.equals(CarpoolingUtil.getLegStatus(currentLeg), "matched")){
+            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")){
+                LOGGER.debug("{} is waiting to be picked up.",agent.getId());
                 waitingRiders.put(agent.getId(), id);
             }else {
-                if(cfgGroup.getMobilityGuarantee()){
-                    //TODO: Add Mobility guarantee option for unmatched riders
+                 if(cfgGroup.getMobilityGuarantee()){
+                    //TODO: Add mobility guarantee option for unmatched riders
 
                 }else{
-                    //TODO: Abort or leave them??
+                     //TODO: Abort or leave them??
+                     LOGGER.debug("{} couldn't find a match and won't be picked up.",agent.getId());
                 }
             }
             return true;
@@ -115,8 +116,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
                         Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
-                        double distance = previousLeg.getRoute().getDistance();
-                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, distance);
+                        int index = ((PlanAgent) agent).getCurrentPlan().getPlanElements().indexOf(previousLeg);
+                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, previousLeg,index);
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
@@ -132,13 +133,20 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     }
 
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
-            double now, double distance) {
+            double now, Leg previousLeg, int index) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
             LOGGER.warn("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
             return;
         }
         LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+
+
+        double distance = previousLeg.getRoute().getDistance();
+
+        Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(),internalInterface.getMobsim().getScenario()).getSelectedPlan().getPlanElements().get(index);
+        //CarpoolingUtil.setDropoffStatus(previousLeg,"true");
+        CarpoolingUtil.setDropoffStatus(leg,"true");
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "carpooling", rider.getId().toString(), null));
@@ -157,7 +165,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+            LOGGER.debug("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
                     driver.getId(), rider.getId(), now, linkId);
             return;
         }

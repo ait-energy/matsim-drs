@@ -51,7 +51,6 @@ public class PlanModifier implements ReplanningListener {
         Population population = scenario.getPopulation();
         Network network = scenario.getNetwork();
         CarpoolingConfigGroup cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
-
         RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();

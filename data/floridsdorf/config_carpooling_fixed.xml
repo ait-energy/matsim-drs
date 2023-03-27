@@ -99,14 +99,14 @@
     </module>
 
     <module name="strategy">
-        <param name="maxAgentPlanMemorySize" value="0" />
+        <param name="maxAgentPlanMemorySize" value="5" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
-            <param name="weight" value="0.9"/>
+            <param name="weight" value="0"/>
         </parameterset>
         <parameterset type="strategysettings">
             <param name="strategyName" value="ReRoute"/>
-            <param name="weight" value="0.1"/>
+            <param name="weight" value="0"/>
         </parameterset>
     </module>
 

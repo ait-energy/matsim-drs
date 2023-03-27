@@ -56,7 +56,7 @@ public class MatchMaker {
                     filteredRidersRequests);
 
             if (!(bestRiderRequest == null)) {
-                CarpoolingUtil.setLegStatus(bestRiderRequest.getLeg(),"matched");
+                CarpoolingUtil.setRequestStatus(bestRiderRequest.getLeg(),"matched");
                 for (PlanElement planElement : bestRiderRequest.getPerson().getSelectedPlan().getPlanElements()) {
                     if (planElement instanceof Activity) {
                         if (((Activity) planElement).getEndTime().isDefined()) {
@@ -78,8 +78,7 @@ public class MatchMaker {
                 requestsRegister.removeRequest(bestRiderRequest);
             }
         }
-        LOGGER.info(matchedRequests.size() + " matches happened.");
-        LOGGER.info("Matching process finished!");
+        LOGGER.warn(matchedRequests.size() + " matches happened. Matching process finished!");
         return matchedRequests;
     }
 }
