@@ -30,6 +30,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String MAX_DETOUR_FACTOR_SLOPE = "maxDetourFactorSlope";
     public double maxDetourFactorSlope = 0.01;
 
+    public static final String PICKUP_WAITING_TIME = "pickupWaitingTime";
+    public double pickupWaitingTime = 120;
+
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0.2;
 
@@ -65,6 +68,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
         map.put(MAX_DETOUR_FACTOR_SLOPE,
                 "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
+        map.put(PICKUP_WAITING_TIME,
+                "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains when picking a rider");
         map.put(RIDER_FARE_PER_KM,
@@ -138,6 +143,16 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(MAX_DETOUR_FACTOR_SLOPE)
     public void setMaxDetourFactorSlope(double maxDetourFactorSlope) {
         this.maxDetourFactorSlope = maxDetourFactorSlope;
+    }
+
+    @StringGetter(PICKUP_WAITING_TIME)
+    public double getPickupWaitingTime() {
+        return pickupWaitingTime;
+    }
+
+    @StringSetter(PICKUP_WAITING_TIME)
+    public void setPickupWaitingTime(double pickupWaitingTime) {
+        this.pickupWaitingTime = pickupWaitingTime;
     }
 
     @StringGetter(DRIVER_PROFIT_PER_KM)

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlanModifierTest {
 
-    static CarpoolingRequest request1;
+    static CarpoolingRequest request;
     static Activity activity1;
     static Activity activity2;
 
@@ -41,27 +41,27 @@ class PlanModifierTest {
         plan.addActivity(activity2);
 
         person.addPlan(plan);
-        request1 = new CarpoolingRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
+        request = new CarpoolingRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
                 null, null, null);
-        CarpoolingUtil.setLinkageActivityToRiderRequest(activity1,request1.getId().toString());
+        CarpoolingUtil.setLinkageActivityToRiderRequest(activity1, request.getId().toString());
     }
     @Test
     void testEarlyPickUpTime() {
         double earlyPickupTime = (8*60*60)-(0.25*60*60);
-        PlanModifier.adjustRiderDepartureTime(request1,earlyPickupTime);
+        PlanModifier.adjustRiderDepartureTime(request,earlyPickupTime);
         assertEquals(activity1.getEndTime().seconds(),earlyPickupTime);
     }
     @Test
     void testLatePickUpTime() {
         double latePickupTime = (8*60*60)+(0.25*60*60);
-        PlanModifier.adjustRiderDepartureTime(request1,latePickupTime);
-        assertEquals(activity1.getEndTime().seconds(),request1.getDepartureTime());
+        PlanModifier.adjustRiderDepartureTime(request,latePickupTime);
+        assertEquals(activity1.getEndTime().seconds(), request.getDepartureTime());
     }
     @Test
     void testExactPickUpTime() {
         double exactPickupTime = (8*60*60);
-        PlanModifier.adjustRiderDepartureTime(request1,exactPickupTime);
-        assertEquals(activity1.getEndTime().seconds(),request1.getDepartureTime());
+        PlanModifier.adjustRiderDepartureTime(request,exactPickupTime);
+        assertEquals(activity1.getEndTime().seconds(), request.getDepartureTime());
     }
 
 

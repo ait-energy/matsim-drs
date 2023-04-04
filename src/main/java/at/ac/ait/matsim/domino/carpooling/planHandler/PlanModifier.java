@@ -32,14 +32,15 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class PlanModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
-
     private final Scenario scenario;
-    private final TripRouter tripRouter;
+    private final CarpoolingConfigGroup cfgGroup;
+    private final RoutingModule router;
 
     @Inject
     public PlanModifier(Scenario scenario, TripRouter tripRouter) {
         this.scenario = scenario;
-        this.tripRouter = tripRouter;
+        cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
+        router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
     }
 
     @Override
@@ -50,21 +51,19 @@ public class PlanModifier implements ReplanningListener {
     private void preplanDay() {
         Population population = scenario.getPopulation();
         Network network = scenario.getNetwork();
-        CarpoolingConfigGroup cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
-        RoutingModule router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
 
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
-            modifyPlans(entry.getKey(), entry.getValue(), populationFactory, router);
+            modifyPlans(entry.getKey(), entry.getValue(), populationFactory);
         }
         LOGGER.info("Modifying carpooling agents plans finished.");
     }
 
-    private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest, PopulationFactory factory,
-            RoutingModule router) {
+    private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest, PopulationFactory factory) {
         RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(driverRequest.getFromLink()),
                 FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverRequest.getDepartureTime(),
@@ -77,7 +76,7 @@ public class PlanModifier implements ReplanningListener {
         adjustRiderDepartureTime(riderRequest, pickupTime);
     }
 
-    static void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
+    private void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
             PopulationFactory factory, RoutingModule router, List<? extends PlanElement> legToCustomerList) {
         Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
         CarpoolingUtil.setRoutingModeToDriver(legToCustomerList);
@@ -85,7 +84,7 @@ public class PlanModifier implements ReplanningListener {
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
                 riderRequest.getFromLink().getId());
-        pickup.setEndTime(pickupTime);
+        pickup.setEndTime(pickupTime+cfgGroup.getPickupWaitingTime());
         CarpoolingUtil.setActivityType(pickup, Carpooling.ActivityType.pickup);
         CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
 
