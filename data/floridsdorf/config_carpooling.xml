@@ -19,7 +19,7 @@
         <param name="outputDirectory" value="./output-floridsdorf-carpooling" />
         <param name="overwriteFiles" value="deleteDirectoryIfExists" />
         <param name="firstIteration" value="0" />
-        <param name="lastIteration" value="10" />
+        <param name="lastIteration" value="5" />
         <param name="writeEventsInterval" value="1" />
         <param name="writePlansInterval" value="1" />
         <param name="writeSnapshotsInterval" value="1" />
@@ -99,7 +99,7 @@
     </module>
 
     <module name="strategy">
-        <param name="maxAgentPlanMemorySize" value="0" />
+        <param name="maxAgentPlanMemorySize" value="5" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
             <param name="weight" value="0.8"/>
@@ -108,15 +108,5 @@
             <param name="strategyName" value="ReRoute"/>
             <param name="weight" value="0.1"/>
         </parameterset>
-        <parameterset type="strategysettings">
-            <param name="strategyName" value="SubtourModeChoiceForCarpooling"/>
-            <param name="weight" value="0.1"/>
-        </parameterset>
-    </module>
-
-    <module name="carpooling">
-        <param name="cellSize" value="900" />
-        <param name="subtourModeChoiceChainBasedModes" value="car,carpoolingDriver,bike" />
-        <param name="subtourModeChoiceModes" value="car,carpoolingDriver,carpoolingRider,bike,pt" />
     </module>
 </config>

@@ -79,16 +79,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
             if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")){
                 LOGGER.debug("{} is waiting to be picked up.",agent.getId());
                 waitingRiders.put(agent.getId(), id);
-            }else {
-                 if(cfgGroup.getMobilityGuarantee()){
-                    //TODO: Add mobility guarantee option for unmatched riders
-
-                }else{
-                     //TODO: Abort or leave them??
-                     LOGGER.debug("{} couldn't find a match and won't be picked up.",agent.getId());
-                }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -135,17 +127,15 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, Leg previousLeg, int index) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.warn("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
+            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
             return;
         }
         LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
-
         double distance = previousLeg.getRoute().getDistance();
 
         Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(),internalInterface.getMobsim().getScenario()).getSelectedPlan().getPlanElements().get(index);
-        //CarpoolingUtil.setDropoffStatus(previousLeg,"true");
         CarpoolingUtil.setDropoffStatus(leg,"true");
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
@@ -165,8 +155,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.debug("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
                     driver.getId(), rider.getId(), now, linkId);
+            rider.setStateToAbort(now);
             return;
         }
 

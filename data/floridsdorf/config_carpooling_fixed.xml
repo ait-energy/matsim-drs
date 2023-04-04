@@ -19,7 +19,7 @@
         <param name="outputDirectory" value="./output-floridsdorf-carpooling-fixed" />
         <param name="overwriteFiles" value="deleteDirectoryIfExists" />
         <param name="firstIteration" value="0" />
-        <param name="lastIteration" value="10" />
+        <param name="lastIteration" value="5" />
         <param name="writeEventsInterval" value="1" />
         <param name="writePlansInterval" value="1" />
         <param name="writeSnapshotsInterval" value="1" />
@@ -108,9 +108,5 @@
             <param name="strategyName" value="ReRoute"/>
             <param name="weight" value="0"/>
         </parameterset>
-    </module>
-
-    <module name="carpooling">
-        <param name="cellSize" value="900" />
     </module>
 </config>
