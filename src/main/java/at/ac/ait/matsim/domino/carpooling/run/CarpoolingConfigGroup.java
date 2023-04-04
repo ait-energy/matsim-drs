@@ -43,7 +43,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
             TransportMode.pt, TransportMode.bike, TransportMode.walk };
 
     public static final String SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES = "subtourModeChoiceChainBasedModes";
-    private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Carpooling.RIDER_MODE,
+    private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Carpooling.DRIVER_MODE,
             TransportMode.bike };
 
     public CarpoolingConfigGroup() {
