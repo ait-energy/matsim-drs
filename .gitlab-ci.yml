@@ -18,7 +18,7 @@ run-tests:
     - 'mvn $MAVEN_CLI_OPTS clean verify source:jar deploy'
   # specify which runner should be used (selection happens automagically based on matching tags)
   tags:
-    - openjdk17
+    - openjdk11
   # don't run for tags and during the release process
   # because we want to deploy releases manually (with mvn release:prepare and release:perform)
   rules:
