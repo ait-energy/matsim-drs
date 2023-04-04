@@ -1,177 +1,177 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<!-- Adds the AIT Maven repository (<distributionManagement>), sets project
+    <!-- Adds the AIT Maven repository (<distributionManagement>), sets project
 		encoding to UTF-8,... Don't forget to set the <repository> in your ~/.m2/settings.xml,
 		otherwise the project can not be found. -->
-	<parent>
-		<groupId>at.ac.ait</groupId>
-		<artifactId>java-project</artifactId>
-		<version>11.1.1</version>
-	</parent>
-	<artifactId>domino-carpooling</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<description>MATSim carpooling module for project DOMINO</description>
+    <parent>
+        <groupId>at.ac.ait</groupId>
+        <artifactId>java-project</artifactId>
+        <version>11.1.1</version>
+    </parent>
+    <artifactId>domino-carpooling</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <description>MATSim carpooling module for project DOMINO</description>
 
-	<properties>
-		<matsim.version>14.0</matsim.version>
+    <properties>
+        <matsim.version>14.0</matsim.version>
 
-		<!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<log4j.version>2.17.1</log4j.version>
-		<geotools.version>24.2</geotools.version>
-		<jts.version>1.17.1</jts.version>
-		<guice.version>5.0.1</guice.version>
-		<guava.version>30.0-jre</guava.version>
-		<jackson.version>2.10.3</jackson.version>
-	</properties>
+        <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <log4j.version>2.17.1</log4j.version>
+        <geotools.version>24.2</geotools.version>
+        <jts.version>1.17.1</jts.version>
+        <guice.version>5.0.1</guice.version>
+        <guava.version>30.0-jre</guava.version>
+        <jackson.version>2.10.3</jackson.version>
+    </properties>
 
-	<scm>
-		<url>https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling</url>
-		<connection>scm:git:https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling.git</connection>
-		<tag>HEAD</tag>
-	</scm>
+    <scm>
+        <url>https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling</url>
+        <connection>scm:git:https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
-	<repositories>
-		<repository>
-			<!-- Repository for MATSim releases and snapshots (MATSim is not on Maven
+    <repositories>
+        <repository>
+            <!-- Repository for MATSim releases and snapshots (MATSim is not on Maven
 				central) -->
-			<id>matsim</id>
-			<url>https://repo.matsim.org/repository/matsim</url>
-		</repository>
-	</repositories>
+            <id>matsim</id>
+            <url>https://repo.matsim.org/repository/matsim</url>
+        </repository>
+    </repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>net.sourceforge.argparse4j</groupId>
-			<artifactId>argparse4j</artifactId>
-			<version>0.9.0</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>net.sourceforge.argparse4j</groupId>
+            <artifactId>argparse4j</artifactId>
+            <version>0.9.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim</groupId>
-			<artifactId>matsim</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim</groupId>
+            <artifactId>matsim</artifactId>
+            <version>${matsim.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim.contrib</groupId>
-			<artifactId>dvrp</artifactId>
-			<version>${matsim.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>dvrp</artifactId>
+            <version>${matsim.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.matsim</groupId>
-			<artifactId>pt2matsim</artifactId>
-			<version>22.11</version>
-		</dependency>
+        <dependency>
+            <groupId>org.matsim</groupId>
+            <artifactId>pt2matsim</artifactId>
+            <version>22.11</version>
+        </dependency>
 
-		<!-- logging dependencies below this line (same as in MATSim 14.0) -->
+        <!-- logging dependencies below this line (same as in MATSim 14.0) -->
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-1.2-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
 
-		<!-- test dependencies below this line -->
+        <!-- test dependencies below this line -->
 
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.9.1</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- platform-* required for running tests in Eclipse -->
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.9.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-runner</artifactId>
-			<version>1.9.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- platform-* required for running tests in Eclipse -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<source>11</source>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>at.ac.ait.matsim.domino.carpooling.run.Main</mainClass>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>META-INF/services/java.sql.Driver</resource>
-								</transformer>
-								<!-- Required to merge the various GeoTools META-INF/services files
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>at.ac.ait.matsim.domino.carpooling.run.Main</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/java.sql.Driver</resource>
+                                </transformer>
+                                <!-- Required to merge the various GeoTools META-INF/services files
 									(necessary for avoiding org.opengis.referencing.NoSuchAuthorityCodeException) -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-							</transformers>
-							<!-- in case a signed jar is contained in the dependences -->
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- run integration tests (ending with IT.java) separately from unit
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                            </transformers>
+                            <!-- in case a signed jar is contained in the dependences -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- run integration tests (ending with IT.java) separately from unit
 				tests -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-failsafe-plugin</artifactId>
+            <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.22.2</version> <executions> <execution> <goals> <goal>integration-test</goal>
 				<goal>verify</goal> </goals> </execution> </executions> </plugin> -->
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 </project>
