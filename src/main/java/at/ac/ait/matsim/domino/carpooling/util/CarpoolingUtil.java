@@ -1,6 +1,7 @@
 package at.ac.ait.matsim.domino.carpooling.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +20,9 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
+import org.matsim.core.router.TripStructureUtils.Trip;
 
 import com.google.common.collect.Sets;
 
@@ -28,6 +31,7 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolingUtil {
     private static final Logger LOGGER = LogManager.getLogger();
+
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
             if (l.getAllowedModes().contains(TransportMode.car)) {
@@ -142,17 +146,21 @@ public class CarpoolingUtil {
             if (permissible.getPermissibleModes(plan).contains(Carpooling.DRIVER_MODE)) {
                 Plan newPlan = PopulationUtils.createPlan();
                 PopulationUtils.copyFromTo(plan, newPlan);
-                for (Leg leg : PopulationUtils.getLegs(newPlan)) {
-                    // TODO actually we need to remove interaction activities as well
-                    leg.setMode(Carpooling.DRIVER_MODE);
-                    leg.setRoute(null);
+
+                for (Trip trip : TripStructureUtils.getTrips(newPlan)) {
+                    TripRouter.insertTrip(
+                            newPlan,
+                            trip.getOriginActivity(),
+                            Collections.singletonList(PopulationUtils.createLeg(Carpooling.DRIVER_MODE)),
+                            trip.getDestinationActivity());
                 }
+
                 newPlan.setPerson(person);
                 person.addPlan(newPlan);
                 count++;
             }
         }
-        LOGGER.debug("added initial carpooling driver plan to {} agents", count);
+        LOGGER.info("added carpooling driver plan to {} agents", count);
     }
 
     public static String getRequestStatus(Leg leg) {
