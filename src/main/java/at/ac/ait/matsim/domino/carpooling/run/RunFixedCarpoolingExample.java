@@ -8,8 +8,8 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 public class RunFixedCarpoolingExample {
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling_fixed.xml", new CarpoolingConfigGroup());
-        Carpooling.prepareConfig(config);
+        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling_fixed.xml",
+                new CarpoolingConfigGroup());
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         Carpooling.prepareScenario(scenario);

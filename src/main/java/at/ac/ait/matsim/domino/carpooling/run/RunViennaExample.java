@@ -15,7 +15,6 @@ import java.util.Random;
 public class RunViennaExample {
     public static void main(String[] args) {
         Config config = ConfigUtils.loadConfig("data/vienna/config_carpooling.xml");
-        Carpooling.prepareConfig(config);
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         Carpooling.prepareScenario(scenario);
