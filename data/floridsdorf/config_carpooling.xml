@@ -142,8 +142,12 @@
             <param name="strategyName" value="ReRoute"/>
             <param name="weight" value="0.1"/>
         </parameterset>
+        <parameterset type="strategysettings">
+            <!-- for carpooling this must be used instead of regular SubtourModeChoice -->
+            <param name="strategyName" value="SubtourModeChoiceForCarpooling"/>
+            <param name="weight" value="0.1"/>
+        </parameterset>
     </module>
-
 
     <module name="carpooling">
         <!-- can be left empty in case you are happy with the defaults -->
