@@ -35,12 +35,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
 
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
-
-    public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
-    private double riderFarePerKm = 0;
-
-    public static final String MOBILITY_GUARANTEE = "mobilityGuarantee";
-    private boolean mobilityGuarantee = false;
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
     private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
             TransportMode.pt, TransportMode.bike, TransportMode.walk };
@@ -72,10 +66,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains when picking a rider");
-        map.put(RIDER_FARE_PER_KM,
-                "The amount of money per kilometre the rider pays when being picked up by a driver.");
-        map.put(MOBILITY_GUARANTEE,
-                "The possibility for the unmatched riders to be teleported to their destination");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
@@ -163,26 +153,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(DRIVER_PROFIT_PER_KM)
     public void setDriverProfitPerKm(double driverProfitPerKm) {
         this.driverProfitPerKm = driverProfitPerKm;
-    }
-
-    @StringGetter(RIDER_FARE_PER_KM)
-    public double getRiderFarePerKm() {
-        return riderFarePerKm;
-    }
-
-    @StringSetter(RIDER_FARE_PER_KM)
-    public void setRiderFarePerKm(double riderFarePerKm) {
-        this.riderFarePerKm = riderFarePerKm;
-    }
-
-    @StringGetter(MOBILITY_GUARANTEE)
-    public boolean getMobilityGuarantee() {
-        return mobilityGuarantee;
-    }
-
-    @StringSetter(MOBILITY_GUARANTEE)
-    public void setMobilityGuarantee(boolean mobilityGuarantee) {
-        this.mobilityGuarantee = mobilityGuarantee;
     }
 
     public String[] getSubtourModeChoiceModes() {

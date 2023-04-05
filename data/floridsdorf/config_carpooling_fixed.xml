@@ -68,7 +68,7 @@
         <parameterset type="teleportedModeParameters">
             <param name="beelineDistanceFactor" value="1.3" />
             <param name="mode" value="carpoolingRider" />
-            <param name="teleportedModeFreespeedFactor" value="1.0" />
+            <param name="teleportedModeFreespeedFactor" value="2.0" />
         </parameterset>
     </module>
 
@@ -119,7 +119,7 @@
             <param name="marginalUtilityOfDistance_util_m" value="0.0" />
             <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
             <param name="mode" value="carpoolingRider" />
-            <param name="monetaryDistanceRate" value="0.0" />
+            <param name="monetaryDistanceRate" value="-0.0004" />
         </parameterset>
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
