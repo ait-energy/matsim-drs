@@ -20,9 +20,9 @@ import java.util.*;
 
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
-    public static final String FILENAME_REQUESTSTATS = "rider_request_stats";
+    public static final String FILENAME_REQUESTSTATS = "carpooling_rider_requeststats";
     public static final String MATCHED = "matched";
-    public static final String NOT_MATCHED = "not matched";
+    public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
@@ -30,7 +30,8 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
     private final Map<String, Integer> requestCount = new TreeMap<>();
 
     @Inject
-    public RiderRequestStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population, OutputDirectoryHierarchy controlerIO) {
+    public RiderRequestStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
+            OutputDirectoryHierarchy controlerIO) {
         this.population = population;
         this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUESTSTATS);
         this.createPNG = controlerConfigGroup.isCreateGraphs();
@@ -42,42 +43,41 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
     }
 
     private void collectRequestStatsInfo(AfterMobsimEvent event) {
-        for (Person person: population.getPersons().values()){
-            for (PlanElement planElement :person.getSelectedPlan().getPlanElements()){
-                if (planElement instanceof Leg){
-                    if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)){
-                        if (Objects.equals(CarpoolingUtil.getRequestStatus((Leg) planElement), MATCHED)){
-                             if (requestCount.get(MATCHED)==null){
+        for (Person person : population.getPersons().values()) {
+            for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
+                if (planElement instanceof Leg) {
+                    if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)) {
+                        if (Objects.equals(CarpoolingUtil.getRequestStatus((Leg) planElement), MATCHED)) {
+                            if (requestCount.get(MATCHED) == null) {
                                 this.requestCount.put(MATCHED, 1);
-                            }else {
+                            } else {
                                 this.requestCount.put(MATCHED, requestCount.get(MATCHED) + 1);
                             }
-                        }else {
-                            if (requestCount.get(NOT_MATCHED)==null){
+                        } else {
+                            if (requestCount.get(NOT_MATCHED) == null) {
                                 this.requestCount.put(NOT_MATCHED, 1);
-                            }else {
+                            } else {
                                 this.requestCount.put(NOT_MATCHED, requestCount.get(NOT_MATCHED) + 1);
                             }
                         }
-                        CarpoolingUtil.setRequestStatus((Leg) planElement,null);
+                        CarpoolingUtil.setRequestStatus((Leg) planElement, null);
                     }
                 }
             }
         }
 
         Map<String, Integer> requestHistory = new HashMap<>();
-        if (requestCount.get(MATCHED)==null){
+        if (requestCount.get(MATCHED) == null) {
             requestHistory.put(MATCHED, 0);
-        }else{
+        } else {
             requestHistory.put(MATCHED, requestCount.get(MATCHED));
         }
-        if (requestCount.get(NOT_MATCHED)==null){
+        if (requestCount.get(NOT_MATCHED) == null) {
             requestHistory.put(NOT_MATCHED, 0);
-        }else{
+        } else {
             requestHistory.put(NOT_MATCHED, requestCount.get(NOT_MATCHED));
         }
         this.iterationHistories.put(event.getIteration(), requestHistory);
-
 
         BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt");
 
@@ -87,7 +87,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
             requestOut.write("\t" + NOT_MATCHED);
             requestOut.write("\n");
 
-            for(int iteration = 0; iteration <= event.getIteration(); ++iteration) {
+            for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 requestOut.write(String.valueOf(iteration));
 
                 Map<String, Integer> matchedMap = this.iterationHistories.get(iteration);
@@ -109,23 +109,24 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
-            StackedBarChart chart = new StackedBarChart("Requests Matching Statistics", "iteration", "requests",categories);
+            StackedBarChart chart = new StackedBarChart("Carpooling Rider Request Statistics", "iteration", "requests",
+                    categories);
 
             double[] matchedValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(MATCHED, 0))
                     .toArray();
-            chart.addSeries(MATCHED,matchedValues);
+            chart.addSeries(MATCHED, matchedValues);
 
             double[] notMatchedValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(NOT_MATCHED, 0))
                     .toArray();
-            chart.addSeries(NOT_MATCHED,notMatchedValues);
+            chart.addSeries(NOT_MATCHED, notMatchedValues);
 
             chart.getChart().getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(0, Color.GREEN);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(1, Color.RED);
             chart.addMatsimLogo();
-            chart.saveAsPng(this.requestFileName + "_stackedbar.png", 800, 600);
+            chart.saveAsPng(this.requestFileName + ".png", 800, 600);
         }
         this.requestCount.clear();
     }
