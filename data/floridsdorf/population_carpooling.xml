@@ -174,7 +174,7 @@
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
-            <activity type="home" link="1037" end_time="08:00:00">
+            <activity type="home" link="1541" end_time="08:00:00">
             </activity>
             <leg mode="carpoolingRider">
             </leg>
@@ -182,7 +182,29 @@
             </activity>
             <leg mode="carpoolingRider">
             </leg>
-            <activity type="home" link="1037" start_time="16:45:00">
+            <activity type="home" link="1541" start_time="16:45:00">
+            </activity>
+        </plan>
+
+    </person>
+
+    <!-- ====================================================================== -->
+    <person id="person9_carDriver">
+        <attributes>
+            <attribute class="java.lang.String" name="carpoolingAffinity">never</attribute>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="1541" end_time="05:10:00">
+            </activity>
+            <leg mode="car">
+            </leg>
+            <activity type="work" link="688" start_time="05:45:00" end_time="13:10:00">
+            </activity>
+            <leg mode="car">
+            </leg>
+            <activity type="home" link="1541" start_time="13:45:00">
             </activity>
         </plan>
 
