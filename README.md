@@ -66,8 +66,8 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 ## Output
 
-- `carpooling_rider_request_stats.txt/.png`
-- `carpooling_vkt_modestats.txt/png` 
+- `carpooling_rider_request_stats.txt.png`
+- `carpooling_vkt_modestats.txt.png` 
 - `output_carpooling_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis 
 
 ## Limitations
