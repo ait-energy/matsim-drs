@@ -31,7 +31,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public double maxDetourFactorSlope = 0.01;
 
     public static final String PICKUP_WAITING_TIME = "pickupWaitingTime";
-    public double pickupWaitingTime = 120;
+    public double pickupWaitingTime = 0;
 
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
