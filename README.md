@@ -12,9 +12,9 @@ The simulated modes of transport are:
 The main components of this extension are the following:
 
 1. Matching algorithm.
-2. Modifying agents plans after replanning.
+2. Modifying agents plans.
 3. Handling agents departures and arrivals in QSim.
-4. Undoing modifications in agents' plans before iteration starts.
+4. Undoing modifications in agents' plans.
 
 ### Matching Algorithm
 Drivers and riders requests are created for agents who are carpooling.
@@ -27,32 +27,37 @@ The matching algorithm looks for the best rider for each driver and consists of 
 5. Filtering out riders which would lead to detourFactor higher than `maxDetourFactor`.
 6. Finding out the rider with the least detour factor.
 
-### Modifying agents plans after replanning
+### Modifying agents plans
 - In case of a matched driver: Two new interaction activities with the pickup and dropoff info will be added to the driver's plan.
-- In case of a matched rider: Rider departure time will be adjusted to the driver's expected arrival time to pickup point.
+- In case of a matched rider: Rider departure time will be adjusted to the driver's expected arrival time at pickup point.
 
 ### Handling agents departures and activities in QSim
-- In case of a matched rider, rider will wait until he gets picked up by the right driver and drop off when arriving at the dropoff point.
-- In case of a not matched rider, rider will be aborted or teleported in case `mobilityGuaranteeOption` is set to true in config.
-- Driver pickup the right rider from the pickup point and drop him off in the dropoff point and then drives to his next activity.
-- In case rider doesn't show up on time at the pickup point, driver would wait until `maxWaitingTime`. If rider doesn't show up at all, driver will skip dropoff activity and drive directly to destination.
+- In case rider has a match, rider will be picked up by the right driver and drop off when arriving at the dropoff point.
+- In case rider doesn't have a match, rider will be teleported.
+- In case driver has a match, driver will pickup the right rider from the pickup point and drop him off at the dropoff point and then drives to his next activity.
+- In case driver doesn't have a match, driver will drive directly to his next activity.
 
 ### Undoing modifications in agents' plans  at the end of each iteration
 - Undoing the changes of rider's plan by restoring the original departure time of rider's activity.
 - Undoing the changes of driver's plan by removing the extra plan elements added to the plan.
 
+### Population preparation
+
+- Attribute `carpoolingAffinity` needs to be added for each agent. It can be either `driverOrRider`, `driverOnly`, `riderOnly` or `none`.
+
+### Config preparation
+
+- `config_carpooling.xml` includes all additional requirements to correctly configure carpooling.
+
 ## Usage
 
 Main method of the `RunSimpleCarpoolingExample` class takes only the config file as an input in order to run the carpooling extension.
 
-It automatically kick-starts all potential carpooling driver agents, i.e. with an according `carpoolingAffinity` + car + license availability, with a carpooling driver plan.
-  
+- It automatically adds carpoolingDriver mode as an allowed mode to all car links.
+- It automatically kick-starts all potential carpooling driver agents, i.e. with an according `carpoolingAffinity` + car + license availability, with a carpooling driver plan. 
+
 This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
 (MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` - before a different plan is selected e.g. via `SelectPlanExpBeta`).
-
-### Population preparation
-
-- Attribute `carpoolingAffinity` needs to be added for each agent
 
 ### Mode innovation
 
@@ -61,13 +66,13 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 ## Output
 
-- `carpooling_rider_requeststats.txt/.png`
-- `carpooling_vkm_modestats.txt/png` 
-- `output_carpooling_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis (TODO where is the file?)
+- `carpooling_rider_request_stats.txt/.png`
+- `carpooling_vkt_modestats.txt/png` 
+- `output_carpooling_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis 
 
 ## Limitations
 
-- Only one rider is supported per a driver's leg (but a driver may have different riders on different legs)
+- Only one rider is supported per a driver's leg (but a driver may have different riders on different legs).
 
 ## Credits
 
