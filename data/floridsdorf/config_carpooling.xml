@@ -121,7 +121,7 @@
             <param name="monetaryDistanceRate" value="0.0" />
         </parameterset>
         <!-- NOTE: carpoolingDriver monetaryDistanceRate should be similar to car monetaryDistanceRate since carpoolingDriver can receive profit during the simulation   -->
-        <!-- NOTE: carpoolingDriver and car dailyMonetaryCost must be set to zero to avoid double dailyMonetaryCost in case a plan has both modes. dailyMonetaryCost is however included as a configurable parameter in CarpoolingConfigGroup  -->
+        <!-- NOTE: carpoolingDriver and car dailyMonetaryConstant must be both set to zero to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes. dailyMonetaryCost is however included as a configurable parameter in CarpoolingConfigGroup  -->
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
             <param name="dailyMonetaryConstant" value="0.0" />
