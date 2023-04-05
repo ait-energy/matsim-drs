@@ -27,7 +27,7 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_REQUESTSTATS = "carpooling_vkm_modestats";
+    public static final String FILENAME_REQUESTSTATS = "carpooling_vkt_mode_stats";
     public static final String CARPOOL_TRIP = "carpool trip";
     public static final String INDIVIDUAL_TRIP = "individual trip";
     private final Population population;
@@ -70,7 +70,6 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                                 this.totalDistance.put(CARPOOL_TRIP, totalDistance.get(CARPOOL_TRIP)
                                         + ((Leg) planElement).getRoute().getDistance() / 1000);
                             }
-                            CarpoolingUtil.setDropoffStatus((Leg) planElement, null);
                         } else {
                             if (totalDistance.get(INDIVIDUAL_TRIP) == null) {
                                 this.totalDistance.put(INDIVIDUAL_TRIP,

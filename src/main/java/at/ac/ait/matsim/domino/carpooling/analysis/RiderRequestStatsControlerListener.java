@@ -20,7 +20,7 @@ import java.util.*;
 
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
-    public static final String FILENAME_REQUESTSTATS = "carpooling_rider_requeststats";
+    public static final String FILENAME_REQUESTSTATS = "carpooling_rider_request_stats";
     public static final String MATCHED = "matched";
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
@@ -60,7 +60,6 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
                                 this.requestCount.put(NOT_MATCHED, requestCount.get(NOT_MATCHED) + 1);
                             }
                         }
-                        CarpoolingUtil.setRequestStatus((Leg) planElement, null);
                     }
                 }
             }
