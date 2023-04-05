@@ -45,12 +45,10 @@ The matching algorithm looks for the best rider for each driver and consists of 
 
 Main method of the `RunSimpleCarpoolingExample` class takes only the config file as an input in order to run the carpooling extension.
 
-It automatically
-- Adds/registers the two carpooling modes (`carpoolingRider` and `carpoolingDriver` as main mode)
-- kick-starts all potential carpooling driver agents, i.e. with an according `carpoolingAffinity` + car + license availability, with a carpooling driver plan.
+It automatically kick-starts all potential carpooling driver agents, i.e. with an according `carpoolingAffinity` + car + license availability, with a carpooling driver plan.
   
-- This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
-  (MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` - before a different plan is selected e.g. via `SelectPlanExpBeta`).
+This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
+(MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` - before a different plan is selected e.g. via `SelectPlanExpBeta`).
 
 ### Population preparation
 
@@ -63,9 +61,9 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 ## Output
 
-- `rider_request_stats.txt` and `rider_request_stats_stackedbar.png`
-- `vkt_stats.txt` and `vkt_stats_stackedbar.png` 
-- `output_carpoolin_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis
+- `carpooling_rider_requeststats.txt/.png`
+- `carpooling_vkm_modestats.txt/png` 
+- `output_carpooling_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis (TODO where is the file?)
 
 ## Limitations
 
