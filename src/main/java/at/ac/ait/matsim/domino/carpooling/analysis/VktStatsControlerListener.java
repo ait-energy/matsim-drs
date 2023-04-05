@@ -27,7 +27,7 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_REQUESTSTATS = "vkt_stats";
+    public static final String FILENAME_REQUESTSTATS = "carpooling_vkm_modestats";
     public static final String CARPOOL_TRIP = "carpool trip";
     public static final String INDIVIDUAL_TRIP = "individual trip";
     private final Population population;
@@ -145,7 +145,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(0, Color.GREEN);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(1, Color.RED);
             chart.addMatsimLogo();
-            chart.saveAsPng(this.requestFileName + "_stackedbar.png", 800, 600);
+            chart.saveAsPng(this.requestFileName + ".png", 800, 600);
         }
         this.totalDistance.clear();
     }
