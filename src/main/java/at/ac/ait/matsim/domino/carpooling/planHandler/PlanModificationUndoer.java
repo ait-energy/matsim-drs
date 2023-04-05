@@ -5,7 +5,6 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.*;
-import org.matsim.contrib.dvrp.router.ClosestAccessEgressFacilityFinder;
 import org.matsim.core.controler.events.IterationStartsEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +15,6 @@ import org.matsim.core.router.TripStructureUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class PlanModificationUndoer implements IterationStartsListener {
     static Logger LOGGER = LogManager.getLogger();
@@ -56,9 +54,6 @@ public class PlanModificationUndoer implements IterationStartsListener {
                     CarpoolingUtil.setDropoffStatus((Leg) planElement,null);
                 } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS)!=null) {
                     CarpoolingUtil.setRequestStatus((Leg) planElement,null);
-                }
-                if (Objects.equals(((Leg) planElement).getMode(), Carpooling.MOBILITY_GUARANTEE_SHUTTLE)){
-                    ((Leg) planElement).setMode(Carpooling.RIDER_MODE);
                 }
             }
         }
