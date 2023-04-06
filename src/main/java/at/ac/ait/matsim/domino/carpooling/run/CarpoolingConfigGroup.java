@@ -15,14 +15,14 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String CELL_SIZE = "cellSize";
     private int cellSize = 800;
 
+    public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
+    private int timeSegmentLength = 2 * 60 * 60;
+
     public static final String NEIGHBOURHOOD_SIZE = "neighbourhoodSize";
     private int neighbourhoodSize = 30;
 
     public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT = "riderDepartureTimeAdjustment";
     private double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
-
-    public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
-    private int timeSegmentLength = 2 * 60 * 60;
 
     public static final String MAX_DETOUR_FACTOR_CONSTANT = "maxDetourFactorConstant";
     public double maxDetourFactorConstant = 1.7;

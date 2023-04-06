@@ -45,7 +45,7 @@ public class DailyMonetaryConstantListener implements ReplanningListener {
             }
             if (isUsingCar){
                 eventsManager.processEvent(new PersonMoneyEvent(0, person.getId(),
-                        cfgGroup.getCarAndCarpoolingDailyMonetaryConstant(), "dailyMonetaryConstant",
+                        -cfgGroup.getCarAndCarpoolingDailyMonetaryConstant(), "dailyMonetaryConstant",
                         null, "carpoolingDriver or car"));
             }
         }
