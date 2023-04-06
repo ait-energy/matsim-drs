@@ -35,6 +35,10 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
 
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
+
+    public static final String CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT = "carAndCarpoolingDailyMonetaryConstant";
+    private double carAndCarpoolingDailyMonetaryConstant = 0;
+
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
     private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
             TransportMode.pt, TransportMode.bike, TransportMode.walk };
@@ -66,6 +70,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains when picking a rider");
+        map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
+                "This daily monetary constant must be configured here not in the modeParams. The reason is to avoid agents getting double daily monetary constant ");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
@@ -153,6 +159,16 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(DRIVER_PROFIT_PER_KM)
     public void setDriverProfitPerKm(double driverProfitPerKm) {
         this.driverProfitPerKm = driverProfitPerKm;
+    }
+
+    @StringGetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)
+    public double getCarAndCarpoolingDailyMonetaryConstant() {
+        return carAndCarpoolingDailyMonetaryConstant;
+    }
+
+    @StringSetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)
+    public void setCarAndCarpoolingDailyMonetaryConstant(double carAndCarpoolingDailyMonetaryConstant) {
+        this.carAndCarpoolingDailyMonetaryConstant = carAndCarpoolingDailyMonetaryConstant;
     }
 
     public String[] getSubtourModeChoiceModes() {
