@@ -135,7 +135,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
         double distance = previousLeg.getRoute().getDistance();
 
-
         Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(),internalInterface.getMobsim().getScenario()).getSelectedPlan().getPlanElements().get(index);
         CarpoolingUtil.setDropoffStatus(leg,"true");
 
