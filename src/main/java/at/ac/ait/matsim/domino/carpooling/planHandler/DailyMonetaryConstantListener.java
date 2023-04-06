@@ -8,12 +8,12 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.controler.events.ReplanningEvent;
-import org.matsim.core.controler.listener.ReplanningListener;
+import org.matsim.core.controler.events.BeforeMobsimEvent;
+import org.matsim.core.controler.listener.BeforeMobsimListener;
 
 import java.util.*;
 
-public class DailyMonetaryConstantListener implements ReplanningListener {
+public class DailyMonetaryConstantListener implements BeforeMobsimListener {
     private final Scenario scenario;
     private final CarpoolingConfigGroup cfgGroup;
     private final EventsManager eventsManager;
@@ -26,10 +26,7 @@ public class DailyMonetaryConstantListener implements ReplanningListener {
     }
 
     @Override
-    public void notifyReplanning(ReplanningEvent replanningEvent) {
-        addDailyMonetaryConstant();
-    }
-
+    public void notifyBeforeMobsim(BeforeMobsimEvent beforeMobsimEvent) { addDailyMonetaryConstant();}
     private void addDailyMonetaryConstant() {
         Population population = scenario.getPopulation();
         boolean isUsingCar;

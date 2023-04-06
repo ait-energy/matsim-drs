@@ -13,7 +13,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String GROUP_NAME = "carpooling";
 
     public static final String CELL_SIZE = "cellSize";
-    private int cellSize = 800;
+    private int cellSize = 1000;
 
     public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
     private int timeSegmentLength = 2 * 60 * 60;
