@@ -27,6 +27,6 @@ public class NearestRequestsFinder {
         Stream<CarpoolingRequest> zonalRegistryIntersection = originNearRequests
                 .filter(destinationNearRequests.collect(Collectors.toList())::contains);
         return zonalRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
-                .limit(cfgGroup.getNeighbourhoodSize()).collect(Collectors.toCollection(ArrayList::new));
+                .limit(cfgGroup.getMaxPossibleCandidates()).collect(Collectors.toCollection(ArrayList::new));
     }
 }

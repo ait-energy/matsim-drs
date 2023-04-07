@@ -27,9 +27,9 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_REQUESTSTATS = "carpooling_vkt_mode_stats";
-    public static final String CARPOOL_TRIP = "carpool trip";
-    public static final String INDIVIDUAL_TRIP = "individual trip";
+    public static final String FILENAME_REQUESTSTATS = "carpooling_vkt_stats";
+    public static final String CARPOOL_TRAVEL = "carpool travel";
+    public static final String INDIVIDUAL_TRAVEL = "individual travel";
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
@@ -54,28 +54,28 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
                     if (Objects.equals(((Leg) planElement).getMode(), TransportMode.car)) {
-                        if (totalDistance.get(INDIVIDUAL_TRIP) == null) {
-                            this.totalDistance.put(INDIVIDUAL_TRIP,
+                        if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
+                            this.totalDistance.put(INDIVIDUAL_TRAVEL,
                                     ((Leg) planElement).getRoute().getDistance() / 1000);
                         } else {
-                            this.totalDistance.put(INDIVIDUAL_TRIP, totalDistance.get(INDIVIDUAL_TRIP)
+                            this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
                                     + ((Leg) planElement).getRoute().getDistance() / 1000);
                         }
                     } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE)) {
                         if (CarpoolingUtil.getDropoffStatus((Leg) planElement) != null) {
-                            if (totalDistance.get(CARPOOL_TRIP) == null) {
-                                this.totalDistance.put(CARPOOL_TRIP,
+                            if (totalDistance.get(CARPOOL_TRAVEL) == null) {
+                                this.totalDistance.put(CARPOOL_TRAVEL,
                                         ((Leg) planElement).getRoute().getDistance() / 1000);
                             } else {
-                                this.totalDistance.put(CARPOOL_TRIP, totalDistance.get(CARPOOL_TRIP)
+                                this.totalDistance.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL)
                                         + ((Leg) planElement).getRoute().getDistance() / 1000);
                             }
                         } else {
-                            if (totalDistance.get(INDIVIDUAL_TRIP) == null) {
-                                this.totalDistance.put(INDIVIDUAL_TRIP,
+                            if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
+                                this.totalDistance.put(INDIVIDUAL_TRAVEL,
                                         ((Leg) planElement).getRoute().getDistance() / 1000);
                             } else {
-                                this.totalDistance.put(INDIVIDUAL_TRIP, totalDistance.get(INDIVIDUAL_TRIP)
+                                this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
                                         + ((Leg) planElement).getRoute().getDistance() / 1000);
                             }
                         }
@@ -85,15 +85,15 @@ public class VktStatsControlerListener implements AfterMobsimListener {
         }
 
         Map<String, Double> totalDistancesHistory = new HashMap<>();
-        if (totalDistance.get(CARPOOL_TRIP) == null) {
-            totalDistancesHistory.put(CARPOOL_TRIP, 0.0);
+        if (totalDistance.get(CARPOOL_TRAVEL) == null) {
+            totalDistancesHistory.put(CARPOOL_TRAVEL, 0.0);
         } else {
-            totalDistancesHistory.put(CARPOOL_TRIP, totalDistance.get(CARPOOL_TRIP));
+            totalDistancesHistory.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL));
         }
-        if (totalDistance.get(INDIVIDUAL_TRIP) == null) {
-            totalDistancesHistory.put(INDIVIDUAL_TRIP, 0.0);
+        if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
+            totalDistancesHistory.put(INDIVIDUAL_TRAVEL, 0.0);
         } else {
-            totalDistancesHistory.put(INDIVIDUAL_TRIP, totalDistance.get(INDIVIDUAL_TRIP));
+            totalDistancesHistory.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL));
         }
         this.iterationHistories.put(event.getIteration(), totalDistancesHistory);
 
@@ -101,18 +101,18 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
         try {
             requestOut.write("Iteration");
-            requestOut.write("\t" + CARPOOL_TRIP);
-            requestOut.write("\t" + INDIVIDUAL_TRIP);
+            requestOut.write("\t" + CARPOOL_TRAVEL);
+            requestOut.write("\t" + INDIVIDUAL_TRAVEL);
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 requestOut.write(String.valueOf(iteration));
 
                 Map<String, Double> matchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + matchedMap.get(CARPOOL_TRIP));
+                requestOut.write("\t" + matchedMap.get(CARPOOL_TRAVEL));
 
                 Map<String, Double> notMatchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + notMatchedMap.get(INDIVIDUAL_TRIP));
+                requestOut.write("\t" + notMatchedMap.get(INDIVIDUAL_TRAVEL));
 
                 requestOut.write("\n");
             }
@@ -127,18 +127,18 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
-            StackedBarChart chart = new StackedBarChart("Vehicle Kilometers Traveled Statistics", "iteration",
+            StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometers Traveled Statistics", "iteration",
                     "Kilometer", categories);
 
             double[] matchedValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(CARPOOL_TRIP, 0.0))
+                    .mapToDouble(map -> map.getOrDefault(CARPOOL_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(CARPOOL_TRIP, matchedValues);
+            chart.addSeries(CARPOOL_TRAVEL, matchedValues);
 
             double[] notMatchedValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(INDIVIDUAL_TRIP, 0.0))
+                    .mapToDouble(map -> map.getOrDefault(INDIVIDUAL_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(INDIVIDUAL_TRIP, notMatchedValues);
+            chart.addSeries(INDIVIDUAL_TRAVEL, notMatchedValues);
 
             chart.getChart().getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(0, Color.GREEN);

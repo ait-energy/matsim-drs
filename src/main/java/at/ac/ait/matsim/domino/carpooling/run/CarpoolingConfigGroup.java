@@ -18,8 +18,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
     private int timeSegmentLength = 2 * 60 * 60;
 
-    public static final String NEIGHBOURHOOD_SIZE = "neighbourhoodSize";
-    private int neighbourhoodSize = 30;
+    public static final String MAX_POSSIBLE_CANDIDATES = "maxPossibleCandidates";
+    private int maxPossibleCandidates = 30;
 
     public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT = "riderDepartureTimeAdjustment";
     private double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
@@ -56,7 +56,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         Map<String, String> map = super.getComments();
         map.put(CELL_SIZE,
                 "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low carpooling share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
-        map.put(NEIGHBOURHOOD_SIZE,
+        map.put(MAX_POSSIBLE_CANDIDATES,
                 "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
         map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT,
                 "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
@@ -91,14 +91,14 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         this.cellSize = cellSize;
     }
 
-    @StringGetter(NEIGHBOURHOOD_SIZE)
-    public int getNeighbourhoodSize() {
-        return neighbourhoodSize;
+    @StringGetter(MAX_POSSIBLE_CANDIDATES)
+    public int getMaxPossibleCandidates() {
+        return maxPossibleCandidates;
     }
 
-    @StringSetter(NEIGHBOURHOOD_SIZE)
-    public void setNeighbourhoodSize(int neighbourhoodSize) {
-        this.neighbourhoodSize = neighbourhoodSize;
+    @StringSetter(MAX_POSSIBLE_CANDIDATES)
+    public void setMaxPossibleCandidates(int maxPossibleCandidates) {
+        this.maxPossibleCandidates = maxPossibleCandidates;
     }
 
     @StringGetter(RIDER_DEPARTURE_TIME_ADJUSTMENT)
