@@ -17,16 +17,16 @@ public class MatchMaker {
     private static final Logger LOGGER = LogManager.getLogger();
     private final RequestsCollector requestsCollector;
     private final RequestsRegister requestsRegister;
-    private final NearestRequestsFinder nearestRequestsFinder;
+    private final PotentialRequestsFinder potentialRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
-            NearestRequestsFinder nearestRequestsFinder, RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder) {
+                      PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
+                      BestRequestFinder bestRequestFinder) {
         this.requestsCollector = requestsCollector;
         this.requestsRegister = requestsRegister;
-        this.nearestRequestsFinder = nearestRequestsFinder;
+        this.potentialRequestsFinder = potentialRequestsFinder;
         this.requestsFilter = requestsFilter;
         this.bestRequestFinder = bestRequestFinder;
     }
@@ -34,7 +34,7 @@ public class MatchMaker {
     public HashMap<CarpoolingRequest, CarpoolingRequest> match() {
         HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
         requestsCollector.collectRequests();
-        LOGGER.info(requestsCollector.getDriversRequests().size() + " drivers requests and "
+        LOGGER.warn(requestsCollector.getDriversRequests().size() + " drivers requests and "
                 + requestsCollector.getRidersRequests().size() + " riders requests were collected.");
         List<CarpoolingRequest> driversRequests = requestsCollector.getDriversRequests();
         Collections.shuffle(driversRequests);
@@ -47,11 +47,11 @@ public class MatchMaker {
 
         for (Iterator<CarpoolingRequest> iterator = driversRequests.iterator(); iterator.hasNext();) {
             CarpoolingRequest driverRequest = iterator.next();
-            List<CarpoolingRequest> nearestRequests = nearestRequestsFinder.findRegistryIntersections(
+            List<CarpoolingRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
                     driverRequest.getFromLink().getFromNode(), driverRequest.getToLink().getFromNode(),
                     driverRequest.getDepartureTime());
             List<CarpoolingRequest> filteredRidersRequests = requestsFilter.filterRequests(driverRequest,
-                    nearestRequests);
+                    potentialRequests);
             CarpoolingRequest bestRiderRequest = bestRequestFinder.findBestRequest(driverRequest,
                     filteredRidersRequests);
 
@@ -70,7 +70,7 @@ public class MatchMaker {
                     }
                 }
 
-                LOGGER.debug(driverRequest.getPerson().getId() + "'s best rider match is "
+                LOGGER.warn(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());
                 matchedRequests.put(driverRequest, bestRiderRequest);
