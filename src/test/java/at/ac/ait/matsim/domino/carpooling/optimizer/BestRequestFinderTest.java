@@ -31,7 +31,6 @@ import org.matsim.facilities.FacilitiesUtils;
 
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 class BestRequestFinderTest {
     static Network network;
@@ -51,7 +50,7 @@ class BestRequestFinderTest {
         RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
                 network,
                 dijkstra);
-        bestRequestFinder = new BestRequestFinder(router, new CarpoolingConfigGroup());
+        bestRequestFinder = new BestRequestFinder(router);
 
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)),
@@ -100,29 +99,12 @@ class BestRequestFinderTest {
     }
 
     @Test
-    void noFilteredRequests() {
+    void noFilteredRequestsTest() {
         assertNull(bestRequestFinder.findBestRequest(driverRequest, filteredPassengersRequests));
     }
 
     @Test
-    void noRequestsLessThanDetourFactorThreshold() {
-        filteredPassengersRequests.add(request4);
-        filteredPassengersRequests.add(request5);
-        assertNull(bestRequestFinder.findBestRequest(driverRequest, filteredPassengersRequests));
-    }
-
-    @Test
-    void oneRequestLessThanDetourFactorThreshold() {
-        filteredPassengersRequests.add(request4);
-        filteredPassengersRequests.add(request5);
-        filteredPassengersRequests.add(request3);
-        assertNotNull(bestRequestFinder.findBestRequest(driverRequest, filteredPassengersRequests));
-        assertEquals("3", bestRequestFinder.findBestRequest(driverRequest, filteredPassengersRequests).getId()
-                .toString());
-    }
-
-    @Test
-    void moreThanOneRequestLessThanDetourFactorThreshold() {
+    void findBestRequestTest() {
         filteredPassengersRequests.add(request4);
         filteredPassengersRequests.add(request5);
         filteredPassengersRequests.add(request3);

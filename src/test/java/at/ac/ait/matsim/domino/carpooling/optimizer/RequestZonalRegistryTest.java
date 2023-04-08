@@ -29,7 +29,9 @@ class RequestZonalRegistryTest {
     public static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
         CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
-        zonalSystem = new SquareGridSystem(network.getNodes().values(), new CarpoolingConfigGroup().getCellSize());
+        CarpoolingConfigGroup cfg = new CarpoolingConfigGroup();
+        cfg.setCellSize(800);
+        zonalSystem = new SquareGridSystem(network.getNodes().values(), cfg.getCellSize());
         request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null, null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,

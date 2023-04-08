@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NearestRequestsFinderTest {
+class PotentialRequestsFinderTest {
     List<CarpoolingRequest> originNearRequests = new ArrayList<>();
     List<CarpoolingRequest> destinationNearRequests = new ArrayList<>();
     List<CarpoolingRequest> temporalNearRequests = new ArrayList<>();
@@ -28,7 +28,7 @@ class NearestRequestsFinderTest {
     @Test
     void testEmptyStreamsIntersection() {
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
                         originNearRequests.stream(), destinationNearRequests.stream(),
                         temporalNearRequests.stream())
                         .size());
@@ -40,7 +40,7 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
                         originNearRequests.stream(), destinationNearRequests.stream(),
                         temporalNearRequests.stream())
                         .size());
@@ -53,7 +53,7 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(0,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
                         originNearRequests.stream(), destinationNearRequests.stream(),
                         temporalNearRequests.stream())
                         .size());
@@ -67,7 +67,7 @@ class NearestRequestsFinderTest {
         destinationNearRequests.add(request2);
         temporalNearRequests.add(request3);
         assertEquals(1,
-                NearestRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
                         originNearRequests.stream(), destinationNearRequests.stream(),
                         temporalNearRequests.stream())
                         .size());

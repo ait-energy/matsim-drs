@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class NearestRequestsFinder {
+public class PotentialRequestsFinder {
     private final CarpoolingConfigGroup cfgGroup;
     private final RequestsRegister requestsRegister;
-    public NearestRequestsFinder(CarpoolingConfigGroup cfgGroup, RequestsRegister requestsRegister) {
+    public PotentialRequestsFinder(CarpoolingConfigGroup cfgGroup, RequestsRegister requestsRegister) {
         this.cfgGroup = cfgGroup;
         this.requestsRegister = requestsRegister;
     }

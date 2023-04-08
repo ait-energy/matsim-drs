@@ -146,6 +146,6 @@
 
 
     <module name="carpooling">
-        <!-- can be left empty in case you are happy with the defaults -->
+        <param name="cellSize" value="800" />
     </module>
 </config>

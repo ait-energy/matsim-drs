@@ -13,15 +13,12 @@ import org.matsim.core.router.RoutingRequest;
 import org.matsim.facilities.FacilitiesUtils;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 public class BestRequestFinder {
     private final RoutingModule router;
-    private final CarpoolingConfigGroup cfgGroup;
 
-    public BestRequestFinder(RoutingModule router, CarpoolingConfigGroup cfgGroup) {
+    public BestRequestFinder(RoutingModule router) {
         this.router = router;
-        this.cfgGroup = cfgGroup;
     }
 
     public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest,
@@ -29,8 +26,6 @@ public class BestRequestFinder {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
         double originalRouteTravelTime = getLeg(driverRequest.getFromLink(), driverRequest.getToLink(),
                 driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
-        double maxDetourFactor = cfgGroup.getMaxDetourFactorConstant()
-                - (cfgGroup.getMaxDetourFactorSlope() * (originalRouteTravelTime / 60));
 
         for (CarpoolingRequest riderRequest : filteredRidersRequests) {
             Leg legToCustomer = getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),
@@ -48,9 +43,8 @@ public class BestRequestFinder {
 
             double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
             double detourFactor = newRouteTravelTime / originalRouteTravelTime;
-            if (detourFactor < maxDetourFactor) {
-                bestRequests.put(riderRequest, detourFactor);
-            }
+
+            bestRequests.put(riderRequest, detourFactor);
         }
         return findRequestWithLeastDetour(bestRequests);
     }

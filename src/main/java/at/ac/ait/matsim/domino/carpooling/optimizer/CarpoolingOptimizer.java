@@ -41,10 +41,10 @@ public class CarpoolingOptimizer {
         RequestsCollector requestsCollector = new RequestsCollector(population, network);
         RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
                 timeSegmentRegistry);
-        NearestRequestsFinder nearestRequestsFinder = new NearestRequestsFinder(cfgGroup, requestsRegister);
+        PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(cfgGroup, requestsRegister);
         RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, router);
-        BestRequestFinder bestRequestFinder = new BestRequestFinder(router, cfgGroup);
-        MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, nearestRequestsFinder,
+        BestRequestFinder bestRequestFinder = new BestRequestFinder(router);
+        MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                 requestsFilter, bestRequestFinder);
         return matchMaker.match();
     }

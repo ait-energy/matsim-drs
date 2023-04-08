@@ -13,7 +13,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String GROUP_NAME = "carpooling";
 
     public static final String CELL_SIZE = "cellSize";
-    private int cellSize = 800;
+    private int cellSize = 4000;
 
     public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
     private int timeSegmentLength = 2 * 60 * 60;
@@ -23,12 +23,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
 
     public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT = "riderDepartureTimeAdjustment";
     private double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
-
-    public static final String MAX_DETOUR_FACTOR_CONSTANT = "maxDetourFactorConstant";
-    public double maxDetourFactorConstant = 1.7;
-
-    public static final String MAX_DETOUR_FACTOR_SLOPE = "maxDetourFactorSlope";
-    public double maxDetourFactorSlope = 0.01;
 
     public static final String PICKUP_WAITING_TIME = "pickupWaitingTime";
     public double pickupWaitingTime = 0;
@@ -62,10 +56,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
         map.put(TIME_SEGMENT_LENGTH,
                 "The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.");
-        map.put(MAX_DETOUR_FACTOR_CONSTANT,
-                "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
-        map.put(MAX_DETOUR_FACTOR_SLOPE,
-                "Component of the function to determine the maximum detour a driver is willing to take. The function is currently linear: maxDetourFactor = constant - slope * travelTime");
         map.put(PICKUP_WAITING_TIME,
                 "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
@@ -119,26 +109,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(TIME_SEGMENT_LENGTH)
     public void setTimeSegmentLength(int timeSegmentLength) {
         this.timeSegmentLength = timeSegmentLength;
-    }
-
-    @StringGetter(MAX_DETOUR_FACTOR_CONSTANT)
-    public double getMaxDetourFactorConstant() {
-        return maxDetourFactorConstant;
-    }
-
-    @StringSetter(MAX_DETOUR_FACTOR_CONSTANT)
-    public void setMaxDetourFactorConstant(double maxDetourFactorConstant) {
-        this.maxDetourFactorConstant = maxDetourFactorConstant;
-    }
-
-    @StringGetter(MAX_DETOUR_FACTOR_SLOPE)
-    public double getMaxDetourFactorSlope() {
-        return maxDetourFactorSlope;
-    }
-
-    @StringSetter(MAX_DETOUR_FACTOR_SLOPE)
-    public void setMaxDetourFactorSlope(double maxDetourFactorSlope) {
-        this.maxDetourFactorSlope = maxDetourFactorSlope;
     }
 
     @StringGetter(PICKUP_WAITING_TIME)
