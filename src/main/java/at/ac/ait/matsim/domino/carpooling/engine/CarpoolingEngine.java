@@ -85,8 +85,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         return false;
     }
 
-
-    //TODO: Delete comment in case the handleActivity returns true
     /**
      * Will always return false so that the default activity handler properly
      * handles the activities of the driver.
@@ -160,7 +158,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         }
 
         LOGGER.debug("driver {} picks up rider {} at {} from link {}", driver.getId(), rider.getId(), now, linkId);
-
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());
         internalInterface.unregisterAdditionalAgentOnLink(rider.getId(), linkId);

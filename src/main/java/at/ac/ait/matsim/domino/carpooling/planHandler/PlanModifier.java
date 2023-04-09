@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.router.DefaultRoutingRequest;
@@ -28,26 +29,26 @@ public class PlanModifier implements ReplanningListener {
     private final Scenario scenario;
     private final CarpoolingConfigGroup cfgGroup;
     private final RoutingModule router;
+    private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
     @Inject
-    public PlanModifier(Scenario scenario, TripRouter tripRouter) {
+    public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
         this.scenario = scenario;
         cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
         router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+        this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
     @Override
     public void notifyReplanning(ReplanningEvent replanningEvent) {
-        preplanDay();
+        preplanDay(replanningEvent);
     }
 
-    private void preplanDay() {
+    private void preplanDay(ReplanningEvent event) {
         Population population = scenario.getPopulation();
         Network network = scenario.getNetwork();
-
-        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router);
+        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router,event.isLastIteration(), outputDirectoryHierarchy);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
-
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {

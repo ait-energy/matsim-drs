@@ -2,12 +2,14 @@ package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import java.util.HashMap;
 
+import at.ac.ait.matsim.domino.carpooling.analysis.CarpoolTripsInfoCollector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.zone.SquareGridSystem;
 import org.matsim.contrib.zone.ZonalSystem;
+import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
@@ -19,13 +21,17 @@ public class CarpoolingOptimizer {
     private final CarpoolingConfigGroup cfgGroup;
     private final Population population;
     private final RoutingModule router;
+    private final Boolean isLastIteration;
+    private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
     public CarpoolingOptimizer(Network network, CarpoolingConfigGroup cfgGroup, Population population,
-            RoutingModule router) {
+                               RoutingModule router, boolean isLastIteration, OutputDirectoryHierarchy outputDirectoryHierarchy){
         this.network = network;
         this.cfgGroup = cfgGroup;
         this.population = population;
         this.router = router;
+        this.isLastIteration = isLastIteration;
+        this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
     public HashMap<CarpoolingRequest, CarpoolingRequest> optimize() {
@@ -37,7 +43,6 @@ public class CarpoolingOptimizer {
                 zonalSystem,
                 false);
         RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(cfgGroup);
-
         RequestsCollector requestsCollector = new RequestsCollector(population, network);
         RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
                 timeSegmentRegistry);
@@ -46,7 +51,12 @@ public class CarpoolingOptimizer {
         BestRequestFinder bestRequestFinder = new BestRequestFinder(router);
         MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                 requestsFilter, bestRequestFinder);
-        return matchMaker.match();
+        HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = matchMaker.match();
+        if (isLastIteration){
+            CarpoolTripsInfoCollector infoCollector = new CarpoolTripsInfoCollector(outputDirectoryHierarchy);
+            infoCollector.printInfoToCsv(matchMap);
+        }
+        return matchMap;
     }
 
 }

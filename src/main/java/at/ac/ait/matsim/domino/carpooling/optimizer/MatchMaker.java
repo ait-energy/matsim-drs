@@ -69,7 +69,6 @@ public class MatchMaker {
                         }
                     }
                 }
-
                 LOGGER.warn(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());

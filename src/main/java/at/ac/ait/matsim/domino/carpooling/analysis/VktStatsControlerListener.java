@@ -27,7 +27,7 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_REQUESTSTATS = "carpooling_vkt_stats";
+    public static final String FILENAME_VKTSTATS = "carpooling_vkt_stats";
     public static final String CARPOOL_TRAVEL = "carpool travel";
     public static final String INDIVIDUAL_TRAVEL = "individual travel";
     private final Population population;
@@ -40,7 +40,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
     public VktStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
             OutputDirectoryHierarchy controlerIO) {
         this.population = population;
-        this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUESTSTATS);
+        this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKTSTATS);
         this.createPNG = controlerConfigGroup.isCreateGraphs();
     }
 
