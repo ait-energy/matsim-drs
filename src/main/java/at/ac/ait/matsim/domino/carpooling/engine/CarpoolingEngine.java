@@ -73,11 +73,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
     @Override
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
-        LOGGER.debug("handleDeparture agent {} on link {}", agent.getId(), id);
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
+            LOGGER.debug("handleDeparture of {} leg for agent {} on link {}", agent.getMode(), agent.getId(), id);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
-            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")){
-                LOGGER.debug("{} is waiting to be picked up.",agent.getId());
+            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")) {
+                LOGGER.debug("{} is waiting to be picked up.", agent.getId());
                 waitingRiders.put(agent.getId(), id);
                 return true;
             }
@@ -93,10 +93,10 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
-        LOGGER.debug("handleActivity agent {}", agent.getId());
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
+                LOGGER.debug("handleActivity {} for {}", act.getType(), agent.getId());
                 ActivityType type = CarpoolingUtil.getActivityType(act);
                 Id<Person> riderId = CarpoolingUtil.getRiderId(act);
                 Id<Link> linkId = agent.getCurrentLinkId();
@@ -107,7 +107,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     case dropoff:
                         Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
                         int index = ((PlanAgent) agent).getCurrentPlan().getPlanElements().indexOf(previousLeg);
-                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, previousLeg,index);
+                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, previousLeg, index);
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
@@ -116,7 +116,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
             } else if (act.getType().equals(Carpooling.RIDER_INTERACTION)) {
-                LOGGER.debug("handleActivity {} {}", act.getType(), agent.getId());
+                // intentionally empty.
             }
         }
         return false;
@@ -133,8 +133,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
         double distance = previousLeg.getRoute().getDistance();
 
-        Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(),internalInterface.getMobsim().getScenario()).getSelectedPlan().getPlanElements().get(index);
-        CarpoolingUtil.setDropoffStatus(leg,"true");
+        Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(), internalInterface.getMobsim().getScenario())
+                .getSelectedPlan().getPlanElements().get(index);
+        CarpoolingUtil.setDropoffStatus(leg, "true");
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "driver profit", rider.getId().toString(), null));

@@ -1,12 +1,20 @@
 package at.ac.ait.matsim.domino.carpooling.planHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.*;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
@@ -14,8 +22,11 @@ import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
 import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
 import org.matsim.facilities.FacilitiesUtils;
+import org.matsim.pt2matsim.tools.NetworkTools;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import at.ac.ait.matsim.domino.carpooling.optimizer.CarpoolingOptimizer;
@@ -27,15 +38,19 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 public class PlanModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
+    private final Network carpoolingNetwork;
     private final CarpoolingConfigGroup cfgGroup;
-    private final RoutingModule router;
+    private final RoutingModule carpoolingDriverRouter, carpoolingRiderRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
     @Inject
     public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
         this.scenario = scenario;
+        this.carpoolingNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
+                ImmutableSet.of(Carpooling.DRIVER_MODE));
         cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
-        router = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+        carpoolingDriverRouter = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+        carpoolingRiderRouter = tripRouter.getRoutingModule(Carpooling.RIDER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
@@ -46,27 +61,29 @@ public class PlanModifier implements ReplanningListener {
 
     private void preplanDay(ReplanningEvent event) {
         Population population = scenario.getPopulation();
-        Network network = scenario.getNetwork();
-        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(network, cfgGroup, population, router,event.isLastIteration(), outputDirectoryHierarchy);
+        CarpoolingOptimizer optimizer = new CarpoolingOptimizer(carpoolingNetwork, cfgGroup, population,
+                carpoolingDriverRouter, event.isLastIteration(), outputDirectoryHierarchy);
         HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
             modifyPlans(entry.getKey(), entry.getValue(), populationFactory);
         }
+        addRoutingModeAndRouteForRiders();
         LOGGER.info("Modifying carpooling agents plans finished.");
     }
 
-    private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest, PopulationFactory factory) {
+    private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
+            PopulationFactory factory) {
         RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(
                 FacilitiesUtils.wrapLink(driverRequest.getFromLink()),
                 FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverRequest.getDepartureTime(),
                 driverRequest.getPerson());
-        List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
+        List<? extends PlanElement> legToCustomerList = carpoolingDriverRouter.calcRoute(toCustomer);
         Leg legToCustomer = (Leg) legToCustomerList.get(0);
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
 
-        addNewActivitiesToDriverPlan(driverRequest, riderRequest, factory, router, legToCustomerList);
+        addNewActivitiesToDriverPlan(driverRequest, riderRequest, factory, carpoolingDriverRouter, legToCustomerList);
         adjustRiderDepartureTime(riderRequest, pickupTime);
     }
 
@@ -78,7 +95,7 @@ public class PlanModifier implements ReplanningListener {
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
                 riderRequest.getFromLink().getId());
-        pickup.setEndTime(pickupTime+cfgGroup.getPickupWaitingTime());
+        pickup.setEndTime(pickupTime + cfgGroup.getPickupWaitingTime());
         CarpoolingUtil.setActivityType(pickup, Carpooling.ActivityType.pickup);
         CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
 
@@ -136,6 +153,42 @@ public class PlanModifier implements ReplanningListener {
                             break;
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * TODO this should be integrated into the optimizer/matchmaker process
+     * 
+     * for all rider legs: add a routingmode and a generic route (that is provided
+     * through the carpooling rider mode configured as teleporting mode)
+     * so that PersonPrepareForSim does not reroute our legs (and thereby discards
+     * our leg attributes where we store if the person found a match or not)
+     */
+    private void addRoutingModeAndRouteForRiders() {
+        for (Person person : scenario.getPopulation().getPersons().values()) {
+            List<PlanElement> planElements = person.getSelectedPlan().getPlanElements();
+            for (int i = 0; i < planElements.size(); i++) {
+                if (planElements.get(i) instanceof Leg) {
+                    Leg leg = (Leg) planElements.get(i);
+                    if (!leg.getMode().equals(Carpooling.RIDER_MODE)) {
+                        continue;
+                    }
+                    TripStructureUtils.setRoutingMode(leg, Carpooling.RIDER_MODE);
+
+                    Activity prevActivity = (Activity) planElements.get(i - 1);
+                    Activity nexActivity = (Activity) planElements.get(i + 1);
+                    RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(
+                            FacilitiesUtils.wrapActivity(prevActivity),
+                            FacilitiesUtils.wrapActivity(nexActivity),
+                            leg.getDepartureTime().orElse(0),
+                            person);
+                    List<? extends PlanElement> newRoute = carpoolingRiderRouter.calcRoute(routingRequest);
+                    if (newRoute.size() > 1) {
+                        throw new RuntimeException("we expect only one leg, but got " + newRoute.size());
+                    }
+                    leg.setRoute(((Leg) newRoute.get(0)).getRoute());
                 }
             }
         }

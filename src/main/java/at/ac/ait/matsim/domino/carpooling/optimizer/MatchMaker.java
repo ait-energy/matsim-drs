@@ -22,8 +22,8 @@ public class MatchMaker {
     private final RequestsFilter requestsFilter;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
-                      PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
-                      BestRequestFinder bestRequestFinder) {
+            PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
+            BestRequestFinder bestRequestFinder) {
         this.requestsCollector = requestsCollector;
         this.requestsRegister = requestsRegister;
         this.potentialRequestsFinder = potentialRequestsFinder;
@@ -34,7 +34,7 @@ public class MatchMaker {
     public HashMap<CarpoolingRequest, CarpoolingRequest> match() {
         HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
         requestsCollector.collectRequests();
-        LOGGER.warn(requestsCollector.getDriversRequests().size() + " drivers requests and "
+        LOGGER.info(requestsCollector.getDriversRequests().size() + " drivers requests and "
                 + requestsCollector.getRidersRequests().size() + " riders requests were collected.");
         List<CarpoolingRequest> driversRequests = requestsCollector.getDriversRequests();
         Collections.shuffle(driversRequests);
@@ -56,7 +56,7 @@ public class MatchMaker {
                     filteredRidersRequests);
 
             if (!(bestRiderRequest == null)) {
-                CarpoolingUtil.setRequestStatus(bestRiderRequest.getLeg(),"matched");
+                CarpoolingUtil.setRequestStatus(bestRiderRequest.getLeg(), "matched");
                 for (PlanElement planElement : bestRiderRequest.getPerson().getSelectedPlan().getPlanElements()) {
                     if (planElement instanceof Activity) {
                         if (((Activity) planElement).getEndTime().isDefined()) {
@@ -69,7 +69,7 @@ public class MatchMaker {
                         }
                     }
                 }
-                LOGGER.warn(driverRequest.getPerson().getId() + "'s best rider match is "
+                LOGGER.info(driverRequest.getPerson().getId() + "'s best rider match is "
                         + bestRiderRequest.getPerson().getId() + ". Pickup point is "
                         + bestRiderRequest.getFromLink().getId());
                 matchedRequests.put(driverRequest, bestRiderRequest);
@@ -77,7 +77,7 @@ public class MatchMaker {
                 requestsRegister.removeRequest(bestRiderRequest);
             }
         }
-        LOGGER.warn(matchedRequests.size() + " matches happened. Matching process finished!");
+        LOGGER.info(matchedRequests.size() + " matches happened. Matching process finished!");
         return matchedRequests;
     }
 }

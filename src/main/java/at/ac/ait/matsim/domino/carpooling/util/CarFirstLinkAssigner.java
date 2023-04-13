@@ -17,6 +17,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.algorithms.AbstractPersonAlgorithm;
 import org.matsim.pt2matsim.tools.NetworkTools;
+// see PrepareForMobsimImpl for network filtering without pt2matsim
 
 import com.google.common.collect.ImmutableSet;
 
@@ -36,8 +37,8 @@ import com.google.common.collect.ImmutableSet;
  * - DefaultTurnAcceptanceLogic:57 Cannot move vehicle ...
  * <p>
  * Note that for populations with cordon agents (i.e. agents trying to start a
- * pt trip far outside the car network) this is important - if we simply take the
- * nearest car link the expected pt trip can not take place!
+ * pt trip far outside the car network) this is important - if we simply take
+ * the nearest car link the expected pt trip can not take place!
  */
 public class CarFirstLinkAssigner extends AbstractPersonAlgorithm {
     private static final Logger LOGGER = LogManager.getLogger();

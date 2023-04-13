@@ -28,11 +28,7 @@
             <AppenderRef ref="stderr" />
         </Logger>
         <!-- logging for our packages -->
-        <Logger name="at.ac.ait.matsim" level="warn" additivity="false">
-            <AppenderRef ref="stdout" />
-            <AppenderRef ref="stderr" />
-        </Logger>
-        <Logger name="at.ac.ait.matsim" level="warn" additivity="false">
+        <Logger name="at.ac.ait.matsim" level="debug" additivity="false">
             <AppenderRef ref="stdout" />
             <AppenderRef ref="stderr" />
         </Logger>
