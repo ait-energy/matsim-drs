@@ -6,15 +6,27 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import at.ac.ait.matsim.domino.carpooling.util.CarLinkAssigner;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
+
 public class RunSimpleCarpoolingExample {
     public static void main(String[] args) {
         Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling.xml", new CarpoolingConfigGroup());
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
-        Carpooling.prepareScenario(scenario);
+
+        // optional steps to prepare the scenario
+        new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
+        CarpoolingUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
+        CarpoolingUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Carpooling.DRIVER_MODE);
+
+        // necessary to kick-start the carpooling driver pool
+        CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
 
         Controler controller = new Controler(scenario);
-        Carpooling.prepareController(controller);
+        // necessary to register the carpooling module
+        controller.addOverridingModule(new CarpoolingModule());
+
         controller.run();
     }
 }

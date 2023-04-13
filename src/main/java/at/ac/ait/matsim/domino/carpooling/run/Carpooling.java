@@ -3,11 +3,6 @@ package at.ac.ait.matsim.domino.carpooling.run;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
-
-import at.ac.ait.matsim.domino.carpooling.engine.CarpoolingEngine;
-import at.ac.ait.matsim.domino.carpooling.util.CarFirstLinkAssigner;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class Carpooling {
     public static final String DRIVER_MODE = "carpoolingDriver";
@@ -38,15 +33,4 @@ public class Carpooling {
         return ConfigUtils.addOrGetModule(config, CarpoolingConfigGroup.GROUP_NAME, CarpoolingConfigGroup.class);
     }
 
-    public static void prepareScenario(Scenario scenario) {
-        new CarFirstLinkAssigner(scenario.getNetwork(), 500).run(scenario.getPopulation());
-        CarpoolingUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
-        CarpoolingUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Carpooling.DRIVER_MODE);
-        CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
-    }
-
-    public static void prepareController(Controler controller) {
-        controller.addOverridingModule(new CarpoolingModule());
-        controller.configureQSimComponents(components -> components.addNamedComponent(CarpoolingEngine.COMPONENT_NAME));
-    }
 }
