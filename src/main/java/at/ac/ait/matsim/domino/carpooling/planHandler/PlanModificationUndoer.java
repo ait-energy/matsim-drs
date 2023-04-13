@@ -1,23 +1,41 @@
 package at.ac.ait.matsim.domino.carpooling.planHandler;
 
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.controler.events.IterationStartsEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.matsim.core.controler.listener.IterationStartsListener;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.TripStructureUtils;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.core.controler.events.IterationStartsEvent;
+import org.matsim.core.controler.listener.IterationStartsListener;
+import org.matsim.core.router.DefaultRoutingRequest;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.RoutingRequest;
+import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
+import org.matsim.facilities.FacilitiesUtils;
+
+import com.google.inject.Inject;
+
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
+
 public class PlanModificationUndoer implements IterationStartsListener {
-    static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private final RoutingModule carpoolingDriverRouter;
+
+    @Inject
+    public PlanModificationUndoer(TripRouter tripRouter) {
+        this.carpoolingDriverRouter = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+    }
 
     @Override
     public void notifyIterationStarts(IterationStartsEvent iterationStartsEvent) {
@@ -50,36 +68,45 @@ public class PlanModificationUndoer implements IterationStartsListener {
                             + ((Activity) planElement).getEndTime().seconds());
                 }
             } else if (planElement instanceof Leg) {
-                if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS)!=null){
-                    CarpoolingUtil.setDropoffStatus((Leg) planElement,null);
-                } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS)!=null) {
-                    CarpoolingUtil.setRequestStatus((Leg) planElement,null);
+                if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS) != null) {
+                    CarpoolingUtil.setDropoffStatus((Leg) planElement, null);
+                } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS) != null) {
+                    CarpoolingUtil.setRequestStatus((Leg) planElement, null);
                 }
             }
         }
     }
 
-    static void undoDriverPlan(Person person) {
-        int before = person.getSelectedPlan().getPlanElements().size();
+    private void undoDriverPlan(Person person) {
+        Plan selectedPlan = person.getSelectedPlan();
+        int before = selectedPlan.getPlanElements().size();
 
-        List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
+        List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(selectedPlan);
         for (TripStructureUtils.Trip trip : trips) {
-            Activity startActivity = trip.getOriginActivity();
-            Activity endActivity = trip.getDestinationActivity();
-            List<Leg> legs = trip.getLegsOnly();
-            for (Leg leg : legs) {
-                String mode = leg.getMode();
-                if (mode.equals(Carpooling.DRIVER_MODE)) {
-                    ArrayList<PlanElement> oldRoute = new ArrayList<>();
-                    oldRoute.add(leg);
-                    TripRouter.insertTrip(person.getSelectedPlan(), startActivity, oldRoute, endActivity);
+            boolean isDriverTrip = false;
+            for (Leg leg : trip.getLegsOnly()) {
+                if (leg.getMode().equals(Carpooling.DRIVER_MODE)) {
+                    isDriverTrip = true;
                 }
             }
+            if (!isDriverTrip) {
+                continue;
+            }
+
+            Activity startActivity = trip.getOriginActivity();
+            Activity endActivity = trip.getDestinationActivity();
+            RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(
+                    FacilitiesUtils.wrapActivity(trip.getOriginActivity()),
+                    FacilitiesUtils.wrapActivity(trip.getDestinationActivity()),
+                    trip.getOriginActivity().getEndTime().orElse(0),
+                    person);
+            List<? extends PlanElement> route = carpoolingDriverRouter.calcRoute(routingRequest);
+            TripRouter.insertTrip(selectedPlan, startActivity, route, endActivity);
         }
-        if (before != person.getSelectedPlan().getPlanElements().size()) {
+        if (before != selectedPlan.getPlanElements().size()) {
             LOGGER.debug("Before undoing, " + person.getId().toString() + " had " + before + " plan elements.");
             LOGGER.debug("After undoing, " + person.getId().toString() + " had "
-                    + person.getSelectedPlan().getPlanElements().size() + " plan elements.");
+                    + selectedPlan.getPlanElements().size() + " plan elements.");
         }
     }
 }
