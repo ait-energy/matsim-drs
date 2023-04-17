@@ -18,6 +18,7 @@ import org.matsim.core.router.TripStructureUtils;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -54,10 +55,17 @@ public class RequestsCollector {
                     Link toLink = network.getLinks().get(endActivity.getLinkId());
                     double activityEndTime = startActivity.getEndTime().seconds();
 
-                    if (fromLink == null || toLink == null) {
-                        LOGGER.warn("null link for start or end activity of leg for person {}.", person.getId());
+                    String msg = "leg {} ({}) not found in carpooling network for person {}.";
+                    if (fromLink == null) {
+                        LOGGER.warn(msg, startActivity.getLinkId(), CarpoolingUtil.toWktPoint(startActivity),
+                                person.getId());
+                        continue;
+                    } else if (toLink == null) {
+                        LOGGER.warn(msg, endActivity.getLinkId(), CarpoolingUtil.toWktPoint(endActivity),
+                                person.getId());
                         continue;
                     }
+
                     if (mode.equals(Carpooling.RIDER_MODE)) {
                         riderRequestID = riderRequestID + 1;
                         CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class),

@@ -186,4 +186,11 @@ public class CarpoolingUtil {
             leg.getAttributes().removeAttribute(Carpooling.ATTRIB_LEG_STATUS);
         }
     }
+
+    public static String toWktPoint(Activity activity) {
+        if (activity == null || activity.getCoord() == null) {
+            return "POINT EMPTY";
+        }
+        return String.format("POINT(%.1f %.1f)", activity.getCoord().getX(), activity.getCoord().getY());
+    }
 }
