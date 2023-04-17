@@ -44,11 +44,16 @@ public class RequestsCollector {
                 List<Leg> legs = trip.getLegsOnly();
                 for (Leg leg : legs) {
                     String mode = leg.getMode();
+                    if (!mode.equals(Carpooling.DRIVER_MODE) && !mode.equals(Carpooling.RIDER_MODE)) {
+                        continue;
+                    }
+
                     Activity startActivity = trip.getOriginActivity();
                     Link fromLink = network.getLinks().get(startActivity.getLinkId());
                     Activity endActivity = trip.getDestinationActivity();
                     Link toLink = network.getLinks().get(endActivity.getLinkId());
                     double activityEndTime = startActivity.getEndTime().seconds();
+
                     if (fromLink == null || toLink == null) {
                         LOGGER.warn("null link for start or end activity of leg for person {}.", person.getId());
                         continue;
