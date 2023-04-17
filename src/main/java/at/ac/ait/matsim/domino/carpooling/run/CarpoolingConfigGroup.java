@@ -30,6 +30,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
 
+    public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
+    private double riderFarePerKm = 0;
+
     public static final String CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT = "carAndCarpoolingDailyMonetaryConstant";
     private double carAndCarpoolingDailyMonetaryConstant = 0;
 
@@ -59,7 +62,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         map.put(PICKUP_WAITING_TIME,
                 "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
-                "The amount of money per kilometre the driver gains when picking a rider");
+                "The amount of money per kilometre the driver gains for a rider (positive value)");
+        map.put(RIDER_FARE_PER_KM,
+                "The amount of money per kilometre the rider has to pay (positive value).");
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
                 "This daily monetary constant must be configured here not in the modeParams. The reason is to avoid agents getting double daily monetary constant ");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
@@ -129,6 +134,16 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(DRIVER_PROFIT_PER_KM)
     public void setDriverProfitPerKm(double driverProfitPerKm) {
         this.driverProfitPerKm = driverProfitPerKm;
+    }
+
+    @StringGetter(RIDER_FARE_PER_KM)
+    public double getRiderFarePerKm() {
+        return riderFarePerKm;
+    }
+
+    @StringSetter(RIDER_FARE_PER_KM)
+    public void setRiderFarePerKm(double riderFarePerKm) {
+        this.riderFarePerKm = riderFarePerKm;
     }
 
     @StringGetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)

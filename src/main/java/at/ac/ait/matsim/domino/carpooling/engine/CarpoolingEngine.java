@@ -139,6 +139,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
         eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
                 (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "driver profit", rider.getId().toString(), null));
+        eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
+                (cfgGroup.getRiderFarePerKm() * -1 * distance / 1000d), "rider fare", driver.getId().toString(), null));
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);
