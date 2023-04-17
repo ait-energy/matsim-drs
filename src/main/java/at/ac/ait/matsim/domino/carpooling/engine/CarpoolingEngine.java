@@ -133,14 +133,26 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
         double distance = previousLeg.getRoute().getDistance();
 
+        // TODO @eyad why not simply use previousLeg? because the change does not
+        // persist?
         Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(), internalInterface.getMobsim().getScenario())
                 .getSelectedPlan().getPlanElements().get(index);
         CarpoolingUtil.setDropoffStatus(leg, "true");
 
-        eventsManager.processEvent(new PersonMoneyEvent(now, driver.getId(),
-                (cfgGroup.getDriverProfitPerKm() * distance / 1000d), "driver profit", rider.getId().toString(), null));
-        eventsManager.processEvent(new PersonMoneyEvent(now, rider.getId(),
-                (cfgGroup.getRiderFarePerKm() * -1 * distance / 1000d), "rider fare", driver.getId().toString(), null));
+        eventsManager.processEvent(new PersonMoneyEvent(
+                now,
+                driver.getId(),
+                cfgGroup.getDriverProfitPerKm() * distance / 1000d,
+                Carpooling.DRIVER_MODE + " profit",
+                rider.getId().toString(),
+                null));
+        eventsManager.processEvent(new PersonMoneyEvent(
+                now,
+                rider.getId(),
+                cfgGroup.getRiderFarePerKm() * -1 * distance / 1000d,
+                Carpooling.RIDER_MODE + " fare",
+                driver.getId().toString(),
+                null));
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);

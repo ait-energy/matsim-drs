@@ -19,7 +19,7 @@
         <param name="outputDirectory" value="./output-floridsdorf-carpooling" />
         <param name="overwriteFiles" value="deleteDirectoryIfExists" />
         <param name="firstIteration" value="0" />
-        <param name="lastIteration" value="20" />
+        <param name="lastIteration" value="6" />
         <param name="writeEventsInterval" value="1" />
         <param name="writePlansInterval" value="1" />
         <param name="writeSnapshotsInterval" value="1" />
@@ -152,5 +152,8 @@
 
     <module name="carpooling">
         <!-- can be left empty in case you are happy with the defaults -->
+        <param name="riderFarePerKm" value="2.0" />
+        <param name="driverProfitPerKm" value="1.0" />
+        <param name="carAndCarpoolingDailyMonetaryConstant" value="12.34" />
     </module>
 </config>
