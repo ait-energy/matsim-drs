@@ -32,7 +32,7 @@ public class RunViennaExample {
 
         Controler controller = new Controler(scenario);
         // necessary to register the carpooling module
-        controller.addOverridingModule(new CarpoolingModule());
+        Carpooling.prepareController(controller);
 
         controller.run();
     }

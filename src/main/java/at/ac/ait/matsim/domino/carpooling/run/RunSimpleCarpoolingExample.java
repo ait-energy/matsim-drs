@@ -24,8 +24,9 @@ public class RunSimpleCarpoolingExample {
         CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
 
         Controler controller = new Controler(scenario);
+
         // necessary to register the carpooling module
-        controller.addOverridingModule(new CarpoolingModule());
+        Carpooling.prepareController(controller);
 
         controller.run();
     }

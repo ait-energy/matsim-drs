@@ -3,6 +3,7 @@ package at.ac.ait.matsim.domino.carpooling.run;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.controler.Controler;
 
 public class Carpooling {
     public static final String DRIVER_MODE = "carpoolingDriver";
@@ -31,6 +32,13 @@ public class Carpooling {
 
     public static CarpoolingConfigGroup addOrGetConfigGroup(Config config) {
         return ConfigUtils.addOrGetModule(config, CarpoolingConfigGroup.GROUP_NAME, CarpoolingConfigGroup.class);
+    }
+
+    public static void prepareController(Controler controller) {
+        controller.addOverridingModule(new CarpoolingModule());
+        controller.configureQSimComponents(components -> {
+            new CarpoolingEngineQSimModule().configure(components);
+        });
     }
 
 }
