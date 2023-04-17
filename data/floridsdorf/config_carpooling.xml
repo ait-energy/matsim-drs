@@ -152,8 +152,8 @@
 
     <module name="carpooling">
         <!-- can be left empty in case you are happy with the defaults -->
-        <param name="riderFarePerKm" value="2.0" />
+        <param name="riderFarePerKm" value="-2.0" />
         <param name="driverProfitPerKm" value="1.0" />
-        <param name="carAndCarpoolingDailyMonetaryConstant" value="12.34" />
+        <param name="carAndCarpoolingDailyMonetaryConstant" value="-12.34" />
     </module>
 </config>

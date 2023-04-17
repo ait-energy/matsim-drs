@@ -26,24 +26,31 @@ public class DailyMonetaryConstantListener implements BeforeMobsimListener {
     }
 
     @Override
-    public void notifyBeforeMobsim(BeforeMobsimEvent beforeMobsimEvent) { addDailyMonetaryConstant();}
+    public void notifyBeforeMobsim(BeforeMobsimEvent beforeMobsimEvent) {
+        addDailyMonetaryConstant();
+    }
+
     private void addDailyMonetaryConstant() {
         Population population = scenario.getPopulation();
         boolean isUsingCar;
         for (Person person : population.getPersons().values()) {
-            isUsingCar =false;
+            isUsingCar = false;
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
                     if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE) ||
-                            Objects.equals(((Leg) planElement).getMode(), TransportMode.car) ) {
-                        isUsingCar=true;
+                            Objects.equals(((Leg) planElement).getMode(), TransportMode.car)) {
+                        isUsingCar = true;
                     }
                 }
             }
-            if (isUsingCar){
-                eventsManager.processEvent(new PersonMoneyEvent(0, person.getId(),
-                        -cfgGroup.getCarAndCarpoolingDailyMonetaryConstant(), "dailyMonetaryConstant",
-                        null, "carpoolingDriver or car"));
+            if (isUsingCar) {
+                eventsManager.processEvent(new PersonMoneyEvent(
+                        0,
+                        person.getId(),
+                        cfgGroup.getCarAndCarpoolingDailyMonetaryConstant(),
+                        "dailyMonetaryConstant",
+                        null,
+                        "carpoolingDriver or car"));
             }
         }
     }

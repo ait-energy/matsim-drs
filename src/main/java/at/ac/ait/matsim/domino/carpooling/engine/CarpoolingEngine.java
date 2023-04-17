@@ -139,20 +139,24 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 .getSelectedPlan().getPlanElements().get(index);
         CarpoolingUtil.setDropoffStatus(leg, "true");
 
-        eventsManager.processEvent(new PersonMoneyEvent(
-                now,
-                driver.getId(),
-                cfgGroup.getDriverProfitPerKm() * distance / 1000d,
-                Carpooling.DRIVER_MODE + " profit",
-                rider.getId().toString(),
-                null));
-        eventsManager.processEvent(new PersonMoneyEvent(
-                now,
-                rider.getId(),
-                cfgGroup.getRiderFarePerKm() * -1 * distance / 1000d,
-                Carpooling.RIDER_MODE + " fare",
-                driver.getId().toString(),
-                null));
+        if (cfgGroup.getDriverProfitPerKm() != 0) {
+            eventsManager.processEvent(new PersonMoneyEvent(
+                    now,
+                    driver.getId(),
+                    cfgGroup.getDriverProfitPerKm() * distance / 1000d,
+                    Carpooling.DRIVER_MODE + " profit",
+                    rider.getId().toString(),
+                    null));
+        }
+        if (cfgGroup.getRiderFarePerKm() != 0) {
+            eventsManager.processEvent(new PersonMoneyEvent(
+                    now,
+                    rider.getId(),
+                    cfgGroup.getRiderFarePerKm() * distance / 1000d,
+                    Carpooling.RIDER_MODE + " fare",
+                    driver.getId().toString(),
+                    null));
+        }
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);

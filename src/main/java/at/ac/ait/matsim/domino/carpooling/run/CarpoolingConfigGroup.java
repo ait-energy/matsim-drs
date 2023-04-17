@@ -62,11 +62,11 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         map.put(PICKUP_WAITING_TIME,
                 "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
-                "The amount of money per kilometre the driver gains for a rider (positive value)");
+                "The amount of money per kilometre the driver gains for a rider (typically positive)");
         map.put(RIDER_FARE_PER_KM,
-                "The amount of money per kilometre the rider has to pay (positive value).");
+                "The amount of money per kilometre the rider has to pay (typically negative).");
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
-                "This daily monetary constant must be configured here not in the modeParams. The reason is to avoid agents getting double daily monetary constant ");
+                "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
