@@ -28,9 +28,9 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
     public static final String FILENAME_VKT_STATS = "carpooling_vkt_stats";
-    public static final String CARPOOL_TRAVEL = "carpool travel";
+    public static final String CARPOOLING_TRAVEL = "carpooling travel";
     public static final String INDIVIDUAL_TRAVEL = "individual travel";
-    public static final String BEFORE_AFTER_CARPOOL_TRAVEL = "before and after carpool";
+    public static final String BEFORE_AFTER_CARPOOLING_TRAVEL = "before and after carpooling";
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
@@ -39,7 +39,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
     @Inject
     public VktStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
-                                     OutputDirectoryHierarchy controlerIO) {
+            OutputDirectoryHierarchy controlerIO) {
         this.population = population;
         this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKT_STATS);
         this.createPNG = controlerConfigGroup.isCreateGraphs();
@@ -74,20 +74,23 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                         }
                     } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE)) {
                         if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) != null) {
-                            if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement).equals("beforeAndAfterCarpool")){
-                                if (totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL) == null) {
-                                    this.totalDistance.put(BEFORE_AFTER_CARPOOL_TRAVEL,
+                            if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement)
+                                    .equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
+                                if (totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL) == null) {
+                                    this.totalDistance.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
                                             ((Leg) planElement).getRoute().getDistance() / 1000);
                                 } else {
-                                    this.totalDistance.put(BEFORE_AFTER_CARPOOL_TRAVEL, totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL)
-                                            + ((Leg) planElement).getRoute().getDistance() / 1000);
+                                    this.totalDistance.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
+                                            totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL)
+                                                    + ((Leg) planElement).getRoute().getDistance() / 1000);
                                 }
-                            } else if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement).equals("carpool")) {
-                                if (totalDistance.get(CARPOOL_TRAVEL) == null) {
-                                    this.totalDistance.put(CARPOOL_TRAVEL,
+                            } else if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement)
+                                    .equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
+                                if (totalDistance.get(CARPOOLING_TRAVEL) == null) {
+                                    this.totalDistance.put(CARPOOLING_TRAVEL,
                                             ((Leg) planElement).getRoute().getDistance() / 1000);
                                 } else {
-                                    this.totalDistance.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL)
+                                    this.totalDistance.put(CARPOOLING_TRAVEL, totalDistance.get(CARPOOLING_TRAVEL)
                                             + ((Leg) planElement).getRoute().getDistance() / 1000);
                                 }
                             }
@@ -98,20 +101,21 @@ public class VktStatsControlerListener implements AfterMobsimListener {
         }
 
         Map<String, Double> totalDistancesHistory = new HashMap<>();
-        if (totalDistance.get(CARPOOL_TRAVEL) == null) {
-            totalDistancesHistory.put(CARPOOL_TRAVEL, 0.0);
+        if (totalDistance.get(CARPOOLING_TRAVEL) == null) {
+            totalDistancesHistory.put(CARPOOLING_TRAVEL, 0.0);
         } else {
-            totalDistancesHistory.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL));
+            totalDistancesHistory.put(CARPOOLING_TRAVEL, totalDistance.get(CARPOOLING_TRAVEL));
         }
         if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
             totalDistancesHistory.put(INDIVIDUAL_TRAVEL, 0.0);
         } else {
             totalDistancesHistory.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL));
         }
-        if (totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL) == null) {
-            totalDistancesHistory.put(BEFORE_AFTER_CARPOOL_TRAVEL, 0.0);
+        if (totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL) == null) {
+            totalDistancesHistory.put(BEFORE_AFTER_CARPOOLING_TRAVEL, 0.0);
         } else {
-            totalDistancesHistory.put(BEFORE_AFTER_CARPOOL_TRAVEL, totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL));
+            totalDistancesHistory.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
+                    totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL));
         }
         this.iterationHistories.put(event.getIteration(), totalDistancesHistory);
 
@@ -119,8 +123,8 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
         try {
             requestOut.write("Iteration");
-            requestOut.write("\t" + CARPOOL_TRAVEL);
-            requestOut.write("\t" + BEFORE_AFTER_CARPOOL_TRAVEL);
+            requestOut.write("\t" + CARPOOLING_TRAVEL);
+            requestOut.write("\t" + BEFORE_AFTER_CARPOOLING_TRAVEL);
             requestOut.write("\t" + INDIVIDUAL_TRAVEL);
             requestOut.write("\n");
 
@@ -128,10 +132,10 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                 requestOut.write(String.valueOf(iteration));
 
                 Map<String, Double> carpoolMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + carpoolMap.get(CARPOOL_TRAVEL));
+                requestOut.write("\t" + carpoolMap.get(CARPOOLING_TRAVEL));
 
                 Map<String, Double> beforeAfterCarpoolMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + beforeAfterCarpoolMap.get(BEFORE_AFTER_CARPOOL_TRAVEL));
+                requestOut.write("\t" + beforeAfterCarpoolMap.get(BEFORE_AFTER_CARPOOLING_TRAVEL));
 
                 Map<String, Double> individualMap = this.iterationHistories.get(iteration);
                 requestOut.write("\t" + individualMap.get(INDIVIDUAL_TRAVEL));
@@ -149,18 +153,19 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
-            StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometers Traveled Statistics", "iteration",
+            StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometers Traveled Statistics",
+                    "iteration",
                     "Kilometer", categories);
 
             double[] carpoolValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(CARPOOL_TRAVEL, 0.0))
+                    .mapToDouble(map -> map.getOrDefault(CARPOOLING_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(CARPOOL_TRAVEL, carpoolValues);
+            chart.addSeries(CARPOOLING_TRAVEL, carpoolValues);
 
             double[] beforeAfterCarpoolValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(BEFORE_AFTER_CARPOOL_TRAVEL, 0.0))
+                    .mapToDouble(map -> map.getOrDefault(BEFORE_AFTER_CARPOOLING_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(BEFORE_AFTER_CARPOOL_TRAVEL, beforeAfterCarpoolValues);
+            chart.addSeries(BEFORE_AFTER_CARPOOLING_TRAVEL, beforeAfterCarpoolValues);
 
             double[] individualValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(INDIVIDUAL_TRAVEL, 0.0))

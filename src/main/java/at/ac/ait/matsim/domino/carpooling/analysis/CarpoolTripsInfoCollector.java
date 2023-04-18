@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 public class CarpoolTripsInfoCollector {
-    public static final String FILENAME_MATCHED_CARPOOL_TRIPS = "carpooling_matched_trips";
+    public static final String FILENAME_MATCHED_CARPOOLING_TRIPS = "carpooling_matched_trips";
     private final String matchedTripsFileName;
-    public static final String FILENAME_UNMATCHED_CARPOOL_TRIPS = "carpooling_unmatched_trips";
+    public static final String FILENAME_UNMATCHED_CARPOOLING_TRIPS = "carpooling_unmatched_trips";
     private final String unmatchedTripsFileName;
 
     public CarpoolTripsInfoCollector(OutputDirectoryHierarchy controlerIO) {
-        this.matchedTripsFileName = controlerIO.getOutputFilename(FILENAME_MATCHED_CARPOOL_TRIPS);
-        this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOL_TRIPS);
+        this.matchedTripsFileName = controlerIO.getOutputFilename(FILENAME_MATCHED_CARPOOLING_TRIPS);
+        this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOLING_TRIPS);
     }
 
     public void printMatchedRequestsToCsv(HashMap<CarpoolingRequest, CarpoolingRequest> matchMap) {

@@ -16,6 +16,8 @@ public class Carpooling {
     public static final String ATTRIB_ACTIVITY_TYPE = "type";
     public static final String ATTRIB_REQUEST_STATUS = "requestStatus";
     public static final String ATTRIB_CARPOOLING_STATUS = "carpoolingStatus";
+    public static final String VALUE_STATUS_CARPOOLING = "carpooling";
+    public static final String VALUE_STATUS_BEFORE_AFTER = "beforeAndAfterCarpooling";
     public static final String ATTRIB_AFFINITY = "carpoolingAffinity";
     public static final String AFFINITY_DRIVER_OR_RIDER = "driverOrRider";
     public static final String AFFINITY_DRIVER_ONLY = "driverOnly";
