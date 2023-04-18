@@ -13,13 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CarpoolTripsInfoCollector {
-    public static final String FILENAME_CARPOOLTRIPS = "carpool_trips";
+    public static final String FILENAME_CARPOOLTRIPS = "carpooling_trips";
     private final String tripsFileName;
+
     public CarpoolTripsInfoCollector(OutputDirectoryHierarchy controlerIO) {
         this.tripsFileName = controlerIO.getOutputFilename(FILENAME_CARPOOLTRIPS);
     }
 
-    public void printInfoToCsv(HashMap<CarpoolingRequest, CarpoolingRequest> matchMap){
+    public void printInfoToCsv(HashMap<CarpoolingRequest, CarpoolingRequest> matchMap) {
         BufferedWriter writer = IOUtils.getBufferedWriter(this.tripsFileName + ".csv");
         try {
             writer.write("driver,rider,driver trip purpose,rider trip purpose,driver originX,driver originY," +
@@ -33,11 +34,15 @@ public class CarpoolTripsInfoCollector {
                 Activity riderStartAct = entry.getValue().getTrip().getOriginActivity();
                 Activity riderEndAct = entry.getValue().getTrip().getDestinationActivity();
 
-                writer.write("\n"+driver.getId()+","+rider.getId()+","+driverEndAct.getType()+","+riderEndAct.getType()
-                +","+driverStartAct.getCoord().getX()+","+driverStartAct.getCoord().getY()+","+driverEndAct.getCoord().getX()
-                +","+driverEndAct.getCoord().getY()+","+riderStartAct.getCoord().getX()+","+riderStartAct.getCoord().getY()
-                +","+riderEndAct.getCoord().getX()+","+riderEndAct.getCoord().getY()+","+entry.getKey().getDepartureTime()
-                +","+entry.getValue().getDepartureTime());
+                writer.write("\n" + driver.getId() + "," + rider.getId() + "," + driverEndAct.getType() + ","
+                        + riderEndAct.getType()
+                        + "," + driverStartAct.getCoord().getX() + "," + driverStartAct.getCoord().getY() + ","
+                        + driverEndAct.getCoord().getX()
+                        + "," + driverEndAct.getCoord().getY() + "," + riderStartAct.getCoord().getX() + ","
+                        + riderStartAct.getCoord().getY()
+                        + "," + riderEndAct.getCoord().getX() + "," + riderEndAct.getCoord().getY() + ","
+                        + entry.getKey().getDepartureTime()
+                        + "," + entry.getValue().getDepartureTime());
             }
             writer.flush();
             writer.close();
