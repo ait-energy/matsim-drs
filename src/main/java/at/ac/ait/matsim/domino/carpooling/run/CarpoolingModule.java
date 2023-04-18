@@ -5,6 +5,7 @@ import org.matsim.core.population.algorithms.PermissibleModesCalculator;
 
 import at.ac.ait.matsim.domino.carpooling.analysis.RiderRequestStatsControlerListener;
 import at.ac.ait.matsim.domino.carpooling.analysis.VktStatsControlerListener;
+import at.ac.ait.matsim.domino.carpooling.engine.DebuggingEventToDiskStreamer;
 import at.ac.ait.matsim.domino.carpooling.planHandler.DailyMonetaryConstantListener;
 import at.ac.ait.matsim.domino.carpooling.planHandler.PlanModificationUndoer;
 import at.ac.ait.matsim.domino.carpooling.planHandler.PlanModifier;
@@ -20,6 +21,8 @@ public final class CarpoolingModule extends AbstractModule {
         addControlerListenerBinding().to(PlanModificationUndoer.class);
         addControlerListenerBinding().to(RiderRequestStatsControlerListener.class);
         addControlerListenerBinding().to(VktStatsControlerListener.class);
+
+        addEventHandlerBinding().to(DebuggingEventToDiskStreamer.class);
 
         bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
         addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
