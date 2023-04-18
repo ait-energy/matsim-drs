@@ -43,7 +43,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
     }
 
     private void undoPlans(IterationStartsEvent event) {
-        LOGGER.info("undoing carpooling plans at the beginning of the iteration before replanning happens");
+        LOGGER.info("undoing carpooling plans at the beginning of the iteration before replan happens");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 
@@ -69,9 +69,10 @@ public class PlanModificationUndoer implements IterationStartsListener {
                 }
             } else if (planElement instanceof Leg) {
                 if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS) != null) {
-                    CarpoolingUtil.setDropoffStatus((Leg) planElement, null);
-                } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS) != null) {
                     CarpoolingUtil.setRequestStatus((Leg) planElement, null);
+                    // FIXME @eyad this should be an if.. not an else if?
+                } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS) != null) {
+                    CarpoolingUtil.setCarpoolingStatus(((Leg) planElement), null);
                 }
             }
         }

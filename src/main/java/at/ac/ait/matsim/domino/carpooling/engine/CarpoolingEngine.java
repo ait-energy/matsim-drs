@@ -1,6 +1,7 @@
 package at.ac.ait.matsim.domino.carpooling.engine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.mobsim.framework.MobsimAgent;
 import org.matsim.core.mobsim.framework.MobsimDriverAgent;
@@ -89,7 +91,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
      * Will always return false so that the default activity handler properly
      * handles the activities of the driver.
      * Not sure if this is a clean approach, but duplicating code from
-     * ActivityEngineDefaultImpl.handleActivity seems not so great too.
+     * ActivityEngineDefaultImpl.handleActivity seems not so great either.
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
@@ -105,9 +107,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
-                        Leg previousLeg = (Leg) ((PlanAgent) agent).getPreviousPlanElement();
-                        int index = ((PlanAgent) agent).getCurrentPlan().getPlanElements().indexOf(previousLeg);
-                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, previousLeg, index);
+                        int dropOffIndex = ((PlanAgent) agent).getCurrentPlan().getPlanElements().indexOf(act);
+                        handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, dropOffIndex);
                         break;
                     case pickup:
                         handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
@@ -115,15 +116,13 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
-            } else if (act.getType().equals(Carpooling.RIDER_INTERACTION)) {
-                // intentionally empty.
             }
         }
         return false;
     }
 
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
-            double now, Leg previousLeg, int index) {
+            double now, int dropoffIndex) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
             LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
                     driver.getId(), rider.getId(), linkId);
@@ -131,13 +130,24 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         }
         LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
 
-        double distance = previousLeg.getRoute().getDistance();
+        List<PlanElement> driverPlanElements = PopulationUtils
+                .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
+                .getPlanElements();
+        Leg legWithRider = (Leg) driverPlanElements.get(dropoffIndex - 1);
+        Leg legAfterRider = (Leg) driverPlanElements.get(dropoffIndex + 1);
+        Leg legBeforeRider = (Leg) driverPlanElements.get(dropoffIndex - 3);
+        CarpoolingUtil.setCarpoolingStatus(legWithRider, "carpool");
+        CarpoolingUtil.setCarpoolingStatus(legAfterRider, "beforeAndAfterCarpool");
+        CarpoolingUtil.setCarpoolingStatus(legBeforeRider, "beforeAndAfterCarpool");
 
-        // TODO @eyad why not simply use previousLeg? because the change does not
-        // persist?
-        Leg leg = (Leg) PopulationUtils.findPerson(driver.getId(), internalInterface.getMobsim().getScenario())
-                .getSelectedPlan().getPlanElements().get(index);
-        CarpoolingUtil.setDropoffStatus(leg, "true");
+        Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
+        int legIndex = ((PlanAgent) rider).getCurrentPlan().getPlanElements().indexOf(planElement);
+        List<PlanElement> riderPlanElements = PopulationUtils
+                .findPerson(rider.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
+                .getPlanElements();
+        Leg leg = (Leg) riderPlanElements.get(legIndex);
+        CarpoolingUtil.setCarpoolingStatus(leg, "carpool");
+        double distance = legWithRider.getRoute().getDistance();
 
         if (cfgGroup.getDriverProfitPerKm() != 0) {
             eventsManager.processEvent(new PersonMoneyEvent(

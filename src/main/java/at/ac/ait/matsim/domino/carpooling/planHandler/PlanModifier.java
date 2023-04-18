@@ -161,7 +161,7 @@ public class PlanModifier implements ReplanningListener {
     /**
      * TODO this should be integrated into the optimizer/matchmaker process
      * 
-     * for all rider legs: add a routingmode and a generic route (that is provided
+     * for all rider legs: add a routing mode and a generic route (that is provided
      * through the carpooling rider mode configured as teleporting mode)
      * so that PersonPrepareForSim does not reroute our legs (and thereby discards
      * our leg attributes where we store if the person found a match or not)

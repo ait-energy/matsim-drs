@@ -16,6 +16,7 @@ public class CarpoolingRequest implements Request {
     private final Link fromLink;
     private final Link toLink;
     private final Leg leg;
+    private double detourFactor;
 
     public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
                              String mode, Link fromLink, Link toLink, Leg leg) {
@@ -65,5 +66,13 @@ public class CarpoolingRequest implements Request {
 
     public Leg getLeg() {
         return leg;
+    }
+
+    public double getDetourFactor() {
+        return detourFactor;
+    }
+
+    public void setDetourFactor(double detourFactor) {
+        this.detourFactor = detourFactor;
     }
 }

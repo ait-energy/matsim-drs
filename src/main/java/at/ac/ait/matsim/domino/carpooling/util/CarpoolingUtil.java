@@ -3,6 +3,7 @@ package at.ac.ait.matsim.domino.carpooling.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,13 +21,18 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.DefaultRoutingRequest;
+import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.RoutingRequest;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
+import org.matsim.facilities.FacilitiesUtils;
 
 import com.google.common.collect.Sets;
 
 import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolingUtil {
@@ -163,6 +169,21 @@ public class CarpoolingUtil {
         LOGGER.info("added carpooling driver plan to {} agents", count);
     }
 
+    public static CarpoolingRequest findRequestWithLeastDetour(Map<CarpoolingRequest, Double> bestRequests) {
+        if (!bestRequests.isEmpty()) {
+            return Collections.min(bestRequests.entrySet(), Map.Entry.comparingByValue()).getKey();
+        } else {
+            return null;
+        }
+    }
+
+    public static Leg getLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router, Person driver) {
+        RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(fromLink),
+                FacilitiesUtils.wrapLink(toLink), departureTime, driver);
+        List<? extends PlanElement> legList = router.calcRoute(routingRequest);
+        return CarpoolingUtil.getFirstLeg(legList);
+    }
+
     public static String getRequestStatus(Leg leg) {
         return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
     }
@@ -175,15 +196,15 @@ public class CarpoolingUtil {
         }
     }
 
-    public static String getDropoffStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_LEG_STATUS);
+    public static String getCarpoolingStatus(Leg leg) {
+        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS);
     }
 
-    public static void setDropoffStatus(Leg leg, String status) {
+    public static void setCarpoolingStatus(Leg leg, String status) {
         if (status != null) {
-            leg.getAttributes().putAttribute(Carpooling.ATTRIB_LEG_STATUS, status);
+            leg.getAttributes().putAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS, status);
         } else {
-            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_LEG_STATUS);
+            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS);
         }
     }
 

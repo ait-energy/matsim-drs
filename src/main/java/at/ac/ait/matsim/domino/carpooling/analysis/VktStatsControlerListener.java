@@ -27,9 +27,10 @@ import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_VKTSTATS = "carpooling_vkt_stats";
+    public static final String FILENAME_VKT_STATS = "carpooling_vkt_stats";
     public static final String CARPOOL_TRAVEL = "carpool travel";
     public static final String INDIVIDUAL_TRAVEL = "individual travel";
+    public static final String BEFORE_AFTER_CARPOOL_TRAVEL = "before and after carpool";
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
@@ -38,9 +39,9 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
     @Inject
     public VktStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
-            OutputDirectoryHierarchy controlerIO) {
+                                     OutputDirectoryHierarchy controlerIO) {
         this.population = population;
-        this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKTSTATS);
+        this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKT_STATS);
         this.createPNG = controlerConfigGroup.isCreateGraphs();
     }
 
@@ -61,22 +62,34 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                             this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
                                     + ((Leg) planElement).getRoute().getDistance() / 1000);
                         }
-                    } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE)) {
-                        if (CarpoolingUtil.getDropoffStatus((Leg) planElement) != null) {
-                            if (totalDistance.get(CARPOOL_TRAVEL) == null) {
-                                this.totalDistance.put(CARPOOL_TRAVEL,
-                                        ((Leg) planElement).getRoute().getDistance() / 1000);
-                            } else {
-                                this.totalDistance.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL)
-                                        + ((Leg) planElement).getRoute().getDistance() / 1000);
-                            }
-                        } else {
+                    } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)) {
+                        if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) == null) {
                             if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
                                 this.totalDistance.put(INDIVIDUAL_TRAVEL,
                                         ((Leg) planElement).getRoute().getDistance() / 1000);
                             } else {
                                 this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
                                         + ((Leg) planElement).getRoute().getDistance() / 1000);
+                            }
+                        }
+                    } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE)) {
+                        if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) != null) {
+                            if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement).equals("beforeAndAfterCarpool")){
+                                if (totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL) == null) {
+                                    this.totalDistance.put(BEFORE_AFTER_CARPOOL_TRAVEL,
+                                            ((Leg) planElement).getRoute().getDistance() / 1000);
+                                } else {
+                                    this.totalDistance.put(BEFORE_AFTER_CARPOOL_TRAVEL, totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL)
+                                            + ((Leg) planElement).getRoute().getDistance() / 1000);
+                                }
+                            } else if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement).equals("carpool")) {
+                                if (totalDistance.get(CARPOOL_TRAVEL) == null) {
+                                    this.totalDistance.put(CARPOOL_TRAVEL,
+                                            ((Leg) planElement).getRoute().getDistance() / 1000);
+                                } else {
+                                    this.totalDistance.put(CARPOOL_TRAVEL, totalDistance.get(CARPOOL_TRAVEL)
+                                            + ((Leg) planElement).getRoute().getDistance() / 1000);
+                                }
                             }
                         }
                     }
@@ -95,6 +108,11 @@ public class VktStatsControlerListener implements AfterMobsimListener {
         } else {
             totalDistancesHistory.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL));
         }
+        if (totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL) == null) {
+            totalDistancesHistory.put(BEFORE_AFTER_CARPOOL_TRAVEL, 0.0);
+        } else {
+            totalDistancesHistory.put(BEFORE_AFTER_CARPOOL_TRAVEL, totalDistance.get(BEFORE_AFTER_CARPOOL_TRAVEL));
+        }
         this.iterationHistories.put(event.getIteration(), totalDistancesHistory);
 
         BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt");
@@ -102,17 +120,21 @@ public class VktStatsControlerListener implements AfterMobsimListener {
         try {
             requestOut.write("Iteration");
             requestOut.write("\t" + CARPOOL_TRAVEL);
+            requestOut.write("\t" + BEFORE_AFTER_CARPOOL_TRAVEL);
             requestOut.write("\t" + INDIVIDUAL_TRAVEL);
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 requestOut.write(String.valueOf(iteration));
 
-                Map<String, Double> matchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + matchedMap.get(CARPOOL_TRAVEL));
+                Map<String, Double> carpoolMap = this.iterationHistories.get(iteration);
+                requestOut.write("\t" + carpoolMap.get(CARPOOL_TRAVEL));
 
-                Map<String, Double> notMatchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + notMatchedMap.get(INDIVIDUAL_TRAVEL));
+                Map<String, Double> beforeAfterCarpoolMap = this.iterationHistories.get(iteration);
+                requestOut.write("\t" + beforeAfterCarpoolMap.get(BEFORE_AFTER_CARPOOL_TRAVEL));
+
+                Map<String, Double> individualMap = this.iterationHistories.get(iteration);
+                requestOut.write("\t" + individualMap.get(INDIVIDUAL_TRAVEL));
 
                 requestOut.write("\n");
             }
@@ -130,19 +152,25 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometers Traveled Statistics", "iteration",
                     "Kilometer", categories);
 
-            double[] matchedValues = iterationHistories.values().stream()
+            double[] carpoolValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(CARPOOL_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(CARPOOL_TRAVEL, matchedValues);
+            chart.addSeries(CARPOOL_TRAVEL, carpoolValues);
 
-            double[] notMatchedValues = iterationHistories.values().stream()
+            double[] beforeAfterCarpoolValues = iterationHistories.values().stream()
+                    .mapToDouble(map -> map.getOrDefault(BEFORE_AFTER_CARPOOL_TRAVEL, 0.0))
+                    .toArray();
+            chart.addSeries(BEFORE_AFTER_CARPOOL_TRAVEL, beforeAfterCarpoolValues);
+
+            double[] individualValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(INDIVIDUAL_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(INDIVIDUAL_TRAVEL, notMatchedValues);
+            chart.addSeries(INDIVIDUAL_TRAVEL, individualValues);
 
             chart.getChart().getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_90);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(0, Color.GREEN);
-            chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(1, Color.RED);
+            chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(2, Color.RED);
+            chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(3, Color.BLUE);
             chart.addMatsimLogo();
             chart.saveAsPng(this.requestFileName + ".png", 800, 600);
         }

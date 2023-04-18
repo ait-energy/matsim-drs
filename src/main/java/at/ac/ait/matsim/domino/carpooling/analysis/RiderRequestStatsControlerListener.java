@@ -20,7 +20,7 @@ import java.util.*;
 
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
-    public static final String FILENAME_REQUESTSTATS = "carpooling_rider_request_stats";
+    public static final String FILENAME_REQUEST_STATS = "carpooling_rider_request_stats";
     public static final String MATCHED = "matched";
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
@@ -33,7 +33,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
     public RiderRequestStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
             OutputDirectoryHierarchy controlerIO) {
         this.population = population;
-        this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUESTSTATS);
+        this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUEST_STATS);
         this.createPNG = controlerConfigGroup.isCreateGraphs();
     }
 

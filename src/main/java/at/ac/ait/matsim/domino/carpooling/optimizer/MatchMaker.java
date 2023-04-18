@@ -20,25 +20,36 @@ public class MatchMaker {
     private final PotentialRequestsFinder potentialRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
+    private final HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests;
+    private List<CarpoolingRequest> driversRequests;
+    private List<CarpoolingRequest> ridersRequests;
+    private final List<CarpoolingRequest> unmatchedDriversRequests;
+    private final List<CarpoolingRequest> unmatchedRidersRequests;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
             PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder) {
+            BestRequestFinder bestRequestFinder, HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests,
+            List<CarpoolingRequest> driversRequests, List<CarpoolingRequest> ridersRequests,
+            List<CarpoolingRequest> unmatchedDriversRequests, List<CarpoolingRequest> unmatchedRidersRequests) {
         this.requestsCollector = requestsCollector;
         this.requestsRegister = requestsRegister;
         this.potentialRequestsFinder = potentialRequestsFinder;
         this.requestsFilter = requestsFilter;
         this.bestRequestFinder = bestRequestFinder;
+        this.matchedRequests = matchedRequests;
+        this.driversRequests = driversRequests;
+        this.ridersRequests = ridersRequests;
+        this.unmatchedDriversRequests = unmatchedDriversRequests;
+        this.unmatchedRidersRequests = unmatchedRidersRequests;
     }
 
-    public HashMap<CarpoolingRequest, CarpoolingRequest> match() {
-        HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
+    public void match() {
         requestsCollector.collectRequests();
         LOGGER.info(requestsCollector.getDriversRequests().size() + " drivers requests and "
                 + requestsCollector.getRidersRequests().size() + " riders requests were collected.");
-        List<CarpoolingRequest> driversRequests = requestsCollector.getDriversRequests();
+        driversRequests = requestsCollector.getDriversRequests();
         Collections.shuffle(driversRequests);
-        List<CarpoolingRequest> ridersRequests = requestsCollector.getRidersRequests();
+        ridersRequests = requestsCollector.getRidersRequests();
         Collections.shuffle(ridersRequests);
 
         for (CarpoolingRequest ridersRequest : ridersRequests) {
@@ -78,6 +89,29 @@ public class MatchMaker {
             }
         }
         LOGGER.info(matchedRequests.size() + " matches happened. Matching process finished!");
+    }
+
+    public HashMap<CarpoolingRequest, CarpoolingRequest> getMatchedRequests() {
         return matchedRequests;
+    }
+
+    public List<CarpoolingRequest> getUnmatchedDriverRequests() {
+
+        for (CarpoolingRequest request : driversRequests) {
+            if (!matchedRequests.containsKey(request)) {
+                unmatchedDriversRequests.add(request);
+            }
+        }
+        return unmatchedDriversRequests;
+    }
+
+    public List<CarpoolingRequest> getUnmatchedRiderRequests() {
+
+        for (CarpoolingRequest request : ridersRequests) {
+            if (!matchedRequests.containsKey(request)) {
+                unmatchedRidersRequests.add(request);
+            }
+        }
+        return unmatchedRidersRequests;
     }
 }
