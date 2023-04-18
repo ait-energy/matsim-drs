@@ -856,7 +856,12 @@ final class QueueWithBuffer implements QLaneI, SignalizeableItem {
 
 		for (QVehicle veh : vehQueue) {
 			context.getEventsManager().processEvent( new VehicleAbortsEvent(now, veh.getId(), veh.getCurrentLink().getId()));
-			context.getEventsManager().processEvent( new PersonStuckEvent(now, veh.getDriver().getId(), veh.getCurrentLink().getId(), veh.getDriver().getMode()));
+			try {	
+				context.getEventsManager().processEvent( new PersonStuckEvent(now, veh.getDriver().getId(), veh.getCurrentLink().getId(), veh.getDriver().getMode()));
+			} catch(Exception e) {
+				log.error("Q error with vehicle " + veh.getId() + " and driver " + veh.getDriver() + " and currentLink " + veh.getCurrentLink());
+				e.printStackTrace();
+			}
 
 			context.getAgentCounter().incLost();
 			context.getAgentCounter().decLiving();
