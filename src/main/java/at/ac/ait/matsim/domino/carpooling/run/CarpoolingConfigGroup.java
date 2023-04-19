@@ -136,16 +136,6 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         this.driverProfitPerKm = driverProfitPerKm;
     }
 
-    @StringGetter(RIDER_FARE_PER_KM)
-    public double getRiderFarePerKm() {
-        return riderFarePerKm;
-    }
-
-    @StringSetter(RIDER_FARE_PER_KM)
-    public void setRiderFarePerKm(double riderFarePerKm) {
-        this.riderFarePerKm = riderFarePerKm;
-    }
-
     @StringGetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)
     public double getCarAndCarpoolingDailyMonetaryConstant() {
         return carAndCarpoolingDailyMonetaryConstant;

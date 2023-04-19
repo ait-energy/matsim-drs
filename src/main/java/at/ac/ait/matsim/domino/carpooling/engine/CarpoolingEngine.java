@@ -158,15 +158,6 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     rider.getId().toString(),
                     null));
         }
-        if (cfgGroup.getRiderFarePerKm() != 0) {
-            eventsManager.processEvent(new PersonMoneyEvent(
-                    now,
-                    rider.getId(),
-                    cfgGroup.getRiderFarePerKm() * distance / 1000d,
-                    Carpooling.RIDER_MODE + " fare",
-                    driver.getId().toString(),
-                    null));
-        }
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);

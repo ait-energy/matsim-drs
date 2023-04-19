@@ -118,7 +118,8 @@
             <param name="marginalUtilityOfDistance_util_m" value="0.0" />
             <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
             <param name="mode" value="carpoolingRider" />
-            <param name="monetaryDistanceRate" value="0.0" />
+            <!-- NOTE configure costs for using carpooling as rider here-->
+            <param name="monetaryDistanceRate" value="1.0" />
         </parameterset>
         <!-- NOTE: carpoolingDriver monetaryDistanceRate should be similar to car monetaryDistanceRate since carpoolingDriver can receive profit during the simulation   -->
         <!-- NOTE: carpoolingDriver and car dailyMonetaryConstant must be both set to zero to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes. dailyMonetaryCost is however included as a configurable parameter in CarpoolingConfigGroup  -->
@@ -152,7 +153,6 @@
 
     <module name="carpooling">
         <!-- can be left empty in case you are happy with the defaults -->
-        <param name="riderFarePerKm" value="-2.0" />
         <param name="driverProfitPerKm" value="1.0" />
         <param name="carAndCarpoolingDailyMonetaryConstant" value="-12.34" />
     </module>
