@@ -70,8 +70,8 @@ public class PlanModificationUndoer implements IterationStartsListener {
             } else if (planElement instanceof Leg) {
                 if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS) != null) {
                     CarpoolingUtil.setRequestStatus((Leg) planElement, null);
-                    // FIXME @eyad this should be an if.. not an else if?
-                } else if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS) != null) {
+                } 
+                if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS) != null) {
                     CarpoolingUtil.setCarpoolingStatus(((Leg) planElement), null);
                 }
             }
