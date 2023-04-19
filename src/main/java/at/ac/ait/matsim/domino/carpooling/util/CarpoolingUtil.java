@@ -147,8 +147,8 @@ public class CarpoolingUtil {
         int count = 0;
         Set<String> excludedSubpopulationSet = Sets.newHashSet(excludedSubpopulations);
         for (Person person : population.getPersons().values()) {
-            String subpop = person.getAttributes().getAttribute("subpopulation").toString();
-            if (subpop != null && excludedSubpopulationSet.contains(subpop)) {
+            Object subpop = person.getAttributes().getAttribute("subpopulation");
+            if (subpop != null && excludedSubpopulationSet.contains(subpop.toString())) {
                 continue;
             }
 
