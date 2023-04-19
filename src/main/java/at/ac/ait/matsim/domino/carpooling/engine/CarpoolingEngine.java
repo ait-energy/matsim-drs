@@ -134,19 +134,19 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
                 .getPlanElements();
         Leg legWithRider = (Leg) driverPlanElements.get(dropoffIndex - 1);
-        Leg legAfterRider = (Leg) driverPlanElements.get(dropoffIndex + 1);
-        Leg legBeforeRider = (Leg) driverPlanElements.get(dropoffIndex - 3);
-        CarpoolingUtil.setCarpoolingStatus(legWithRider, Carpooling.VALUE_STATUS_CARPOOLING);
-        CarpoolingUtil.setCarpoolingStatus(legAfterRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
-        CarpoolingUtil.setCarpoolingStatus(legBeforeRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+        // Leg legAfterRider = (Leg) driverPlanElements.get(dropoffIndex + 1);
+        // Leg legBeforeRider = (Leg) driverPlanElements.get(dropoffIndex - 3);
+        // CarpoolingUtil.setCarpoolingStatus(legWithRider, Carpooling.VALUE_STATUS_CARPOOLING);
+        // CarpoolingUtil.setCarpoolingStatus(legAfterRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+        // CarpoolingUtil.setCarpoolingStatus(legBeforeRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
 
-        Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
-        int legIndex = ((PlanAgent) rider).getCurrentPlan().getPlanElements().indexOf(planElement);
-        List<PlanElement> riderPlanElements = PopulationUtils
-                .findPerson(rider.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
-                .getPlanElements();
-        Leg leg = (Leg) riderPlanElements.get(legIndex);
-        CarpoolingUtil.setCarpoolingStatus(leg, Carpooling.VALUE_STATUS_CARPOOLING);
+        // Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
+        // int legIndex = ((PlanAgent) rider).getCurrentPlan().getPlanElements().indexOf(planElement);
+        // List<PlanElement> riderPlanElements = PopulationUtils
+                // .findPerson(rider.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
+                // .getPlanElements();
+        // Leg leg = (Leg) riderPlanElements.get(legIndex);
+        // CarpoolingUtil.setCarpoolingStatus(leg, Carpooling.VALUE_STATUS_CARPOOLING);
         double distance = legWithRider.getRoute().getDistance();
 
         if (cfgGroup.getDriverProfitPerKm() != 0) {
