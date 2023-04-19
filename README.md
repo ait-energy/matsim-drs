@@ -47,7 +47,7 @@ The matching algorithm looks for the best rider for each driver and consists of 
 
 ### Config preparation
 
-- `config_carpooling.xml` includes all additional requirements to correctly configure carpooling.
+- `config_carpooling.xml` serves as an example on how to correctly configure carpooling.
 
 ## Usage
 
@@ -66,13 +66,14 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 ## Output
 
-- `carpooling_rider_request_stats.txt.png`
-- `carpooling_vkt_modestats.txt.png` 
-- `output_carpooling_trips.csv.gz` can be used for spatial analysis, temporal analysis and trip purpose analysis 
+- `carpooling_rider_request_stats.txt/png`
+- `carpooling_vkt_stats.txt/png` 
+- `carpooling_[un]matched_trips.csv` can be used for spatial analysis, temporal analysis and trip purpose analysis 
 
 ## Limitations
 
 - Only one rider is supported per a driver's leg (but a driver may have different riders on different legs).
+- If a `carpoolingDriver` can not pick up a `carpoolingRider` because it is not there it will still go to the dropoff place. A future improvement is to optimize the drivers route on the fly in such cases.
 
 ## Credits
 
