@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
@@ -36,7 +34,6 @@ import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolingUtil {
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
@@ -144,10 +141,17 @@ public class CarpoolingUtil {
         }
     }
 
-    public static void addDriverPlanForEligibleAgents(Population population, Config config) {
+    public static int addDriverPlanForEligibleAgents(Population population, Config config,
+            String... excludedSubpopulations) {
         PermissibleModesCalculatorForCarpooling permissible = new PermissibleModesCalculatorForCarpooling(config);
         int count = 0;
+        Set<String> excludedSubpopulationSet = Sets.newHashSet(excludedSubpopulations);
         for (Person person : population.getPersons().values()) {
+            String subpop = person.getAttributes().getAttribute("subpopulation").toString();
+            if (subpop != null && excludedSubpopulationSet.contains(subpop)) {
+                continue;
+            }
+
             Plan plan = person.getSelectedPlan();
             if (permissible.getPermissibleModes(plan).contains(Carpooling.DRIVER_MODE)) {
                 Plan newPlan = PopulationUtils.createPlan();
@@ -166,7 +170,7 @@ public class CarpoolingUtil {
                 count++;
             }
         }
-        LOGGER.info("added carpooling driver plan to {} agents", count);
+        return count;
     }
 
     public static CarpoolingRequest findRequestWithLeastDetour(Map<CarpoolingRequest, Double> bestRequests) {
