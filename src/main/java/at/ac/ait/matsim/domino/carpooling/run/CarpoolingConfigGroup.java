@@ -112,7 +112,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     }
 
     @StringGetter(PICKUP_WAITING_SECSONDS)
-    public int getPickupWaitingSecsonds() {
+    public int getPickupWaitingSeconds() {
         return pickupWaitingSeconds;
     }
 

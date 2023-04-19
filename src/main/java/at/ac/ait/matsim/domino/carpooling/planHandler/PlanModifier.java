@@ -95,7 +95,7 @@ public class PlanModifier implements ReplanningListener {
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
                 riderRequest.getFromLink().getId());
-        pickup.setEndTime(pickupTime + cfgGroup.getPickupWaitingSecsonds());
+        pickup.setEndTime(pickupTime + cfgGroup.getPickupWaitingSeconds());
         CarpoolingUtil.setActivityType(pickup, Carpooling.ActivityType.pickup);
         CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
 
