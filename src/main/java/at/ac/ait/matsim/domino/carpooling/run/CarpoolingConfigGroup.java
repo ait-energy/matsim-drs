@@ -15,23 +15,20 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String CELL_SIZE = "cellSize";
     private int cellSize = 4000;
 
-    public static final String TIME_SEGMENT_LENGTH = "timeSegmentLength";
-    private int timeSegmentLength = 2 * 60 * 60;
+    public static final String TIME_SEGMENT_LENGTH_SECONDS = "timeSegmentLengthSeconds";
+    private int timeSegmentLengthSeconds = 2 * 60 * 60;
 
     public static final String MAX_POSSIBLE_CANDIDATES = "maxPossibleCandidates";
     private int maxPossibleCandidates = 30;
 
-    public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT = "riderDepartureTimeAdjustment";
-    private double riderDepartureTimeAdjustment = 0.25 * 60 * 60;
+    public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS = "riderDepartureTimeAdjustmentSeconds";
+    private int riderDepartureTimeAdjustmentSeconds = 15 * 60;
 
-    public static final String PICKUP_WAITING_TIME = "pickupWaitingTime";
-    public double pickupWaitingTime = 0;
+    public static final String PICKUP_WAITING_SECSONDS = "pickupWaitingSeconds";
+    public int pickupWaitingSeconds = 0;
 
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
-
-    public static final String RIDER_FARE_PER_KM = "riderFarePerKm";
-    private double riderFarePerKm = 0;
 
     public static final String CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT = "carAndCarpoolingDailyMonetaryConstant";
     private double carAndCarpoolingDailyMonetaryConstant = 0;
@@ -55,16 +52,14 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low carpooling share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
         map.put(MAX_POSSIBLE_CANDIDATES,
                 "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
-        map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT,
+        map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS,
                 "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
-        map.put(TIME_SEGMENT_LENGTH,
+        map.put(TIME_SEGMENT_LENGTH_SECONDS,
                 "The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.");
-        map.put(PICKUP_WAITING_TIME,
-                "The amount of minutes the driver is expected to wait till the rider enters the vehicle.");
+        map.put(PICKUP_WAITING_SECSONDS,
+                "The amount of time the driver is expected to wait until the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
-        map.put(RIDER_FARE_PER_KM,
-                "The amount of money per kilometre the rider has to pay (typically negative).");
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
                 "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
@@ -96,34 +91,34 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         this.maxPossibleCandidates = maxPossibleCandidates;
     }
 
-    @StringGetter(RIDER_DEPARTURE_TIME_ADJUSTMENT)
-    public double getRiderDepartureTimeAdjustment() {
-        return riderDepartureTimeAdjustment;
+    @StringGetter(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS)
+    public int getRiderDepartureTimeAdjustmentSeconds() {
+        return riderDepartureTimeAdjustmentSeconds;
     }
 
-    @StringSetter(RIDER_DEPARTURE_TIME_ADJUSTMENT)
-    public void setRiderDepartureTimeAdjustment(double riderDepartureTimeAdjustment) {
-        this.riderDepartureTimeAdjustment = riderDepartureTimeAdjustment;
+    @StringSetter(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS)
+    public void setRiderDepartureTimeAdjustmentSeconds(int riderDepartureTimeAdjustmentSeconds) {
+        this.riderDepartureTimeAdjustmentSeconds = riderDepartureTimeAdjustmentSeconds;
     }
 
-    @StringGetter(TIME_SEGMENT_LENGTH)
-    public int getTimeSegmentLength() {
-        return timeSegmentLength;
+    @StringGetter(TIME_SEGMENT_LENGTH_SECONDS)
+    public int getTimeSegmentLengthSeconds() {
+        return timeSegmentLengthSeconds;
     }
 
-    @StringSetter(TIME_SEGMENT_LENGTH)
-    public void setTimeSegmentLength(int timeSegmentLength) {
-        this.timeSegmentLength = timeSegmentLength;
+    @StringSetter(TIME_SEGMENT_LENGTH_SECONDS)
+    public void setTimeSegmentLengthSeconds(int timeSegmentLengthSeconds) {
+        this.timeSegmentLengthSeconds = timeSegmentLengthSeconds;
     }
 
-    @StringGetter(PICKUP_WAITING_TIME)
-    public double getPickupWaitingTime() {
-        return pickupWaitingTime;
+    @StringGetter(PICKUP_WAITING_SECSONDS)
+    public int getPickupWaitingSecsonds() {
+        return pickupWaitingSeconds;
     }
 
-    @StringSetter(PICKUP_WAITING_TIME)
-    public void setPickupWaitingTime(double pickupWaitingTime) {
-        this.pickupWaitingTime = pickupWaitingTime;
+    @StringSetter(PICKUP_WAITING_SECSONDS)
+    public void setPickupWaitingSeconds(int pickupWaitingSeconds) {
+        this.pickupWaitingSeconds = pickupWaitingSeconds;
     }
 
     @StringGetter(DRIVER_PROFIT_PER_KM)

@@ -22,7 +22,7 @@ public class RequestTimeSegmentRegistry {
     }
 
     public void addRequest(CarpoolingRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLength());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
         Map<Id<Request>, CarpoolingRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
         if (requestsInTimeSegment != null) {
             if (requestsInTimeSegments.get(timeSegment).get(request.getId()) != null) {
@@ -38,14 +38,14 @@ public class RequestTimeSegmentRegistry {
     }
 
     public void removeRequest(CarpoolingRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLength());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
         if (requestsInTimeSegments.get(timeSegment).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
     }
 
     public Stream<CarpoolingRequest> findNearestRequests(double departureTime) {
-        int timeSegment = getTimeSegment(departureTime, cfgGroup.getTimeSegmentLength());
+        int timeSegment = getTimeSegment(departureTime, cfgGroup.getTimeSegmentLengthSeconds());
         Stream<CarpoolingRequest> requestsInPreviousSegment = Stream.empty();
         Stream<CarpoolingRequest> requestsInCurrentSegment = Stream.empty();
         Stream<CarpoolingRequest> requestsInNextSegment = Stream.empty();
