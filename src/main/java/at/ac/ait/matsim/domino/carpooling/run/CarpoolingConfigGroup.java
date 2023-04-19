@@ -24,7 +24,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS = "riderDepartureTimeAdjustmentSeconds";
     private int riderDepartureTimeAdjustmentSeconds = 15 * 60;
 
-    public static final String PICKUP_WAITING_SECSONDS = "pickupWaitingSeconds";
+    public static final String PICKUP_WAITING_SECONDS = "pickupWaitingSeconds";
     public int pickupWaitingSeconds = 0;
 
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
@@ -56,7 +56,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
         map.put(TIME_SEGMENT_LENGTH_SECONDS,
                 "The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.");
-        map.put(PICKUP_WAITING_SECSONDS,
+        map.put(PICKUP_WAITING_SECONDS,
                 "The amount of time the driver is expected to wait until the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
@@ -111,12 +111,12 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         this.timeSegmentLengthSeconds = timeSegmentLengthSeconds;
     }
 
-    @StringGetter(PICKUP_WAITING_SECSONDS)
+    @StringGetter(PICKUP_WAITING_SECONDS)
     public int getPickupWaitingSeconds() {
         return pickupWaitingSeconds;
     }
 
-    @StringSetter(PICKUP_WAITING_SECSONDS)
+    @StringSetter(PICKUP_WAITING_SECONDS)
     public void setPickupWaitingSeconds(int pickupWaitingSeconds) {
         this.pickupWaitingSeconds = pickupWaitingSeconds;
     }
