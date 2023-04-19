@@ -108,7 +108,7 @@ public class MatchMaker {
     public List<CarpoolingRequest> getUnmatchedRiderRequests() {
 
         for (CarpoolingRequest request : ridersRequests) {
-            if (!matchedRequests.containsKey(request)) {
+            if (!matchedRequests.containsValue(request)) {
                 unmatchedRidersRequests.add(request);
             }
         }
