@@ -74,6 +74,7 @@ Mode innovation relies on an adapted version of the innovation strategy `Subtour
 
 - Only one rider is supported per a driver's leg (but a driver may have different riders on different legs).
 - If a `carpoolingDriver` can not pick up a `carpoolingRider` because it is not there it will still go to the dropoff place. A future improvement is to optimize the drivers route on the fly in such cases.
+- `pickupWaitingSeconds` prolongs **all** pickups, even if the rider is already there (also it does not work now as expected, see #3)
 
 ## Credits
 

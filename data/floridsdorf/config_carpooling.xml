@@ -155,5 +155,6 @@
         <!-- can be left empty in case you are happy with the defaults -->
         <param name="driverProfitPerKm" value="1.0" />
         <param name="carAndCarpoolingDailyMonetaryConstant" value="-12.34" />
+        <param name="pickupWaitingSeconds" value="30" />
     </module>
 </config>
