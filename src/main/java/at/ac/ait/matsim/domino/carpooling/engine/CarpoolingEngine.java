@@ -198,6 +198,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     "driver {} wanted to pick up rider {} at {} from link {}, but it is waiting on link {}",
                     driver.getId(), rider.getId(), now, linkId, waitingRiders.get(rider.getId()));
             rider.setStateToAbort(now);
+            internalInterface.arrangeNextAgentState(rider);
             return;
         }
         if (!rider.getCurrentLinkId().equals(linkId)) {
@@ -205,6 +206,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     "driver {} wanted to pick up rider {} at {} from link {}, but the rider is currently on link {}",
                     driver.getId(), rider.getId(), now, linkId, rider.getCurrentLinkId());
             rider.setStateToAbort(now);
+            internalInterface.arrangeNextAgentState(rider);
             return;
         }
 
