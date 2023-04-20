@@ -81,6 +81,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
             if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")) {
                 LOGGER.debug("{} is waiting to be picked up.", agent.getId());
                 waitingRiders.put(agent.getId(), id);
+                // return true so that this agent waits for the driver
+                // instead of being handled by the teleportationengine!
                 return true;
             }
         }
@@ -170,23 +172,39 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
 
         driver.getVehicle().removePassenger(rider);
         rider.setVehicle(null);
-        eventsManager.processEvent(
-                new PersonLeavesVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
+        eventsManager.processEvent(new PersonLeavesVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         rider.notifyArrivalOnLinkByNonNetworkMode(rider.getDestinationLinkId());
         rider.endLegAndComputeNextState(now);
         internalInterface.arrangeNextAgentState(rider);
     }
 
-    private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
-            double now) {
-        if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it never arrived there",
+    private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double now) {
+        if (rider.getVehicle() != null) {
+            LOGGER.warn(
+                    "driver {} wanted to pick up rider {} at {} from link {}, but the rider is already in vehicle {}. This must never happen.",
+                    driver.getId(), rider.getId(), now, linkId, driver.getVehicle().getId());
+            // not aborting the agent, but actually this must not happen.
+            return;
+        }
+        if (!waitingRiders.containsKey(rider.getId())) {
+            LOGGER.warn(
+                    "driver {} wanted to pick up rider {} at {} from link {}, but it did not arrive there yet",
                     driver.getId(), rider.getId(), now, linkId);
-            // TODO check if the rider is still at the link in Qsim?
-            // disabling this: maybe we abort riders that were already teleported and then
-            // started a car trip - and setting them to abort maybe removes them from
-            // the vehicle they are driving with thereby causing the NPE in QueueWithBuffer.
-            // rider.setStateToAbort(now);
+            // agent is probably late and will be handled via teleportation
+            return;
+        }
+        if (!waitingRiders.get(rider.getId()).equals(linkId)) {
+            LOGGER.warn(
+                    "driver {} wanted to pick up rider {} at {} from link {}, but it is waiting on link {}",
+                    driver.getId(), rider.getId(), now, linkId, waitingRiders.get(rider.getId()));
+            rider.setStateToAbort(now);
+            return;
+        }
+        if (!rider.getCurrentLinkId().equals(linkId)) {
+            LOGGER.warn(
+                    "driver {} wanted to pick up rider {} at {} from link {}, but the rider is currently on link {}",
+                    driver.getId(), rider.getId(), now, linkId, rider.getCurrentLinkId());
+            rider.setStateToAbort(now);
             return;
         }
 
@@ -194,8 +212,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());
         internalInterface.unregisterAdditionalAgentOnLink(rider.getId(), linkId);
-        eventsManager
-                .processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
+        eventsManager.processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         waitingRiders.remove(rider.getId());
     }
 
