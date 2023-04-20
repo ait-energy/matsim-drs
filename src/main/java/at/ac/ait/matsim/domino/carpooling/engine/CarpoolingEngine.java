@@ -134,19 +134,28 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
                 .getPlanElements();
         Leg legWithRider = (Leg) driverPlanElements.get(dropoffIndex - 1);
-        // Leg legAfterRider = (Leg) driverPlanElements.get(dropoffIndex + 1);
-        // Leg legBeforeRider = (Leg) driverPlanElements.get(dropoffIndex - 3);
-        // CarpoolingUtil.setCarpoolingStatus(legWithRider, Carpooling.VALUE_STATUS_CARPOOLING);
-        // CarpoolingUtil.setCarpoolingStatus(legAfterRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
-        // CarpoolingUtil.setCarpoolingStatus(legBeforeRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+        CarpoolingUtil.setCarpoolingStatus(legWithRider, Carpooling.VALUE_STATUS_CARPOOLING);
 
-        // Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
-        // int legIndex = ((PlanAgent) rider).getCurrentPlan().getPlanElements().indexOf(planElement);
-        // List<PlanElement> riderPlanElements = PopulationUtils
-                // .findPerson(rider.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
-                // .getPlanElements();
-        // Leg leg = (Leg) riderPlanElements.get(legIndex);
-        // CarpoolingUtil.setCarpoolingStatus(leg, Carpooling.VALUE_STATUS_CARPOOLING);
+        int legBeforeRiderIndex = dropoffIndex - 3;
+        if (0 <= legBeforeRiderIndex && legBeforeRiderIndex < driverPlanElements.size()) {
+            Leg legBeforeRider = (Leg) driverPlanElements.get(legBeforeRiderIndex);
+            CarpoolingUtil.setCarpoolingStatus(legBeforeRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+        }
+
+        int legAfterRiderIndex = dropoffIndex + 1;
+        if (0 <= legAfterRiderIndex && legAfterRiderIndex < driverPlanElements.size()) {
+            Leg legAfterRider = (Leg) driverPlanElements.get(legAfterRiderIndex);
+            CarpoolingUtil.setCarpoolingStatus(legAfterRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+        }
+
+        Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
+        int legIndex = ((PlanAgent) rider).getCurrentPlan().getPlanElements().indexOf(planElement);
+        List<PlanElement> riderPlanElements = PopulationUtils
+                .findPerson(rider.getId(), internalInterface.getMobsim().getScenario())
+                .getSelectedPlan()
+                .getPlanElements();
+        Leg leg = (Leg) riderPlanElements.get(legIndex);
+        CarpoolingUtil.setCarpoolingStatus(leg, Carpooling.VALUE_STATUS_CARPOOLING);
         double distance = legWithRider.getRoute().getDistance();
 
         if (cfgGroup.getDriverProfitPerKm() != 0) {
@@ -171,9 +180,13 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now) {
         if (!waitingRiders.getOrDefault(rider.getId(), Id.createLinkId(-1)).equals(linkId)) {
-            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it was not there",
+            LOGGER.warn("driver {} wanted to pick up rider {} at {} from link {}, but it never arrived there",
                     driver.getId(), rider.getId(), now, linkId);
-            rider.setStateToAbort(now);
+            // TODO check if the rider is still at the link in Qsim?
+            // disabling this: maybe we abort riders that were already teleported and then
+            // started a car trip - and setting them to abort maybe removes them from
+            // the vehicle they are driving with thereby causing the NPE in QueueWithBuffer.
+            // rider.setStateToAbort(now);
             return;
         }
 

@@ -9,7 +9,6 @@ public class Carpooling {
     public static final String DRIVER_MODE = "carpoolingDriver";
     public static final String RIDER_MODE = "carpoolingRider";
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
-    public static final String RIDER_INTERACTION = RIDER_MODE + " interaction";
     public static final String ATTRIB_ORIGINAL_DEP_TIME = "originalDepTime";
     public static final String ATTRIB_LINKED_REQUEST = "linkedRequest";
     public static final String ATTRIB_RIDER_ID = "riderId";
