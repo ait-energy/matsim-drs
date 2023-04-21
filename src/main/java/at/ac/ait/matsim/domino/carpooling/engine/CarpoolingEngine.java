@@ -1,9 +1,9 @@
 package at.ac.ait.matsim.domino.carpooling.engine;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -28,12 +28,12 @@ import org.matsim.core.mobsim.qsim.InternalInterface;
 import org.matsim.core.mobsim.qsim.interfaces.ActivityHandler;
 import org.matsim.core.mobsim.qsim.interfaces.DepartureHandler;
 import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
+import org.matsim.core.population.PopulationUtils;
 
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
-import org.matsim.core.population.PopulationUtils;
 
 /**
  * Heavily inspired by
@@ -45,7 +45,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     private final CarpoolingConfigGroup cfgGroup;
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
-    private final Map<Id<Person>, Id<Link>> waitingRiders = new HashMap<>();
+    private final Map<Id<Person>, Id<Link>> waitingRiders = new ConcurrentHashMap<>();
 
     @Inject
     public CarpoolingEngine(Scenario scenario, EventsManager eventsManager) {
@@ -100,13 +100,19 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
-                LOGGER.debug("handleActivity {} for {}", act.getType(), agent.getId());
+                double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
+                LOGGER.debug("handleActivity {} @ {} for {}", act.getType(), now, agent.getId());
                 ActivityType type = CarpoolingUtil.getActivityType(act);
                 Id<Person> riderId = CarpoolingUtil.getRiderId(act);
                 Id<Link> linkId = agent.getCurrentLinkId();
                 MobsimPassengerAgent rider = (MobsimPassengerAgent) internalInterface.getMobsim().getAgents()
                         .get(riderId);
-                double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
+                if (rider == null) {
+                    LOGGER.warn(
+                            "driver {} wanted to {} rider {} on link {}, but it is no longer an active qsim agent. the driver continues.",
+                            agent.getId(), type, riderId, linkId);
+                    return false;
+                }
                 switch (Objects.requireNonNull(type)) {
                     case dropoff:
                         int dropOffIndex = ((PlanAgent) agent).getCurrentPlan().getPlanElements().indexOf(act);
