@@ -150,7 +150,7 @@ public class PlanModifier implements ReplanningListener {
                             CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement, null);
                             LOGGER.debug("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            break;
+                            break; // TODO eyad break here.. really?
                         }
                     }
                 }

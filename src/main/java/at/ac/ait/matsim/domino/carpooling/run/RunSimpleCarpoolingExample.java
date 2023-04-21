@@ -26,7 +26,7 @@ public class RunSimpleCarpoolingExample {
 
         // necessary to kick-start the carpooling driver pool
         int count = CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
-        LOGGER.info("added initial carpooling driver plan to {} agents", count);
+        LOGGER.info("added initial carpooling driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);
 

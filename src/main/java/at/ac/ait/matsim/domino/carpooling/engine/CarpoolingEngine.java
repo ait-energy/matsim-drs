@@ -3,7 +3,9 @@ package at.ac.ait.matsim.domino.carpooling.engine;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import javax.inject.Inject;
 
@@ -14,6 +16,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
+import org.matsim.api.core.v01.events.PersonStuckEvent;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
@@ -36,7 +39,7 @@ import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 /**
- * Heavily inspired by
+ * Heavily inspired by ActivityEngineDefaultImpl and
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
  */
 public class CarpoolingEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
@@ -54,18 +57,65 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         this.eventsManager = eventsManager;
     }
 
-    @Override
-    public void doSimStep(double time) {
+    private static class PickupEntry {
+        PickupEntry(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double latestPickupTime) {
+            this.driver = driver;
+            this.rider = rider;
+            this.linkId = linkId;
+            this.latestPickupTime = latestPickupTime;
+        }
+
+        private final MobsimDriverAgent driver;
+        private final MobsimPassengerAgent rider;
+        private final Id<Link> linkId;
+        private final double latestPickupTime;
     }
+
+    private final Queue<PickupEntry> pickupQueue = new PriorityBlockingQueue<>(500, (e0, e1) -> {
+        int cmp = Double.compare(e0.latestPickupTime, e1.latestPickupTime);
+        if (cmp == 0) {
+            return e1.driver.getId().compareTo(e0.driver.getId());
+        }
+        return cmp;
+    });
 
     @Override
     public void onPrepareSim() {
-        LOGGER.info("onPrepareSim");
+    }
+
+    /**
+     * retry previously unsuccessful pickups at latest pickup time
+     */
+    @Override
+    public void doSimStep(double time) {
+        while (pickupQueue.peek() != null) {
+            if (pickupQueue.peek().latestPickupTime <= time) {
+                PickupEntry pickup = pickupQueue.poll();
+                if (!handlePickup(pickup.driver, pickup.rider, pickup.linkId, time)) {
+                    pickup.driver.endActivityAndComputeNextState(time);
+                    internalInterface.arrangeNextAgentState(pickup.driver);
+                }
+            } else {
+                return;
+            }
+        }
     }
 
     @Override
     public void afterSim() {
-        LOGGER.info("afterSim");
+        double now = this.internalInterface.getMobsim().getSimTimer().getTimeOfDay();
+        if (!pickupQueue.isEmpty()) {
+            LOGGER.warn("{} carpooling drivers were still waiting for their pickup and are stuck.", pickupQueue.size());
+            pickupQueue.forEach(d -> eventsManager.processEvent(
+                    new PersonStuckEvent(now, d.driver.getId(), d.linkId, Carpooling.DRIVER_MODE)));
+            pickupQueue.clear();
+        }
+        if (!waitingRiders.isEmpty()) {
+            LOGGER.warn("{} carpooling riders were still waiting to be picked up and are stuck.", waitingRiders.size());
+            waitingRiders.keySet().forEach(d -> eventsManager.processEvent(
+                    new PersonStuckEvent(now, d, null, Carpooling.RIDER_MODE)));
+            waitingRiders.clear();
+        }
     }
 
     @Override
@@ -73,16 +123,21 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         this.internalInterface = internalInterface;
     }
 
+    /**
+     * Register riders that are ready to be picked up.
+     * 
+     * @return true for riders so that they actually wait for the driver instead of
+     *         being haneld by a different engine (e.g. teleportation)
+     */
     @Override
-    public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> id) {
+    public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> linkId) {
         if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
-            LOGGER.debug("handleDeparture of {} leg for agent {} on link {}", agent.getMode(), agent.getId(), id);
+            LOGGER.debug("handleDeparture {} for agent {} @ {} on link {}", agent.getMode(), agent.getId(), now,
+                    linkId);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
             if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")) {
-                LOGGER.debug("{} is waiting to be picked up.", agent.getId());
-                waitingRiders.put(agent.getId(), id);
-                // return true so that this agent waits for the driver
-                // instead of being handled by the teleportationengine!
+                LOGGER.debug("{} is waiting to be picked up @ {} on link {}.", agent.getId(), now, linkId);
+                waitingRiders.put(agent.getId(), linkId);
                 return true;
             }
         }
@@ -90,10 +145,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     }
 
     /**
-     * Will always return false so that the default activity handler properly
-     * handles the activities of the driver.
-     * Not sure if this is a clean approach, but duplicating code from
-     * ActivityEngineDefaultImpl.handleActivity seems not so great either.
+     * Takes care of special handling required for drivers picking up riders.
+     * For all other activities (and also as final step for our drivers) the
+     * delegate default handler is called.
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
@@ -101,16 +155,16 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
-                LOGGER.debug("handleActivity {} @ {} for {}", act.getType(), now, agent.getId());
                 ActivityType type = CarpoolingUtil.getActivityType(act);
                 Id<Person> riderId = CarpoolingUtil.getRiderId(act);
                 Id<Link> linkId = agent.getCurrentLinkId();
                 MobsimPassengerAgent rider = (MobsimPassengerAgent) internalInterface.getMobsim().getAgents()
                         .get(riderId);
+                LOGGER.debug("handleActivity {} for {} @ {} on link {}", act.getType(), agent.getId(), now, linkId);
                 if (rider == null) {
                     LOGGER.warn(
-                            "driver {} wanted to {} rider {} on link {}, but it is no longer an active qsim agent. the driver continues.",
-                            agent.getId(), type, riderId, linkId);
+                            "Driver {} wanted to {} rider {} @ {} on link {}, but it is no longer an active qsim agent",
+                            agent.getId(), type, riderId, now, linkId);
                     return false;
                 }
                 switch (Objects.requireNonNull(type)) {
@@ -119,8 +173,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                         handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, dropOffIndex);
                         break;
                     case pickup:
-                        handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
-                        break;
+                        return handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
@@ -129,14 +182,19 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         return false;
     }
 
+    /**
+     * Drop off rider on a link (if it is actually in the vehicle) and pay the
+     * driver (MoneyEvent).
+     * Sets the carpooling status of legs, which is relevant for the vkt analysis.
+     */
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, int dropoffIndex) {
         if (!driver.getVehicle().getPassengers().contains(rider)) {
-            LOGGER.debug("driver {} wanted to drop off rider {} on link {}, but it never entered the vehicle",
-                    driver.getId(), rider.getId(), linkId);
+            LOGGER.debug("Driver {} wanted to drop off rider {} @ {} on link {}, but it never entered the vehicle",
+                    driver.getId(), rider.getId(), now, linkId);
             return;
         }
-        LOGGER.debug("driver {} drops off rider {} on link {}", driver.getId(), rider.getId(), linkId);
+        LOGGER.debug("Driver {} drops off rider {} @ {} on link {}", driver.getId(), rider.getId(), now, linkId);
 
         List<PlanElement> driverPlanElements = PopulationUtils
                 .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
@@ -184,44 +242,57 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         internalInterface.arrangeNextAgentState(rider);
     }
 
-    private void handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double now) {
+    /**
+     * @return if the driver handling is finished (note: only returns true if it
+     *         needs to wait more time for the rider to show up)
+     */
+    private boolean handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double now) {
         if (rider.getVehicle() != null) {
             LOGGER.warn(
-                    "driver {} wanted to pick up rider {} at {} from link {}, but the rider is already in vehicle {}. This must never happen.",
+                    "Driver {} wanted to pick up rider {} @ {} from link {}, but it is already in vehicle {}. Driving on.",
                     driver.getId(), rider.getId(), now, linkId, driver.getVehicle().getId());
-            // not aborting the agent, but actually this must not happen.
-            return;
+            // TODO this happens quite often. investigate why!
+            return false;
         }
         if (!waitingRiders.containsKey(rider.getId())) {
+            if (driver.getActivityEndTime() <= now) {
+                LOGGER.warn(
+                        "Driver {} wanted to pick up rider {} @ {} from link {}, but it did not arrive until the end of the pickup activity. Driving on.",
+                        driver.getId(), rider.getId(), now, linkId);
+                return false;
+            }
             LOGGER.warn(
-                    "driver {} wanted to pick up rider {} at {} from link {}, but it did not arrive there yet",
+                    "Driver {} wanted to pick up rider {} @ {} from link {}, but it did not arrive yet. Driver waits until the end of the pickup activity.",
                     driver.getId(), rider.getId(), now, linkId);
-            // agent is probably late and will be handled via teleportation
-            return;
+            pickupQueue.add(new PickupEntry(driver, rider, linkId, driver.getActivityEndTime()));
+            return true;
         }
         if (!waitingRiders.get(rider.getId()).equals(linkId)) {
             LOGGER.warn(
-                    "driver {} wanted to pick up rider {} at {} from link {}, but it is waiting on link {}",
+                    "Driver {} wanted to pick up rider {} @ {} from link {}, but it is waiting on link {}. Driving on.",
                     driver.getId(), rider.getId(), now, linkId, waitingRiders.get(rider.getId()));
             rider.setStateToAbort(now);
             internalInterface.arrangeNextAgentState(rider);
-            return;
+            return false;
         }
         if (!rider.getCurrentLinkId().equals(linkId)) {
             LOGGER.warn(
-                    "driver {} wanted to pick up rider {} at {} from link {}, but the rider is currently on link {}",
+                    "Driver {} wanted to pick up rider {} @ {} from link {}, but it is currently on link {}. Driving on.",
                     driver.getId(), rider.getId(), now, linkId, rider.getCurrentLinkId());
             rider.setStateToAbort(now);
             internalInterface.arrangeNextAgentState(rider);
-            return;
+            return false;
         }
 
-        LOGGER.debug("driver {} picks up rider {} at {} from link {}", driver.getId(), rider.getId(), now, linkId);
+        LOGGER.debug("Driver {} picks up rider {} @ {} from link {} and starts driving.", driver.getId(),
+                rider.getId(), now, linkId);
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());
         internalInterface.unregisterAdditionalAgentOnLink(rider.getId(), linkId);
         eventsManager.processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         waitingRiders.remove(rider.getId());
+
+        return false;
     }
 
     @Override
