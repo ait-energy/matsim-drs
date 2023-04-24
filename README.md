@@ -1,6 +1,6 @@
 # Carpooling
 
-This extension simulates dynamic carpooling.
+This extension simulates carpooling, i.e. agents driving a private car pick up riders for a part of their trip.
 The assignment of carpooling driver to rider is done before each QSim iteration.
 
 The simulated modes of transport are:
@@ -9,7 +9,7 @@ The simulated modes of transport are:
 
 ## Main features
 
-The main components of this extension are the following:
+The main components of this extension are:
 
 1. Matching algorithm.
 2. Modifying agents plans.

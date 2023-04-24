@@ -45,7 +45,7 @@ public class MatchMaker {
 
     public void match() {
         requestsCollector.collectRequests();
-        LOGGER.info("collected {} driver and {} rider requests",
+        LOGGER.info("Collected {} driver and {} rider requests",
                 requestsCollector.getDriversRequests().size(),
                 requestsCollector.getRidersRequests().size());
         driversRequests = requestsCollector.getDriversRequests();
