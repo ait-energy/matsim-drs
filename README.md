@@ -24,8 +24,7 @@ The matching algorithm looks for the best rider for each driver and consists of 
 2. Registering riders requests in time segments according to the requests departure times.
 3. Finding riders requests that lay within same origin zone, destination zone and departure time segment of the driver.
 4. Filtering out riders which departure times are not within driver arrival time to pickup point +- `riderDepartureTimeAdjustment`.
-5. Filtering out riders which would lead to detourFactor higher than `maxDetourFactor`.
-6. Finding out the rider with the least detour factor.
+5. Finding out the rider with the least detour factor.
 
 ### Modifying agents plans
 - In case of a matched driver: Two new interaction activities with the pickup and dropoff info will be added to the driver's plan.
