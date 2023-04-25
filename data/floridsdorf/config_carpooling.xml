@@ -100,12 +100,6 @@
 
         <!-- activityParams and modeParams must be added for carpooling-->
         <parameterset type="activityParams">
-            <param name="activityType" value="carpoolingRider interaction" />
-            <param name="priority" value="1.0" />
-            <param name="scoringThisActivityAtAll" value="false" />
-            <param name="typicalDurationScoreComputation" value="relative" />
-        </parameterset>
-        <parameterset type="activityParams">
             <param name="activityType" value="carpoolingDriver interaction" />
             <param name="priority" value="1.0" />
             <param name="scoringThisActivityAtAll" value="false" />

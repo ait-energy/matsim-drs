@@ -1,7 +1,9 @@
 package at.ac.ait.matsim.domino.carpooling.analysis;
 
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
@@ -9,11 +11,8 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.core.utils.io.UncheckedIOException;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolTripsInfoCollector {
     public static final String FILENAME_MATCHED_CARPOOLING_TRIPS = "carpooling_matched_trips";
@@ -26,7 +25,7 @@ public class CarpoolTripsInfoCollector {
         this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOLING_TRIPS);
     }
 
-    public void printMatchedRequestsToCsv(HashMap<CarpoolingRequest, CarpoolingRequest> matchMap) {
+    public void printMatchedRequestsToCsv(Map<CarpoolingRequest, CarpoolingRequest> matchMap) {
         BufferedWriter writer = IOUtils.getBufferedWriter(this.matchedTripsFileName + ".csv");
         try {
             writer.write(

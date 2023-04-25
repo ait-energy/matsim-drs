@@ -1,7 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.planHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +62,7 @@ public class PlanModifier implements ReplanningListener {
         Population population = scenario.getPopulation();
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(carpoolingNetwork, cfgGroup, population,
                 carpoolingDriverRouter, event.isLastIteration(), outputDirectoryHierarchy);
-        HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
+        Map<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
         for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
@@ -80,18 +79,15 @@ public class PlanModifier implements ReplanningListener {
                 FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverRequest.getDepartureTime(),
                 driverRequest.getPerson());
         List<? extends PlanElement> legToCustomerList = carpoolingDriverRouter.calcRoute(toCustomer);
-        Leg legToCustomer = (Leg) legToCustomerList.get(0);
+        Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
 
-        addNewActivitiesToDriverPlan(driverRequest, riderRequest, factory, carpoolingDriverRouter, legToCustomerList);
+        addNewActivitiesToDriverPlan(driverRequest, riderRequest, factory, carpoolingDriverRouter, legToCustomer);
         adjustRiderDepartureTime(riderRequest, pickupTime);
     }
 
     private void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
-            PopulationFactory factory, RoutingModule router, List<? extends PlanElement> legToCustomerList) {
-        Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
-        CarpoolingUtil.setRoutingModeToDriver(legToCustomerList);
-
+            PopulationFactory factory, RoutingModule router, Leg legToCustomer) {
         double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
                 riderRequest.getFromLink().getId());
@@ -104,7 +100,6 @@ public class PlanModifier implements ReplanningListener {
                 FacilitiesUtils.wrapLink(riderRequest.getToLink()), pickupTime, driverRequest.getPerson());
         List<? extends PlanElement> legWithCustomerList = router.calcRoute(withCustomer);
         Leg legWithCustomer = CarpoolingUtil.getFirstLeg(legWithCustomerList);
-        CarpoolingUtil.setRoutingModeToDriver(legWithCustomerList);
 
         double dropoffTime = pickupTime + legWithCustomer.getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
@@ -117,19 +112,21 @@ public class PlanModifier implements ReplanningListener {
                 FacilitiesUtils.wrapLink(riderRequest.getToLink()), FacilitiesUtils.wrapLink(driverRequest.getToLink()),
                 dropoffTime, driverRequest.getPerson());
         List<? extends PlanElement> legAfterCustomerList = router.calcRoute(afterCustomer);
-        CarpoolingUtil.setRoutingModeToDriver(legAfterCustomerList);
 
-        ArrayList<PlanElement> newRoute = new ArrayList<>(legToCustomerList);
-        newRoute.add(pickup);
-        newRoute.addAll(legWithCustomerList);
-        newRoute.add(dropoff);
-        newRoute.addAll(legAfterCustomerList);
+        List<PlanElement> newTrip = new ArrayList<>();
+        newTrip.add(legToCustomer);
+        newTrip.add(pickup);
+        newTrip.addAll(legWithCustomerList);
+        newTrip.add(dropoff);
+        newTrip.addAll(legAfterCustomerList);
+
+        CarpoolingUtil.setRoutingModeToDriver(newTrip);
         Activity startActivity = driverRequest.getTrip().getOriginActivity();
         Activity endActivity = driverRequest.getTrip().getDestinationActivity();
         List<PlanElement> planElements = driverRequest.getPerson().getSelectedPlan().getPlanElements();
         LOGGER.debug("Before matching " + driverRequest.getPerson().getId().toString() + " had "
                 + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
-        TripRouter.insertTrip(planElements, startActivity, newRoute, endActivity);
+        TripRouter.insertTrip(planElements, startActivity, newTrip, endActivity);
         LOGGER.debug("After matching " + driverRequest.getPerson().getId().toString() + " had "
                 + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
     }
@@ -150,7 +147,10 @@ public class PlanModifier implements ReplanningListener {
                             CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement, null);
                             LOGGER.debug("After matching " + riderRequest.getPerson().getId().toString()
                                     + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            break; // TODO eyad break here.. really?
+                            break;
+                            // TODO this only adjusts one element. the following elements must be adjusted
+                            // as well otherwise the following elements may have a start time before the end
+                            // time of the adjusted element.
                         }
                     }
                 }

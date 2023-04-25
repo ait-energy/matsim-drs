@@ -17,11 +17,17 @@ public class BestRequestFinder {
         this.router = router;
     }
 
+    /**
+     * @return null if no match was found
+     */
     public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest,
             List<CarpoolingRequest> filteredRidersRequests) {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
         double originalRouteTravelTime = CarpoolingUtil.getLeg(driverRequest.getFromLink(), driverRequest.getToLink(),
                 driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
+        if (originalRouteTravelTime == 0) {
+            return null;
+        }
 
         for (CarpoolingRequest riderRequest : filteredRidersRequests) {
             Leg legToCustomer = CarpoolingUtil.getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),
@@ -38,9 +44,6 @@ public class BestRequestFinder {
             double travelTimeAfterCustomer = legAfterCustomer.getTravelTime().seconds();
 
             double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
-            if (originalRouteTravelTime == 0) {
-                return null;
-            }
             double detourFactor = newRouteTravelTime / originalRouteTravelTime;
             riderRequest.setDetourFactor(detourFactor);
             bestRequests.put(riderRequest, detourFactor);

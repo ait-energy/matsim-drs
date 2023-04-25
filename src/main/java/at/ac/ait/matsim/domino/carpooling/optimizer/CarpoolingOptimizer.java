@@ -3,8 +3,8 @@ package at.ac.ait.matsim.domino.carpooling.optimizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import at.ac.ait.matsim.domino.carpooling.analysis.CarpoolTripsInfoCollector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
@@ -14,6 +14,7 @@ import org.matsim.contrib.zone.ZonalSystem;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
+import at.ac.ait.matsim.domino.carpooling.analysis.CarpoolTripsInfoCollector;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
@@ -37,7 +38,7 @@ public class CarpoolingOptimizer {
                 this.outputDirectoryHierarchy = outputDirectoryHierarchy;
         }
 
-        public HashMap<CarpoolingRequest, CarpoolingRequest> optimize() {
+        public Map<CarpoolingRequest, CarpoolingRequest> optimize() {
                 LOGGER.info("Matching process started!");
                 ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.getCellSize());
                 RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
@@ -53,7 +54,7 @@ public class CarpoolingOptimizer {
                                 requestsRegister);
                 RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, router);
                 BestRequestFinder bestRequestFinder = new BestRequestFinder(router);
-                HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
+                Map<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
                 List<CarpoolingRequest> driversRequests = new ArrayList<>();
                 List<CarpoolingRequest> ridersRequests = new ArrayList<>();
                 List<CarpoolingRequest> unmatchedDriversRequests = new ArrayList<>();
@@ -62,7 +63,7 @@ public class CarpoolingOptimizer {
                                 requestsFilter, bestRequestFinder, matchedRequests, driversRequests, ridersRequests,
                                 unmatchedDriversRequests, unmatchedRidersRequests);
                 matchMaker.match();
-                HashMap<CarpoolingRequest, CarpoolingRequest> matchMap = matchMaker.getMatchedRequests();
+                Map<CarpoolingRequest, CarpoolingRequest> matchMap = matchMaker.getMatchedRequests();
                 if (isLastIteration) {
                         CarpoolTripsInfoCollector infoCollector = new CarpoolTripsInfoCollector(
                                         outputDirectoryHierarchy);

@@ -1,9 +1,9 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +20,7 @@ public class MatchMaker {
     private final PotentialRequestsFinder potentialRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
-    private final HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests;
+    private final Map<CarpoolingRequest, CarpoolingRequest> matchedRequests;
     private List<CarpoolingRequest> driversRequests;
     private List<CarpoolingRequest> ridersRequests;
     private final List<CarpoolingRequest> unmatchedDriversRequests;
@@ -28,7 +28,7 @@ public class MatchMaker {
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
             PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder, HashMap<CarpoolingRequest, CarpoolingRequest> matchedRequests,
+            BestRequestFinder bestRequestFinder, Map<CarpoolingRequest, CarpoolingRequest> matchedRequests,
             List<CarpoolingRequest> driversRequests, List<CarpoolingRequest> ridersRequests,
             List<CarpoolingRequest> unmatchedDriversRequests, List<CarpoolingRequest> unmatchedRidersRequests) {
         this.requestsCollector = requestsCollector;
@@ -92,7 +92,7 @@ public class MatchMaker {
         LOGGER.info(matchedRequests.size() + " matches happened. Matching process finished!");
     }
 
-    public HashMap<CarpoolingRequest, CarpoolingRequest> getMatchedRequests() {
+    public Map<CarpoolingRequest, CarpoolingRequest> getMatchedRequests() {
         return matchedRequests;
     }
 
