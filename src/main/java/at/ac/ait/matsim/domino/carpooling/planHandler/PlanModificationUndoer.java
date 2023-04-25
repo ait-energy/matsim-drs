@@ -70,7 +70,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
             } else if (planElement instanceof Leg) {
                 if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS) != null) {
                     CarpoolingUtil.setRequestStatus((Leg) planElement, null);
-                } 
+                }
                 if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS) != null) {
                     CarpoolingUtil.setCarpoolingStatus(((Leg) planElement), null);
                 }
@@ -94,15 +94,17 @@ public class PlanModificationUndoer implements IterationStartsListener {
                 continue;
             }
 
-            Activity startActivity = trip.getOriginActivity();
-            Activity endActivity = trip.getDestinationActivity();
+            // TODO performance improvement: only re-route trips with more than one leg
+            // (because these are the ones that were changed... the rest can be kept as is)
+            Activity from = trip.getOriginActivity();
+            Activity to = trip.getDestinationActivity();
             RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(
-                    FacilitiesUtils.wrapActivity(trip.getOriginActivity()),
-                    FacilitiesUtils.wrapActivity(trip.getDestinationActivity()),
+                    FacilitiesUtils.wrapActivity(from),
+                    FacilitiesUtils.wrapActivity(to),
                     trip.getOriginActivity().getEndTime().orElse(0),
                     person);
             List<? extends PlanElement> route = carpoolingDriverRouter.calcRoute(routingRequest);
-            TripRouter.insertTrip(selectedPlan, startActivity, route, endActivity);
+            TripRouter.insertTrip(selectedPlan, from, route, to);
         }
         if (before != selectedPlan.getPlanElements().size()) {
             LOGGER.debug("Before undoing, " + person.getId().toString() + " had " + before + " plan elements.");

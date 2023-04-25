@@ -1,18 +1,14 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
-import org.matsim.api.core.v01.network.Link;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import org.matsim.api.core.v01.population.Leg;
-import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.core.router.DefaultRoutingRequest;
-import org.matsim.core.router.RoutingModule;
-import org.matsim.core.router.RoutingRequest;
-import org.matsim.facilities.FacilitiesUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.core.router.RoutingModule;
+
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class RequestsFilter {
     private final CarpoolingConfigGroup cfgGroup;
@@ -26,14 +22,12 @@ public class RequestsFilter {
     public List<CarpoolingRequest> filterRequests(CarpoolingRequest driverRequest,
             List<CarpoolingRequest> ridersRequests) {
         List<CarpoolingRequest> filteredRiderRequests = new ArrayList<>();
-        Link driverOrigin = driverRequest.getFromLink();
-        double driverDepartureTime = driverRequest.getDepartureTime();
         for (CarpoolingRequest riderRequest : ridersRequests) {
-            RoutingRequest toCustomer = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(driverOrigin),
-                    FacilitiesUtils.wrapLink(riderRequest.getFromLink()), driverDepartureTime,
+            Leg legToCustomer = CarpoolingUtil.calculateLeg(router,
+                    driverRequest.getFromLink(),
+                    riderRequest.getFromLink(),
+                    driverRequest.getDepartureTime(),
                     driverRequest.getPerson());
-            List<? extends PlanElement> legToCustomerList = router.calcRoute(toCustomer);
-            Leg legToCustomer = CarpoolingUtil.getFirstLeg(legToCustomerList);
             double expectedPickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
             boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()
                     - cfgGroup.getRiderDepartureTimeAdjustmentSeconds()) < expectedPickupTime

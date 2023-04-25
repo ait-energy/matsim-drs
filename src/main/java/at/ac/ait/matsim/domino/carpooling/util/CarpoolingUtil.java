@@ -26,6 +26,7 @@ import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
 import org.matsim.facilities.FacilitiesUtils;
+import org.matsim.facilities.Facility;
 
 import com.google.common.collect.Sets;
 
@@ -68,14 +69,6 @@ public class CarpoolingUtil {
                 .filter(Activity.class::isInstance) //
                 .map(Activity.class::cast) //
                 .collect(Collectors.toList());
-    }
-
-    public static Leg getFirstLeg(List<? extends PlanElement> planElements) {
-        List<Leg> legs = TripStructureUtils.getLegs(planElements);
-        if (legs.size() != 1) {
-            throw new IllegalStateException("expected exactly one leg but got " + legs.size());
-        }
-        return legs.get(0);
     }
 
     public static String getCarpoolingAffinity(Person person) {
@@ -181,12 +174,40 @@ public class CarpoolingUtil {
         }
     }
 
-    public static Leg calculateLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router,
+    /**
+     * @return a route as a single leg (as expected when routing with a network
+     *         mode)
+     * @throws IllegalStateException if the resulting route contains more legs
+     */
+    public static Leg calculateLeg(RoutingModule router, Link from, Link to, double departureTime, Person driver) {
+        return calculateLeg(router,
+                FacilitiesUtils.wrapLink(from),
+                FacilitiesUtils.wrapLink(to),
+                departureTime,
+                driver);
+    }
+
+    /**
+     * @return a route as a single leg (as expected when routing with a network
+     *         mode)
+     * @throws IllegalStateException if the resulting route contains more legs
+     */
+    public static Leg calculateLeg(RoutingModule router, Facility from, Facility to, double departureTime,
             Person driver) {
-        RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(fromLink),
-                FacilitiesUtils.wrapLink(toLink), departureTime, driver);
+        RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(from, to, departureTime, driver);
         List<? extends PlanElement> legList = router.calcRoute(routingRequest);
-        return CarpoolingUtil.getFirstLeg(legList);
+        return getFirstLeg(legList);
+    }
+
+    /**
+     * @throws IllegalStateException if more legs are contained
+     */
+    public static Leg getFirstLeg(List<? extends PlanElement> planElements) {
+        List<Leg> legs = TripStructureUtils.getLegs(planElements);
+        if (legs.size() != 1) {
+            throw new IllegalStateException("expected exactly one leg but got " + legs.size());
+        }
+        return legs.get(0);
     }
 
     public static String getRequestStatus(Leg leg) {
