@@ -16,6 +16,8 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.router.TripStructureUtils;
 
+import com.google.common.collect.ImmutableList;
+
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
@@ -23,21 +25,23 @@ import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final List<CarpoolingRequest> driversRequests;
-    private final List<CarpoolingRequest> ridersRequests;
     private final Population population;
     private final Network network;
-    private long riderRequestID = 0;
-    private long driverRequestID = 0;
+    private List<CarpoolingRequest> driverRequests;
+    private List<CarpoolingRequest> riderRequests;
 
     public RequestsCollector(Population population, Network network) {
         this.population = population;
         this.network = network;
-        driversRequests = new ArrayList<>();
-        ridersRequests = new ArrayList<>();
     }
 
     public void collectRequests() {
+        driverRequests = new ArrayList<>();
+        riderRequests = new ArrayList<>();
+
+        long riderRequestID = 0;
+        long driverRequestID = 0;
+
         for (Map.Entry<Id<Person>, ? extends Person> entry : population.getPersons().entrySet()) {
             Person person = entry.getValue();
             List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
@@ -70,24 +74,25 @@ public class RequestsCollector {
                         riderRequestID = riderRequestID + 1;
                         CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(riderRequestID, Request.class),
                                 person, trip, activityEndTime, mode, fromLink, toLink, leg);
-                        ridersRequests.add(riderRequest);
+                        riderRequests.add(riderRequest);
                     } else if (mode.equals(Carpooling.DRIVER_MODE)) {
                         driverRequestID = driverRequestID + 1;
                         CarpoolingRequest driverRequest = new CarpoolingRequest(
                                 Id.create(driverRequestID, Request.class), person, trip, activityEndTime, mode,
                                 fromLink, toLink, leg);
-                        driversRequests.add(driverRequest);
+                        driverRequests.add(driverRequest);
                     }
                 }
             }
         }
+        LOGGER.info("Collected {} driver and {} rider requests", driverRequests.size(), riderRequests.size());
     }
 
-    public List<CarpoolingRequest> getDriversRequests() {
-        return driversRequests;
+    public List<CarpoolingRequest> getDriverRequests() {
+        return ImmutableList.copyOf(driverRequests);
     }
 
-    public List<CarpoolingRequest> getRidersRequests() {
-        return ridersRequests;
+    public List<CarpoolingRequest> getRiderRequests() {
+        return ImmutableList.copyOf(riderRequests);
     }
 }

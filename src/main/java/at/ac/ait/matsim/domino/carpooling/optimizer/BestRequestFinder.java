@@ -23,22 +23,24 @@ public class BestRequestFinder {
     public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest,
             List<CarpoolingRequest> filteredRidersRequests) {
         Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
-        double originalRouteTravelTime = CarpoolingUtil.getLeg(driverRequest.getFromLink(), driverRequest.getToLink(),
-                driverRequest.getDepartureTime(), router, driverRequest.getPerson()).getTravelTime().seconds();
+        double originalRouteTravelTime = CarpoolingUtil
+                .calculateLeg(driverRequest.getFromLink(), driverRequest.getToLink(),
+                        driverRequest.getDepartureTime(), router, driverRequest.getPerson())
+                .getTravelTime().seconds();
         if (originalRouteTravelTime == 0) {
             return null;
         }
 
         for (CarpoolingRequest riderRequest : filteredRidersRequests) {
-            Leg legToCustomer = CarpoolingUtil.getLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),
+            Leg legToCustomer = CarpoolingUtil.calculateLeg(driverRequest.getFromLink(), riderRequest.getFromLink(),
                     driverRequest.getDepartureTime(), router, driverRequest.getPerson());
             double travelTimeToCustomer = legToCustomer.getTravelTime().seconds();
 
-            Leg legWithCustomer = CarpoolingUtil.getLeg(riderRequest.getFromLink(), riderRequest.getToLink(),
+            Leg legWithCustomer = CarpoolingUtil.calculateLeg(riderRequest.getFromLink(), riderRequest.getToLink(),
                     driverRequest.getDepartureTime() + travelTimeToCustomer, router, driverRequest.getPerson());
             double travelTimeWithCustomer = legWithCustomer.getTravelTime().seconds();
 
-            Leg legAfterCustomer = CarpoolingUtil.getLeg(riderRequest.getToLink(), driverRequest.getToLink(),
+            Leg legAfterCustomer = CarpoolingUtil.calculateLeg(riderRequest.getToLink(), driverRequest.getToLink(),
                     driverRequest.getDepartureTime() + travelTimeToCustomer + travelTimeWithCustomer, router,
                     driverRequest.getPerson());
             double travelTimeAfterCustomer = legAfterCustomer.getTravelTime().seconds();

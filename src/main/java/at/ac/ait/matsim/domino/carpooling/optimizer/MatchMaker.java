@@ -1,6 +1,8 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.PlanElement;
+
+import com.google.common.collect.Lists;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
@@ -20,44 +24,36 @@ public class MatchMaker {
     private final PotentialRequestsFinder potentialRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
-    private final Map<CarpoolingRequest, CarpoolingRequest> matchedRequests;
-    private List<CarpoolingRequest> driversRequests;
-    private List<CarpoolingRequest> ridersRequests;
-    private final List<CarpoolingRequest> unmatchedDriversRequests;
-    private final List<CarpoolingRequest> unmatchedRidersRequests;
+
+    private List<CarpoolingRequest> driverRequests;
+    private List<CarpoolingRequest> riderRequests;
+    private Map<CarpoolingRequest, CarpoolingRequest> matchedRequests;
+    private List<CarpoolingRequest> unmatchedDriverRequests;
+    private List<CarpoolingRequest> unmatchedRiderRequests;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
             PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder, Map<CarpoolingRequest, CarpoolingRequest> matchedRequests,
-            List<CarpoolingRequest> driversRequests, List<CarpoolingRequest> ridersRequests,
-            List<CarpoolingRequest> unmatchedDriversRequests, List<CarpoolingRequest> unmatchedRidersRequests) {
+            BestRequestFinder bestRequestFinder) {
         this.requestsCollector = requestsCollector;
         this.requestsRegister = requestsRegister;
         this.potentialRequestsFinder = potentialRequestsFinder;
         this.requestsFilter = requestsFilter;
         this.bestRequestFinder = bestRequestFinder;
-        this.matchedRequests = matchedRequests;
-        this.driversRequests = driversRequests;
-        this.ridersRequests = ridersRequests;
-        this.unmatchedDriversRequests = unmatchedDriversRequests;
-        this.unmatchedRidersRequests = unmatchedRidersRequests;
     }
 
     public void match() {
         requestsCollector.collectRequests();
-        LOGGER.info("Collected {} driver and {} rider requests",
-                requestsCollector.getDriversRequests().size(),
-                requestsCollector.getRidersRequests().size());
-        driversRequests = requestsCollector.getDriversRequests();
-        Collections.shuffle(driversRequests);
-        ridersRequests = requestsCollector.getRidersRequests();
-        Collections.shuffle(ridersRequests);
+        driverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
+        Collections.shuffle(driverRequests);
+        riderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
+        Collections.shuffle(riderRequests);
 
-        for (CarpoolingRequest ridersRequest : ridersRequests) {
+        for (CarpoolingRequest ridersRequest : riderRequests) {
             requestsRegister.addRequest(ridersRequest);
         }
 
-        for (Iterator<CarpoolingRequest> iterator = driversRequests.iterator(); iterator.hasNext();) {
+        matchedRequests = new HashMap<>();
+        for (Iterator<CarpoolingRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
             CarpoolingRequest driverRequest = iterator.next();
             List<CarpoolingRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
                     driverRequest.getFromLink().getFromNode(), driverRequest.getToLink().getFromNode(),
@@ -89,30 +85,42 @@ public class MatchMaker {
                 requestsRegister.removeRequest(bestRiderRequest);
             }
         }
+
+        unmatchedDriverRequests = new ArrayList<>();
+        for (CarpoolingRequest request : driverRequests) {
+            if (!matchedRequests.containsKey(request)) {
+                unmatchedDriverRequests.add(request);
+            }
+        }
+
+        unmatchedRiderRequests = new ArrayList<>();
+        for (CarpoolingRequest request : riderRequests) {
+            if (!matchedRequests.containsValue(request)) {
+                unmatchedRiderRequests.add(request);
+            }
+        }
+
         LOGGER.info(matchedRequests.size() + " matches happened. Matching process finished!");
     }
 
+    public List<CarpoolingRequest> getDriverRequests() {
+        return Collections.unmodifiableList(driverRequests);
+    }
+
+    public List<CarpoolingRequest> getRiderRequests() {
+        return Collections.unmodifiableList(riderRequests);
+    }
+
     public Map<CarpoolingRequest, CarpoolingRequest> getMatchedRequests() {
-        return matchedRequests;
+        return Collections.unmodifiableMap(matchedRequests);
     }
 
     public List<CarpoolingRequest> getUnmatchedDriverRequests() {
-
-        for (CarpoolingRequest request : driversRequests) {
-            if (!matchedRequests.containsKey(request)) {
-                unmatchedDriversRequests.add(request);
-            }
-        }
-        return unmatchedDriversRequests;
+        return Collections.unmodifiableList(unmatchedDriverRequests);
     }
 
     public List<CarpoolingRequest> getUnmatchedRiderRequests() {
-
-        for (CarpoolingRequest request : ridersRequests) {
-            if (!matchedRequests.containsValue(request)) {
-                unmatchedRidersRequests.add(request);
-            }
-        }
-        return unmatchedRidersRequests;
+        return Collections.unmodifiableList(unmatchedRiderRequests);
     }
+
 }

@@ -1,8 +1,5 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,14 +51,8 @@ public class CarpoolingOptimizer {
                                 requestsRegister);
                 RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, router);
                 BestRequestFinder bestRequestFinder = new BestRequestFinder(router);
-                Map<CarpoolingRequest, CarpoolingRequest> matchedRequests = new HashMap<>();
-                List<CarpoolingRequest> driversRequests = new ArrayList<>();
-                List<CarpoolingRequest> ridersRequests = new ArrayList<>();
-                List<CarpoolingRequest> unmatchedDriversRequests = new ArrayList<>();
-                List<CarpoolingRequest> unmatchedRidersRequests = new ArrayList<>();
                 MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
-                                requestsFilter, bestRequestFinder, matchedRequests, driversRequests, ridersRequests,
-                                unmatchedDriversRequests, unmatchedRidersRequests);
+                                requestsFilter, bestRequestFinder);
                 matchMaker.match();
                 Map<CarpoolingRequest, CarpoolingRequest> matchMap = matchMaker.getMatchedRequests();
                 if (isLastIteration) {

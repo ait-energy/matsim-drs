@@ -181,7 +181,8 @@ public class CarpoolingUtil {
         }
     }
 
-    public static Leg getLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router, Person driver) {
+    public static Leg calculateLeg(Link fromLink, Link toLink, double departureTime, RoutingModule router,
+            Person driver) {
         RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(FacilitiesUtils.wrapLink(fromLink),
                 FacilitiesUtils.wrapLink(toLink), departureTime, driver);
         List<? extends PlanElement> legList = router.calcRoute(routingRequest);
