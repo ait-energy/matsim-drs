@@ -23,17 +23,13 @@ public class RequestsFilter {
             List<CarpoolingRequest> ridersRequests) {
         List<CarpoolingRequest> filteredRiderRequests = new ArrayList<>();
         for (CarpoolingRequest riderRequest : ridersRequests) {
-            Leg legToCustomer = CarpoolingUtil.calculateLeg(router,
+            Leg legToRider = CarpoolingUtil.calculateLeg(router,
                     driverRequest.getFromLink(),
                     riderRequest.getFromLink(),
                     driverRequest.getDepartureTime(),
                     driverRequest.getPerson());
-            double expectedPickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
-            boolean withinRiderDepartureTimeWindow = (riderRequest.getDepartureTime()
-                    - cfgGroup.getRiderDepartureTimeAdjustmentSeconds()) < expectedPickupTime
-                    && expectedPickupTime < (riderRequest.getDepartureTime()
-                            + cfgGroup.getRiderDepartureTimeAdjustmentSeconds());
-            if (withinRiderDepartureTimeWindow) {
+            double expectedPickupTime = driverRequest.getDepartureTime() + legToRider.getTravelTime().seconds();
+            if (CarpoolingUtil.checkRiderTimeConstraints(riderRequest,expectedPickupTime,cfgGroup.getRiderDepartureTimeAdjustmentSeconds())){
                 filteredRiderRequests.add(riderRequest);
             }
         }

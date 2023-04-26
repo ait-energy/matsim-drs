@@ -240,4 +240,26 @@ public class CarpoolingUtil {
         }
         return String.format("POINT(%.1f %.1f)", activity.getCoord().getX(), activity.getCoord().getY());
     }
+
+    public static boolean checkRiderTimeConstraints(CarpoolingRequest riderRequest, double expectedPickupTime, double allowedTimeAdjustment) {
+        double timeAdjustment = expectedPickupTime- riderRequest.getDepartureTime();
+        boolean withinRiderDepartureTimeWindow = Math.abs(timeAdjustment)<= allowedTimeAdjustment;
+        boolean constrainsPassed = false;
+        if (withinRiderDepartureTimeWindow) {
+            double timeBetweenStartAndEndAct =riderRequest.getTrip().getDestinationActivity().getStartTime().seconds()-riderRequest.getTrip().getOriginActivity().getEndTime().seconds();
+            if (timeAdjustment>=0){
+                constrainsPassed =timeBetweenStartAndEndAct>timeAdjustment;
+            }else if(timeAdjustment<0){
+                int indexOfCurrentTrip = TripStructureUtils.getTrips(riderRequest.getPerson().getSelectedPlan()).indexOf(riderRequest.getTrip());
+                if (indexOfCurrentTrip==0){
+                    constrainsPassed=true;
+                }else{
+                    double previousActEndTime = TripStructureUtils.getTrips(riderRequest.getPerson().getSelectedPlan()).get(indexOfCurrentTrip-1).getOriginActivity().getEndTime().seconds();
+                    double timeBetweenStartAndPreviousAct =riderRequest.getTrip().getOriginActivity().getStartTime().seconds()-previousActEndTime;
+                    constrainsPassed =timeBetweenStartAndPreviousAct>Math.abs(timeAdjustment);
+                }
+            }
+        }
+        return constrainsPassed;
+    }
 }
