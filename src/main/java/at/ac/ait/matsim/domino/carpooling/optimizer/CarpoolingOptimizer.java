@@ -20,17 +20,17 @@ public class CarpoolingOptimizer {
         private final Network network;
         private final CarpoolingConfigGroup cfgGroup;
         private final Population population;
-        private final RoutingModule router;
+        private final RoutingModule driverRouter;
         private final Boolean isLastIteration;
         private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
         public CarpoolingOptimizer(Network network, CarpoolingConfigGroup cfgGroup, Population population,
-                        RoutingModule router, boolean isLastIteration,
+                        RoutingModule driverRouter, boolean isLastIteration,
                         OutputDirectoryHierarchy outputDirectoryHierarchy) {
                 this.network = network;
                 this.cfgGroup = cfgGroup;
                 this.population = population;
-                this.router = router;
+                this.driverRouter = driverRouter;
                 this.isLastIteration = isLastIteration;
                 this.outputDirectoryHierarchy = outputDirectoryHierarchy;
         }
@@ -44,13 +44,14 @@ public class CarpoolingOptimizer {
                                 zonalSystem,
                                 false);
                 RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(cfgGroup);
-                RequestsCollector requestsCollector = new RequestsCollector(population, network);
+                RequestsCollector requestsCollector = new RequestsCollector(cfgGroup, population, network,
+                                driverRouter);
                 RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
                                 timeSegmentRegistry);
                 PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(cfgGroup,
                                 requestsRegister);
-                RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, router);
-                BestRequestFinder bestRequestFinder = new BestRequestFinder(router);
+                RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, driverRouter);
+                BestRequestFinder bestRequestFinder = new BestRequestFinder(driverRouter);
                 MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                                 requestsFilter, bestRequestFinder);
                 matchMaker.match();

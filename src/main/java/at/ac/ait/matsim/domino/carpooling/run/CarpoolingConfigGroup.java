@@ -41,6 +41,12 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Carpooling.DRIVER_MODE,
             TransportMode.bike };
 
+    public static final String MIN_DRIVER_LEG_METERS = "minDriverLegMeters";
+    private int minDriverLegMeters = 10;
+
+    public static final String MIN_RIDER_LEG_METERS = "minRiderLegMeters";
+    private int minRiderLegMeters = 10;
+
     public CarpoolingConfigGroup() {
         super(GROUP_NAME);
     }
@@ -68,6 +74,10 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         map.put(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES,
                 "Defines the chain-based modes for the'" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
                         + "' strategy, separated by commas");
+        map.put(MIN_DRIVER_LEG_METERS,
+                "minimum length of legs (routed with the carpoolingDriver mode) to be considered for the carpooling driver mode. 0 means no minimum.");
+        map.put(MIN_RIDER_LEG_METERS,
+                "minimum length of legs (routed with the carpoolingDriver mode) to be considered for the carpooling ride mode. 0 means no minimum.");
         return map;
     }
 
@@ -177,6 +187,26 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         this.subtourModeChoiceChainBasedModes = toArray(subtourModeChoiceChainBasedModes);
     }
 
+    @StringGetter(MIN_DRIVER_LEG_METERS)
+    public int getMinDriverLegMeters() {
+        return minDriverLegMeters;
+    }
+
+    @StringSetter(MIN_DRIVER_LEG_METERS)
+    public void setMinDriverLegMeters(int minDriverLegMeters) {
+        this.minDriverLegMeters = minDriverLegMeters;
+    }
+
+    @StringGetter(MIN_RIDER_LEG_METERS)
+    public int getMinRiderLegMeters() {
+        return minRiderLegMeters;
+    }
+
+    @StringSetter(MIN_RIDER_LEG_METERS)
+    public void setMinRiderLegMeters(int minRiderLegMeters) {
+        this.minRiderLegMeters = minRiderLegMeters;
+    }
+
     /** copied from SubtourModeChoiceConfigGroup */
     private static String toString(final String[] modes) {
         StringBuilder b = new StringBuilder();
@@ -197,4 +227,5 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         }
         return parts;
     }
+
 }

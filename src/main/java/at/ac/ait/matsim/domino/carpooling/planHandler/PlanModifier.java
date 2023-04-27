@@ -37,7 +37,7 @@ public class PlanModifier implements ReplanningListener {
     private final Scenario scenario;
     private final Network carpoolingNetwork;
     private final CarpoolingConfigGroup cfgGroup;
-    private final RoutingModule carpoolingDriverRouter, carpoolingRiderRouter;
+    private final RoutingModule driverRouter, riderRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
     @Inject
@@ -46,8 +46,8 @@ public class PlanModifier implements ReplanningListener {
         this.carpoolingNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
                 ImmutableSet.of(Carpooling.DRIVER_MODE));
         cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
-        carpoolingDriverRouter = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
-        carpoolingRiderRouter = tripRouter.getRoutingModule(Carpooling.RIDER_MODE);
+        driverRouter = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+        riderRouter = tripRouter.getRoutingModule(Carpooling.RIDER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
@@ -59,7 +59,7 @@ public class PlanModifier implements ReplanningListener {
     private void preplanDay(ReplanningEvent event) {
         Population population = scenario.getPopulation();
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(carpoolingNetwork, cfgGroup, population,
-                carpoolingDriverRouter, event.isLastIteration(), outputDirectoryHierarchy);
+                driverRouter, event.isLastIteration(), outputDirectoryHierarchy);
         Map<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
@@ -72,7 +72,7 @@ public class PlanModifier implements ReplanningListener {
 
     private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
             PopulationFactory factory) {
-        Leg legToCustomer = CarpoolingUtil.calculateLeg(carpoolingDriverRouter,
+        Leg legToCustomer = CarpoolingUtil.calculateLeg(driverRouter,
                 driverRequest.getFromLink(),
                 riderRequest.getFromLink(),
                 driverRequest.getDepartureTime(),
@@ -92,7 +92,7 @@ public class PlanModifier implements ReplanningListener {
         CarpoolingUtil.setActivityType(pickup, Carpooling.ActivityType.pickup);
         CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
 
-        Leg legWithCustomer = CarpoolingUtil.calculateLeg(carpoolingDriverRouter,
+        Leg legWithCustomer = CarpoolingUtil.calculateLeg(driverRouter,
                 riderRequest.getFromLink(),
                 riderRequest.getToLink(),
                 pickupTime,
@@ -105,7 +105,7 @@ public class PlanModifier implements ReplanningListener {
         CarpoolingUtil.setActivityType(dropoff, Carpooling.ActivityType.dropoff);
         CarpoolingUtil.setRiderId(dropoff, riderRequest.getPerson().getId());
 
-        Leg legAfterCustomer = CarpoolingUtil.calculateLeg(carpoolingDriverRouter,
+        Leg legAfterCustomer = CarpoolingUtil.calculateLeg(driverRouter,
                 riderRequest.getToLink(),
                 driverRequest.getToLink(),
                 dropoffTime,
@@ -171,7 +171,7 @@ public class PlanModifier implements ReplanningListener {
 
                     Activity prevActivity = (Activity) planElements.get(i - 1);
                     Activity nextActivity = (Activity) planElements.get(i + 1);
-                    Leg calculatedLeg = CarpoolingUtil.calculateLeg(carpoolingRiderRouter,
+                    Leg calculatedLeg = CarpoolingUtil.calculateLeg(riderRouter,
                             FacilitiesUtils.wrapActivity(prevActivity),
                             FacilitiesUtils.wrapActivity(nextActivity),
                             leg.getDepartureTime().orElse(0),

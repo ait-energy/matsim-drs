@@ -94,8 +94,9 @@ public class PlanModificationUndoer implements IterationStartsListener {
                 continue;
             }
 
-            // TODO performance improvement: only re-route trips with more than one leg
-            // (because these are the ones that were changed... the rest can be kept as is)
+            // TODO performance improvement: skip rerouting if the trip consists of a single
+            // leg with a route (maybe even further narrow it down to networkroutes?)
+
             Activity from = trip.getOriginActivity();
             Activity to = trip.getDestinationActivity();
             RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(

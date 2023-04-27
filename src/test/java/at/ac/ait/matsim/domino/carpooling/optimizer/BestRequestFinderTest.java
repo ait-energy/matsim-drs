@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,20 +14,12 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.contrib.dvrp.optimizer.Request;
-import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.DefaultRoutingRequest;
-import org.matsim.core.router.NetworkRoutingModule;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
-import org.matsim.core.router.speedy.SpeedyDijkstra;
-import org.matsim.core.router.speedy.SpeedyGraph;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.FacilitiesUtils;
 
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.RoutingForTests;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 
 class BestRequestFinderTest {
@@ -42,15 +32,11 @@ class BestRequestFinderTest {
 
     @BeforeAll
     static void setup() {
-        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
-        LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network),
-                new FreeSpeedTravelTime(),
-                new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
-                network,
-                dijkstra);
-        bestRequestFinder = new BestRequestFinder(router);
+        RoutingForTests routingForTests = new RoutingForTests("data/floridsdorf/network.xml");
+        network = routingForTests.getNetwork();
+        RoutingModule driverRouter = routingForTests.getDriverRouter();
+
+        bestRequestFinder = new BestRequestFinder(driverRouter);
 
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)),
@@ -63,7 +49,7 @@ class BestRequestFinderTest {
                 FacilitiesUtils.wrapLink(request2.getFromLink()),
                 FacilitiesUtils.wrapLink(request2.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
-        request2Route = router.calcRoute(toRequest2);
+        request2Route = driverRouter.calcRoute(toRequest2);
 
         request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1037)),
@@ -72,7 +58,7 @@ class BestRequestFinderTest {
                 FacilitiesUtils.wrapLink(request3.getFromLink()),
                 FacilitiesUtils.wrapLink(request3.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
-        request3Route = router.calcRoute(toRequest3);
+        request3Route = driverRouter.calcRoute(toRequest3);
 
         request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(186)),
@@ -81,7 +67,7 @@ class BestRequestFinderTest {
                 FacilitiesUtils.wrapLink(request4.getFromLink()),
                 FacilitiesUtils.wrapLink(request4.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
-        request4Route = router.calcRoute(toRequest4);
+        request4Route = driverRouter.calcRoute(toRequest4);
 
         request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(688)),
@@ -90,7 +76,7 @@ class BestRequestFinderTest {
                 FacilitiesUtils.wrapLink(request5.getFromLink()),
                 FacilitiesUtils.wrapLink(request5.getToLink()),
                 driverRequest.getDepartureTime(), driverRequest.getPerson());
-        request5Route = router.calcRoute(toRequest5);
+        request5Route = driverRouter.calcRoute(toRequest5);
     }
 
     @BeforeEach

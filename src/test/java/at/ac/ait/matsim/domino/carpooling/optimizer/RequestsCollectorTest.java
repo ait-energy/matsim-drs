@@ -1,55 +1,80 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.RoutingModule;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import at.ac.ait.matsim.domino.carpooling.RoutingForTests;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
+import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 class RequestsCollectorTest {
-    static Population population, populationWithZeroCarpoolingDrivers;
-    static Network network;
-    RequestsCollector requestsCollector, requestsCollectorNoRequests;
+    private static Population population, populationWithZeroCarpoolingDrivers;
+    private static Network network;
+    private static RoutingModule driverRouter;
 
     @BeforeAll
     static void setup() {
+        // population with predefined driver/rider legs (see length in xml comments)
         population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
         populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
-        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
-    }
 
-    @BeforeEach
-    public void beforeEach() {
-        requestsCollector = new RequestsCollector(population, network);
-        requestsCollectorNoRequests = new RequestsCollector(populationWithZeroCarpoolingDrivers,
-                NetworkUtils.createNetwork());
+        RoutingForTests routingForTests = new RoutingForTests("data/floridsdorf/network.xml");
+        network = routingForTests.getNetwork();
+        driverRouter = routingForTests.getDriverRouter();
     }
 
     @Test
     void testNumberOfRequests() {
-        requestsCollector.collectRequests();
-        List<CarpoolingRequest> driverRequests = requestsCollector.getDriverRequests();
-        List<CarpoolingRequest> riderRequests = requestsCollector.getRiderRequests();
-        assertEquals(6, driverRequests.size());
-        assertEquals(8, riderRequests.size());
+        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(), population, network,
+                driverRouter);
+        collector.collectRequests();
+
+        assertEquals(6, collector.getDriverRequests().size());
+        assertEquals(8, collector.getRiderRequests().size());
+    }
+
+    @Test
+    void testNumberOfRequestsWithMinimumDistances() {
+        CarpoolingConfigGroup cfgWithMinimums = new CarpoolingConfigGroup();
+        cfgWithMinimums.setMinDriverLegMeters(4_500);
+        cfgWithMinimums.setMinRiderLegMeters(2_000);
+        RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
+        collector.collectRequests();
+
+        assertEquals(4, collector.getDriverRequests().size());
+        assertEquals(6, collector.getRiderRequests().size());
+    }
+
+    @Test
+    void testNumberOfRequestsWithMinimumDistancesExtreme() {
+        CarpoolingConfigGroup cfgWithMinimums = new CarpoolingConfigGroup();
+        cfgWithMinimums.setMinDriverLegMeters(20_000);
+        cfgWithMinimums.setMinRiderLegMeters(20_000);
+        RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
+        collector.collectRequests();
+
+        assertTrue(collector.getDriverRequests().isEmpty());
+        assertTrue(collector.getRiderRequests().isEmpty());
     }
 
     @Test
     void testRequestsInfo() {
-        requestsCollector.collectRequests();
-        List<CarpoolingRequest> driverRequests = requestsCollector.getDriverRequests();
-        List<CarpoolingRequest> riderRequests = requestsCollector.getRiderRequests();
+        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(), population, network,
+                driverRouter);
+        collector.collectRequests();
+        List<CarpoolingRequest> driverRequests = collector.getDriverRequests();
+        List<CarpoolingRequest> riderRequests = collector.getRiderRequests();
 
         assertEquals("1", driverRequests.get(0).getId().toString());
         assertEquals(5 * 60 * 60, driverRequests.get(0).getDepartureTime());
@@ -62,14 +87,15 @@ class RequestsCollectorTest {
         assertEquals(Carpooling.RIDER_MODE, riderRequests.get(0).getMode());
         assertEquals("1541", riderRequests.get(0).getFromLink().getId().toString());
         assertEquals("688", riderRequests.get(0).getToLink().getId().toString());
-
     }
 
     @Test
     void testNoCarpoolingRequests() {
-        requestsCollectorNoRequests.collectRequests();
-        List<CarpoolingRequest> driverRequests = requestsCollectorNoRequests.getDriverRequests();
-        List<CarpoolingRequest> riderRequests = requestsCollectorNoRequests.getRiderRequests();
+        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(),
+                populationWithZeroCarpoolingDrivers, NetworkUtils.createNetwork(), driverRouter);
+        collector.collectRequests();
+        List<CarpoolingRequest> driverRequests = collector.getDriverRequests();
+        List<CarpoolingRequest> riderRequests = collector.getRiderRequests();
         assertTrue(driverRequests.isEmpty());
         assertTrue(riderRequests.isEmpty());
     }

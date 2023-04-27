@@ -22,23 +22,15 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.optimizer.Request;
-import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
-import org.matsim.core.router.NetworkRoutingModule;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
-import org.matsim.core.router.speedy.SpeedyDijkstra;
-import org.matsim.core.router.speedy.SpeedyGraph;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
+import at.ac.ait.matsim.domino.carpooling.RoutingForTests;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
-import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 class RequestsFilterTest {
     static Network network;
@@ -48,18 +40,13 @@ class RequestsFilterTest {
 
     @BeforeAll
     static void setup() {
-        network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
+        RoutingForTests routingForTests = new RoutingForTests("data/floridsdorf/network.xml");
+        network = routingForTests.getNetwork();
+        RoutingModule driverRouter = routingForTests.getDriverRouter();
 
-        LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network),
-                new FreeSpeedTravelTime(),
-                new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        RoutingModule router = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
-                network,
-                dijkstra);
         CarpoolingConfigGroup cfg = new CarpoolingConfigGroup();
         cfg.setRiderDepartureTimeAdjustmentSeconds(180);
-        requestsFilter = new RequestsFilter(cfg, router);
+        requestsFilter = new RequestsFilter(cfg, driverRouter);
         driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                 null, network.getLinks().get(Id.createLinkId(1540)), null, null);
         request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
