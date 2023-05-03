@@ -33,6 +33,7 @@ import org.matsim.core.mobsim.qsim.interfaces.DepartureHandler;
 import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
 import org.matsim.core.population.PopulationUtils;
 
+import at.ac.ait.matsim.domino.carpooling.events.CarpoolingPickupEvent;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling.ActivityType;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
@@ -160,7 +161,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 Id<Link> linkId = agent.getCurrentLinkId();
                 MobsimPassengerAgent rider = (MobsimPassengerAgent) internalInterface.getMobsim().getAgents()
                         .get(riderId);
-                LOGGER.debug("handleActivity {} for {} @ {} on link {}", act.getType(), agent.getId(), now, linkId);
+                // LOGGER.debug("handleActivity {} for {} @ {} on link {}", act.getType(),
+                // agent.getId(), now, linkId);
                 if (rider == null) {
                     LOGGER.warn(
                             "Driver {} wanted to {} rider {} @ {} on link {}, but it is no longer an active qsim agent",
@@ -277,6 +279,8 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         driver.getVehicle().addPassenger(rider);
         rider.setVehicle(driver.getVehicle());
         internalInterface.unregisterAdditionalAgentOnLink(rider.getId(), linkId);
+        eventsManager.processEvent(
+                new CarpoolingPickupEvent(now, linkId, driver.getId(), rider.getId(), driver.getVehicle().getId()));
         eventsManager.processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         waitingRiders.remove(rider.getId());
         return false;

@@ -53,7 +53,9 @@ public class PlanModifier implements ReplanningListener {
 
     @Override
     public void notifyReplanning(ReplanningEvent replanningEvent) {
+        CarpoolingUtil.routeCalculations.set(0);
         preplanDay(replanningEvent);
+        LOGGER.info("plan modifier used {} route calculations.", CarpoolingUtil.routeCalculations.get());
     }
 
     private void preplanDay(ReplanningEvent event) {

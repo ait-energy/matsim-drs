@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.Id;
@@ -196,8 +197,11 @@ public class CarpoolingUtil {
             Person driver) {
         RoutingRequest routingRequest = DefaultRoutingRequest.withoutAttributes(from, to, departureTime, driver);
         List<? extends PlanElement> legList = router.calcRoute(routingRequest);
+        routeCalculations.incrementAndGet();
         return getFirstLeg(legList);
     }
+
+    public static volatile AtomicInteger routeCalculations = new AtomicInteger();
 
     /**
      * @throws IllegalStateException if more legs are contained
