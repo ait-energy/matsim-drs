@@ -1,7 +1,11 @@
 package at.ac.ait.matsim.domino.carpooling.run;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
@@ -18,10 +22,11 @@ public class RunLargeScenario {
 
     public static void main(String[] args) {
         Config config = ConfigUtils.loadConfig(
-                "/home/mstraub/projects/matsim-salabim/scenarios/matsim_model_upper_austria_2023.1/test_config.xml");
+                "/home/mstraub/projects/matsim-salabim/scenarios/matsim_model_upper_austria_2023.1/test_config_5km.xml");
         // "/home/mstraub/projects/matsim-salabim/scenarios/matsim_model_vienna_xl_2023.1/config_carpooling.xml");
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
+        enforceMaxPopulationSize(scenario.getPopulation(), 10_000);
         // addAffinity(scenario.getPopulation());
 
         // optional steps to prepare the scenario
@@ -39,6 +44,21 @@ public class RunLargeScenario {
         Carpooling.prepareController(controller);
 
         controller.run();
+    }
+
+    /**
+     * Removes persons from the scenario (keeps the first N persons)
+     * 
+     * @return the number of removed persons
+     */
+    public static int enforceMaxPopulationSize(Population population, int maxPopulationSize) {
+        if (population.getPersons().size() <= maxPopulationSize)
+            return 0;
+
+        List<Id<Person>> keys = new ArrayList<>(population.getPersons().keySet());
+        List<Id<Person>> deleteKeys = keys.subList(maxPopulationSize, keys.size());
+        deleteKeys.forEach(k -> population.removePerson(k));
+        return deleteKeys.size();
     }
 
     public static void addAffinity(Population population) {
