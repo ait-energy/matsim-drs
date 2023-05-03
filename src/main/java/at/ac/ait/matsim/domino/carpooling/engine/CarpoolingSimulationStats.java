@@ -14,6 +14,7 @@ import org.matsim.api.core.v01.events.handler.VehicleAbortsEventHandler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
+import org.matsim.core.utils.misc.Time;
 
 import com.google.inject.Inject;
 
@@ -65,9 +66,9 @@ public class CarpoolingSimulationStats
 
     @Override
     public void handleEvent(VehicleAbortsEvent event) {
-        String msg = String.format("%s @ %d: veh: %s, link: %s",
+        String msg = String.format("%s %s: veh: %s, link: %s",
+                Time.writeTime(event.getTime()),
                 event.getEventType(),
-                (int) event.getTime(),
                 event.getVehicleId(),
                 event.getLinkId());
         writeMessageToDebugFileWithNewline(msg);
@@ -78,9 +79,9 @@ public class CarpoolingSimulationStats
         if (event.getLegMode() != null && event.getLegMode().equals(Carpooling.RIDER_MODE)) {
             stuckRiders++;
         }
-        String msg = String.format("%s @ %d: pers: %s, link: %s, legMode: %s",
+        String msg = String.format("%s %s: pers: %s, link: %s, legMode: %s",
+                Time.writeTime(event.getTime()),
                 event.getEventType(),
-                (int) event.getTime(),
                 event.getPersonId(),
                 event.getLinkId(),
                 event.getLegMode());
@@ -90,9 +91,9 @@ public class CarpoolingSimulationStats
     @Override
     public void handleEvent(CarpoolingPickupEvent event) {
         successfulPickups++;
-        String msg = String.format("%s @ %d: rider: %s, driver: %s, link: %s, vehicle: %s",
+        String msg = String.format("%s %s: rider: %s, driver: %s, link: %s, vehicle: %s",
+                Time.writeTime(event.getTime()),
                 event.getEventType(),
-                (int) event.getTime(),
                 event.getRiderId(),
                 event.getDriverId(),
                 event.getLinkId(),
