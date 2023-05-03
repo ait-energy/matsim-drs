@@ -1,6 +1,6 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import java.util.Map;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +12,7 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.domino.carpooling.analysis.CarpoolTripsInfoCollector;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingMatch;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
 
 public class CarpoolingOptimizer {
@@ -35,7 +35,7 @@ public class CarpoolingOptimizer {
                 this.outputDirectoryHierarchy = outputDirectoryHierarchy;
         }
 
-        public Map<CarpoolingRequest, CarpoolingRequest> optimize() {
+        public List<CarpoolingMatch> optimize() {
                 LOGGER.info("Matching process started!");
                 ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.getCellSize());
                 RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
@@ -55,15 +55,15 @@ public class CarpoolingOptimizer {
                 MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                                 requestsFilter, bestRequestFinder);
                 matchMaker.match();
-                Map<CarpoolingRequest, CarpoolingRequest> matchMap = matchMaker.getMatchedRequests();
+                List<CarpoolingMatch> matches = matchMaker.getMatches();
                 if (isLastIteration) {
                         CarpoolTripsInfoCollector infoCollector = new CarpoolTripsInfoCollector(
                                         outputDirectoryHierarchy);
-                        infoCollector.printMatchedRequestsToCsv(matchMap);
+                        infoCollector.printMatchedRequestsToCsv(matches);
                         infoCollector.printUnMatchedRequestsToCsv(matchMaker.getUnmatchedDriverRequests(),
                                         matchMaker.getUnmatchedRiderRequests());
                 }
-                return matchMap;
+                return matches;
         }
 
 }

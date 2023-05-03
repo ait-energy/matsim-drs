@@ -1,13 +1,16 @@
 package at.ac.ait.matsim.domino.carpooling.optimizer;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.core.router.RoutingModule;
 
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import com.google.common.base.Functions;
+
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingMatch;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class BestRequestFinder {
@@ -20,43 +23,69 @@ public class BestRequestFinder {
     /**
      * @return null if no match was found
      */
-    public CarpoolingRequest findBestRequest(CarpoolingRequest driverRequest,
-            List<CarpoolingRequest> filteredRidersRequests) {
-        Map<CarpoolingRequest, Double> bestRequests = new HashMap<>();
-        double originalRouteTravelTime = CarpoolingUtil
-                .calculateLeg(router, driverRequest.getFromLink(), driverRequest.getToLink(),
-                        driverRequest.getDepartureTime(), driverRequest.getPerson())
-                .getTravelTime().seconds();
-        if (originalRouteTravelTime == 0) {
+    public CarpoolingMatch findBestRequest(List<CarpoolingMatch> matches) {
+        if (matches.isEmpty()) {
             return null;
         }
-
-        for (CarpoolingRequest riderRequest : filteredRidersRequests) {
-            Leg legToCustomer = CarpoolingUtil.calculateLeg(router, driverRequest.getFromLink(),
-                    riderRequest.getFromLink(), driverRequest.getDepartureTime(), driverRequest.getPerson());
-            double travelTimeToCustomer = legToCustomer.getTravelTime().seconds();
-
-            Leg legWithCustomer = CarpoolingUtil.calculateLeg(router, riderRequest.getFromLink(),
-                    riderRequest.getToLink(), driverRequest.getDepartureTime() + travelTimeToCustomer,
-                    driverRequest.getPerson());
-            double travelTimeWithCustomer = legWithCustomer.getTravelTime().seconds();
-
-            Leg legAfterCustomer = CarpoolingUtil.calculateLeg(router, riderRequest.getToLink(),
-                    driverRequest.getToLink(),
-                    driverRequest.getDepartureTime() + travelTimeToCustomer + travelTimeWithCustomer,
-                    driverRequest.getPerson());
-            double travelTimeAfterCustomer = legAfterCustomer.getTravelTime().seconds();
-
-            double newRouteTravelTime = travelTimeToCustomer + travelTimeWithCustomer + travelTimeAfterCustomer;
-            double detourFactor = newRouteTravelTime / originalRouteTravelTime;
-            riderRequest.setDetourFactor(detourFactor);
-            bestRequests.put(riderRequest, detourFactor);
-        }
-        CarpoolingRequest bestRequest = CarpoolingUtil.findRequestWithLeastDetour(bestRequests);
-        if (bestRequest != null) {
-            driverRequest.setDetourFactor(bestRequest.getDetourFactor());
-        }
-        return bestRequest;
+        List<CarpoolingMatch> matchesWithDetails = matches.stream().map(m -> calculateDetailsForMatch(m))
+                .collect(Collectors.toList());
+        return findMatchWithLeastDetour(matchesWithDetails);
     }
 
+    CarpoolingMatch calculateDetailsForMatch(CarpoolingMatch match) {
+        // Should already be calculated (in the request collection phase)
+        Leg originalDriverLeg = match.getDriver().getLegWithRoute();
+        if (originalDriverLeg == null) {
+            originalDriverLeg = CarpoolingUtil.calculateLeg(router,
+                    match.getDriver().getFromLink(),
+                    match.getDriver().getToLink(),
+                    match.getDriver().getDepartureTime(),
+                    match.getDriver().getPerson());
+        }
+        double originalRouteTravelTime = originalDriverLeg.getTravelTime().seconds();
+
+        // should be calculated by RequestsFilter
+        // if not then calculate it now.
+        Leg toPickup = match.getAfterDropoff();
+        if (toPickup == null) {
+            toPickup = CarpoolingUtil.calculateLeg(router,
+                    match.getDriver().getFromLink(),
+                    match.getRider().getFromLink(),
+                    match.getDriver().getDepartureTime(),
+                    match.getDriver().getPerson());
+        }
+        double travelTimeToPickup = toPickup.getTravelTime().seconds();
+
+        // should already be provided in the request,
+        // if not calculate it now
+        // NOTE: when using the cached leg the travelTimeToCustomer is not respected,
+        // but that should be OK
+        Leg withCustomer = match.getRider().getLegWithRoute();
+        if (withCustomer == null) {
+            withCustomer = CarpoolingUtil.calculateLeg(router,
+                    match.getRider().getFromLink(),
+                    match.getRider().getToLink(),
+                    match.getDriver().getDepartureTime() + travelTimeToPickup,
+                    match.getDriver().getPerson());
+        }
+        double travelTimeWithCustomer = withCustomer.getTravelTime().seconds();
+
+        Leg afterDropoff = CarpoolingUtil.calculateLeg(router,
+                match.getRider().getToLink(),
+                match.getDriver().getToLink(),
+                match.getDriver().getDepartureTime() + travelTimeToPickup + travelTimeWithCustomer,
+                match.getDriver().getPerson());
+        double travelTimeAfterDropoff = afterDropoff.getTravelTime().seconds();
+
+        double newRouteTravelTime = travelTimeToPickup + travelTimeWithCustomer + travelTimeAfterDropoff;
+        double detourFactor = newRouteTravelTime / originalRouteTravelTime;
+        return CarpoolingMatch.create(match.getDriver(), match.getRider(), toPickup, withCustomer, afterDropoff,
+                detourFactor);
+    }
+
+    static CarpoolingMatch findMatchWithLeastDetour(List<CarpoolingMatch> matches) {
+        Map<CarpoolingMatch, Double> match2detour = matches.stream()
+                .collect(Collectors.toMap(Functions.identity(), CarpoolingMatch::getDetourFactor));
+        return Collections.min(match2detour.entrySet(), Map.Entry.comparingByValue()).getKey();
+    }
 }

@@ -2,7 +2,6 @@ package at.ac.ait.matsim.domino.carpooling.planHandler;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +26,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import at.ac.ait.matsim.domino.carpooling.optimizer.CarpoolingOptimizer;
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingMatch;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.run.CarpoolingConfigGroup;
@@ -62,67 +62,47 @@ public class PlanModifier implements ReplanningListener {
         Population population = scenario.getPopulation();
         CarpoolingOptimizer optimizer = new CarpoolingOptimizer(carpoolingNetwork, cfgGroup, population,
                 driverRouter, event.isLastIteration(), outputDirectoryHierarchy);
-        Map<CarpoolingRequest, CarpoolingRequest> matchMap = optimizer.optimize();
+        List<CarpoolingMatch> matches = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying carpooling agents plans started.");
-        for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
-            modifyPlans(entry.getKey(), entry.getValue(), populationFactory);
+        for (CarpoolingMatch match : matches) {
+            modifyPlans(match, populationFactory);
         }
         addRoutingModeAndRouteForRiders();
         LOGGER.info("Modifying carpooling agents plans finished.");
     }
 
-    private void modifyPlans(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
-            PopulationFactory factory) {
-        Leg legToCustomer = CarpoolingUtil.calculateLeg(driverRouter,
-                driverRequest.getFromLink(),
-                riderRequest.getFromLink(),
-                driverRequest.getDepartureTime(),
-                driverRequest.getPerson());
-        double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
-
-        addNewActivitiesToDriverPlan(driverRequest, riderRequest, factory, legToCustomer);
-        adjustRiderDepartureTime(riderRequest, pickupTime);
+    private void modifyPlans(CarpoolingMatch match, PopulationFactory factory) {
+        double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
+        addNewActivitiesToDriverPlan(match, pickupTime, factory);
+        adjustRiderDepartureTime(match.getRider(), pickupTime);
     }
 
-    private void addNewActivitiesToDriverPlan(CarpoolingRequest driverRequest, CarpoolingRequest riderRequest,
-            PopulationFactory factory, Leg legToCustomer) {
-        double pickupTime = driverRequest.getDepartureTime() + legToCustomer.getTravelTime().seconds();
+    private void addNewActivitiesToDriverPlan(CarpoolingMatch match, double pickupTime, PopulationFactory factory) {
         Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
-                riderRequest.getFromLink().getId());
+                match.getRider().getFromLink().getId());
         pickup.setEndTime(pickupTime + cfgGroup.getPickupWaitingSeconds());
         CarpoolingUtil.setActivityType(pickup, Carpooling.ActivityType.pickup);
-        CarpoolingUtil.setRiderId(pickup, riderRequest.getPerson().getId());
+        CarpoolingUtil.setRiderId(pickup, match.getRider().getPerson().getId());
 
-        Leg legWithCustomer = CarpoolingUtil.calculateLeg(driverRouter,
-                riderRequest.getFromLink(),
-                riderRequest.getToLink(),
-                pickupTime,
-                driverRequest.getPerson());
-
-        double dropoffTime = pickupTime + legWithCustomer.getTravelTime().seconds();
+        double dropoffTime = pickupTime + match.getWithCustomer().getTravelTime().seconds();
         Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION,
-                riderRequest.getToLink().getId());
+                match.getRider().getToLink().getId());
         dropoff.setEndTime(dropoffTime);
         CarpoolingUtil.setActivityType(dropoff, Carpooling.ActivityType.dropoff);
-        CarpoolingUtil.setRiderId(dropoff, riderRequest.getPerson().getId());
+        CarpoolingUtil.setRiderId(dropoff, match.getRider().getPerson().getId());
 
-        Leg legAfterCustomer = CarpoolingUtil.calculateLeg(driverRouter,
-                riderRequest.getToLink(),
-                driverRequest.getToLink(),
-                dropoffTime,
-                driverRequest.getPerson());
-
-        List<PlanElement> newTrip = Arrays.asList(legToCustomer, pickup, legWithCustomer, dropoff, legAfterCustomer);
+        List<PlanElement> newTrip = Arrays.asList(match.getToPickup(), pickup, match.getWithCustomer(), dropoff,
+                match.getAfterDropoff());
         CarpoolingUtil.setRoutingModeToDriver(newTrip);
-        Activity startActivity = driverRequest.getTrip().getOriginActivity();
-        Activity endActivity = driverRequest.getTrip().getDestinationActivity();
-        List<PlanElement> planElements = driverRequest.getPerson().getSelectedPlan().getPlanElements();
-        LOGGER.debug("Before matching " + driverRequest.getPerson().getId().toString() + " had "
-                + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
+        Activity startActivity = match.getDriver().getTrip().getOriginActivity();
+        Activity endActivity = match.getDriver().getTrip().getDestinationActivity();
+        List<PlanElement> planElements = match.getDriver().getPerson().getSelectedPlan().getPlanElements();
+        LOGGER.debug("Before matching " + match.getDriver().getPerson().getId().toString() + " had "
+                + match.getDriver().getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
         TripRouter.insertTrip(planElements, startActivity, newTrip, endActivity);
-        LOGGER.debug("After matching " + driverRequest.getPerson().getId().toString() + " had "
-                + driverRequest.getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
+        LOGGER.debug("After matching " + match.getDriver().getPerson().getId().toString() + " had "
+                + match.getDriver().getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
     }
 
     static void adjustRiderDepartureTime(CarpoolingRequest riderRequest, double pickupTime) {

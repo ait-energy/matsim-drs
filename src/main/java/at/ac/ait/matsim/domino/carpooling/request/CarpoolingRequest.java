@@ -18,8 +18,10 @@ public class CarpoolingRequest implements Request {
     private final Link toLink;
     private final Leg leg;
     private Leg legWithRoute;
-    private double detourFactor;
 
+    /**
+     * Request for being either driver or rider (see mode)
+     */
     public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
             String mode, Link fromLink, Link toLink, Leg leg) {
         this.leg = leg;
@@ -66,12 +68,19 @@ public class CarpoolingRequest implements Request {
         return 0;
     }
 
+    /**
+     * original leg (from the plans file)
+     */
     public Leg getLeg() {
         return leg;
     }
 
+    /**
+     * optional: pre-calculated leg with route (to avoid duplicate calculations).
+     * can be null
+     */
     public Leg getLegWithRoute() {
-        return legWithRoute; // TODO use this leg to avoid duplicate calculations (save time)
+        return legWithRoute;
     }
 
     public void setLegWithRoute(Leg leg) {
@@ -94,11 +103,4 @@ public class CarpoolingRequest implements Request {
         return Double.NEGATIVE_INFINITY;
     }
 
-    public double getDetourFactor() {
-        return detourFactor;
-    }
-
-    public void setDetourFactor(double detourFactor) {
-        this.detourFactor = detourFactor;
-    }
 }

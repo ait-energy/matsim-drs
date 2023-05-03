@@ -3,7 +3,6 @@ package at.ac.ait.matsim.domino.carpooling.analysis;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
@@ -11,6 +10,7 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.core.utils.io.UncheckedIOException;
 
+import at.ac.ait.matsim.domino.carpooling.request.CarpoolingMatch;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
@@ -25,7 +25,7 @@ public class CarpoolTripsInfoCollector {
         this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOLING_TRIPS);
     }
 
-    public void printMatchedRequestsToCsv(Map<CarpoolingRequest, CarpoolingRequest> matchMap) {
+    public void printMatchedRequestsToCsv(List<CarpoolingMatch> matches) {
         BufferedWriter writer = IOUtils.getBufferedWriter(this.matchedTripsFileName + ".csv");
         try {
             writer.write(
@@ -33,13 +33,13 @@ public class CarpoolTripsInfoCollector {
                             +
                             "driver destinationX,driver destinationY,rider originX,rider originY,rider destinationX," +
                             "rider destinationY,driver departure time,rider departure time,detour factor");
-            for (Map.Entry<CarpoolingRequest, CarpoolingRequest> entry : matchMap.entrySet()) {
-                Person driver = entry.getKey().getPerson();
-                Person rider = entry.getValue().getPerson();
-                Activity driverStartAct = entry.getKey().getTrip().getOriginActivity();
-                Activity driverEndAct = entry.getKey().getTrip().getDestinationActivity();
-                Activity riderStartAct = entry.getValue().getTrip().getOriginActivity();
-                Activity riderEndAct = entry.getValue().getTrip().getDestinationActivity();
+            for (CarpoolingMatch match : matches) {
+                Person driver = match.getDriver().getPerson();
+                Person rider = match.getRider().getPerson();
+                Activity driverStartAct = match.getDriver().getTrip().getOriginActivity();
+                Activity driverEndAct = match.getDriver().getTrip().getDestinationActivity();
+                Activity riderStartAct = match.getRider().getTrip().getOriginActivity();
+                Activity riderEndAct = match.getRider().getTrip().getDestinationActivity();
 
                 writer.write("\n" + driver.getId() + "," + rider.getId() + "," + driverStartAct.getType() + "," +
                         driverEndAct.getType() + "," + riderStartAct.getType() + "," + riderEndAct.getType() + "," +
@@ -48,8 +48,8 @@ public class CarpoolTripsInfoCollector {
                         + riderStartAct.getCoord().getX() +
                         "," + riderStartAct.getCoord().getY() + "," + riderEndAct.getCoord().getX() + ","
                         + riderEndAct.getCoord().getY()
-                        + "," + entry.getKey().getDepartureTime() + "," + entry.getValue().getDepartureTime() + ","
-                        + entry.getKey().getDetourFactor());
+                        + "," + match.getDriver().getDepartureTime() + "," + match.getRider().getDepartureTime() + ","
+                        + match.getDetourFactor());
             }
             writer.flush();
             writer.close();

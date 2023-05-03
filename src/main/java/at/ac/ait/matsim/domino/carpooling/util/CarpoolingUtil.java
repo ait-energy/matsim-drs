@@ -3,7 +3,6 @@ package at.ac.ait.matsim.domino.carpooling.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -32,7 +31,6 @@ import org.matsim.facilities.Facility;
 import com.google.common.collect.Sets;
 
 import at.ac.ait.matsim.domino.carpooling.replanning.PermissibleModesCalculatorForCarpooling;
-import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
 import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 
 public class CarpoolingUtil {
@@ -165,14 +163,6 @@ public class CarpoolingUtil {
             }
         }
         return count;
-    }
-
-    public static CarpoolingRequest findRequestWithLeastDetour(Map<CarpoolingRequest, Double> bestRequests) {
-        if (!bestRequests.isEmpty()) {
-            return Collections.min(bestRequests.entrySet(), Map.Entry.comparingByValue()).getKey();
-        } else {
-            return null;
-        }
     }
 
     /**
