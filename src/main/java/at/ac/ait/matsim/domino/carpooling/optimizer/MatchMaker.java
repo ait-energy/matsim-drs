@@ -46,17 +46,17 @@ public class MatchMaker {
         }
 
         requestsCollector.collectRequests();
-        List<CarpoolingRequest> allDriverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
-        Collections.shuffle(allDriverRequests);
-        List<CarpoolingRequest> allRiderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
-        Collections.shuffle(allRiderRequests);
+        List<CarpoolingRequest> driverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
+        Collections.shuffle(driverRequests);
+        List<CarpoolingRequest> riderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
+        Collections.shuffle(riderRequests);
 
-        for (CarpoolingRequest ridersRequest : allRiderRequests) {
+        for (CarpoolingRequest ridersRequest : riderRequests) {
             requestsRegister.addRequest(ridersRequest);
         }
 
         matches = new ArrayList<>();
-        for (Iterator<CarpoolingRequest> iterator = allDriverRequests.iterator(); iterator.hasNext();) {
+        for (Iterator<CarpoolingRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
             CarpoolingRequest driverRequest = iterator.next();
             List<CarpoolingRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
                     driverRequest.getFromLink().getFromNode(), driverRequest.getToLink().getFromNode(),
@@ -86,16 +86,16 @@ public class MatchMaker {
                     + bestRider.getPerson().getId() + ". Pickup point is "
                     + bestRider.getFromLink().getId());
             matches.add(bestMatch);
-            iterator.remove(); // FIXME why is this removed?
+            iterator.remove();
             requestsRegister.removeRequest(bestRider);
         }
 
-        unmatchedDriverRequests = allDriverRequests;
+        unmatchedDriverRequests = driverRequests;
 
         Set<CarpoolingRequest> matchedRiders = matches.stream().map(CarpoolingMatch::getRider)
                 .collect(Collectors.toSet());
         unmatchedRiderRequests = new ArrayList<>();
-        for (CarpoolingRequest request : allRiderRequests) {
+        for (CarpoolingRequest request : riderRequests) {
             if (!matchedRiders.contains(request)) {
                 unmatchedRiderRequests.add(request);
             }

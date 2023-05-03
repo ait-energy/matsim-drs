@@ -75,7 +75,7 @@ public class CarpoolingSimulationStats
 
     @Override
     public void handleEvent(PersonStuckEvent event) {
-        if (event.getLegMode().equals(Carpooling.RIDER_MODE)) {
+        if (event.getLegMode() != null && event.getLegMode().equals(Carpooling.RIDER_MODE)) {
             stuckRiders++;
         }
         String msg = String.format("%s @ %d: pers: %s, link: %s, legMode: %s",
