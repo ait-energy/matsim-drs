@@ -255,7 +255,9 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
      *         needs to wait more time for the rider to show up)
      */
     private boolean handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double now) {
-        boolean riderInVehicle = rider.getVehicle() != null;
+        // agents that drive a vehicle before being passenger actually have a vehicle
+        // assigned. therefore putting these agents into a different vehicle seems fine.
+        boolean riderInVehicle = false; // rider.getVehicle() != null;
         boolean riderOnOtherLink = !rider.getCurrentLinkId().equals(linkId);
         boolean riderNotWaitingForThisPickup = !waitingRiders.containsKey(rider.getId())
                 || !waitingRiders.get(rider.getId()).equals(linkId);
@@ -265,12 +267,12 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         if (riderInVehicle || riderOnOtherLink || riderNotWaitingForThisPickup) {
             if (driver.getActivityEndTime() <= now) {
                 LOGGER.warn(
-                        "{} {} wanted to pick up {} from link {}, but it did not arrive until the end of the pickup activity. Driving on.",
-                        Time.writeTime(now), driver.getId(), rider.getId(), linkId);
+                        "{} {} wanted to pick up {} from link {}, but it is still not ready at the end of the pickup activity (code {}). Driving on.",
+                        Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
                 return false;
             }
             LOGGER.warn(
-                    "{} {} wanted to pick up {} from link {}, but it is not there (code {}). Driver waits until the end of the pickup activity.",
+                    "{} {} wanted to pick up {} from link {}, but it is not ready (code {}). Driver waits until the end of the pickup activity.",
                     Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
             pickupQueue.add(new PickupEntry(driver, rider, linkId, driver.getActivityEndTime()));
             return true;
