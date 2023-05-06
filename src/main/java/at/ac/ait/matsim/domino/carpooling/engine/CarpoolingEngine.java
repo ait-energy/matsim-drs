@@ -137,7 +137,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
             // LOGGER.debug("handleDeparture {} for agent {} @ {} on link {}",
             // agent.getMode(), agent.getId(), now, linkId);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
-            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), "matched")) {
+            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), Carpooling.REQUEST_STATUS_MATCHED)) {
                 LOGGER.debug("{} {} is waiting to be picked up on link {}.",
                         Time.writeTime(now), agent.getId(), linkId);
                 waitingRiders.put(agent.getId(), linkId);

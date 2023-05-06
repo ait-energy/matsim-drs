@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingMatch;
 import at.ac.ait.matsim.domino.carpooling.request.CarpoolingRequest;
+import at.ac.ait.matsim.domino.carpooling.run.Carpooling;
 import at.ac.ait.matsim.domino.carpooling.util.CarpoolingUtil;
 
 public class MatchMaker {
@@ -69,7 +70,7 @@ public class MatchMaker {
             }
 
             CarpoolingRequest bestRider = bestMatch.getRider();
-            CarpoolingUtil.setRequestStatus(bestRider.getLeg(), "matched");
+            CarpoolingUtil.setRequestStatus(bestRider.getLeg(), Carpooling.REQUEST_STATUS_MATCHED);
             for (PlanElement planElement : bestRider.getPerson().getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Activity) {
                     if (((Activity) planElement).getEndTime().isDefined()) {

@@ -21,7 +21,7 @@ import java.util.*;
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
     public static final String FILENAME_REQUEST_STATS = "carpooling_rider_request_stats";
-    public static final String MATCHED = "matched";
+    public static final String MATCHED = Carpooling.REQUEST_STATUS_MATCHED;
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
