@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.matsim.api.core.v01.TransportMode;
@@ -34,8 +33,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
-    Map<Integer, Map<String, Double>> iterationHistories = new HashMap<>();
-    private final Map<String, Double> totalDistance = new HashMap<>();
+    private final Map<Integer, Map<String, Double>> iterationHistories = new HashMap<>();
 
     @Inject
     public VktStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
@@ -51,77 +49,41 @@ public class VktStatsControlerListener implements AfterMobsimListener {
     }
 
     private void collectVktStatsInfo(AfterMobsimEvent event) {
+        Map<String, Double> distances = new HashMap<>();
         for (Person person : population.getPersons().values()) {
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
-                    if (Objects.equals(((Leg) planElement).getMode(), TransportMode.car)) {
-                        if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
-                            this.totalDistance.put(INDIVIDUAL_TRAVEL,
-                                    ((Leg) planElement).getRoute().getDistance() / 1000);
-                        } else {
-                            this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
-                                    + ((Leg) planElement).getRoute().getDistance() / 1000);
-                        }
-                    } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)) {
+                    Leg leg = (Leg) planElement;
+                    String type = null;
+
+                    if (leg.getMode().equals(TransportMode.car)) {
+                        type = INDIVIDUAL_TRAVEL;
+                    } else if (leg.getMode().equals(Carpooling.RIDER_MODE)) {
                         if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) == null) {
-                            if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
-                                this.totalDistance.put(INDIVIDUAL_TRAVEL,
-                                        ((Leg) planElement).getRoute().getDistance() / 1000);
-                            } else {
-                                this.totalDistance.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL)
-                                        + ((Leg) planElement).getRoute().getDistance() / 1000);
+                            type = INDIVIDUAL_TRAVEL;
+                        }
+                    } else if (leg.getMode().equals(Carpooling.DRIVER_MODE)) {
+                        String carpoolingStatus = CarpoolingUtil.getCarpoolingStatus(leg);
+                        if (carpoolingStatus != null) {
+                            if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
+                                type = BEFORE_AFTER_CARPOOLING_TRAVEL;
+                            } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
+                                type = CARPOOLING_TRAVEL;
                             }
                         }
-                    } else if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE)) {
-                        if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) != null) {
-                            if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement)
-                                    .equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
-                                if (totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL) == null) {
-                                    this.totalDistance.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
-                                            ((Leg) planElement).getRoute().getDistance() / 1000);
-                                } else {
-                                    this.totalDistance.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
-                                            totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL)
-                                                    + ((Leg) planElement).getRoute().getDistance() / 1000);
-                                }
-                            } else if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement)
-                                    .equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
-                                if (totalDistance.get(CARPOOLING_TRAVEL) == null) {
-                                    this.totalDistance.put(CARPOOLING_TRAVEL,
-                                            ((Leg) planElement).getRoute().getDistance() / 1000);
-                                } else {
-                                    this.totalDistance.put(CARPOOLING_TRAVEL, totalDistance.get(CARPOOLING_TRAVEL)
-                                            + ((Leg) planElement).getRoute().getDistance() / 1000);
-                                }
-                            }
-                        }
+                    }
+
+                    if (type != null) {
+                        double distance = leg.getRoute().getDistance() / 1000;
+                        distances.put(type, distance + distances.getOrDefault(type, 0d));
                     }
                 }
             }
         }
 
-        Map<String, Double> totalDistancesHistory = new HashMap<>();
-        if (totalDistance.get(CARPOOLING_TRAVEL) == null) {
-            totalDistancesHistory.put(CARPOOLING_TRAVEL, 0.0);
-        } else {
-            totalDistancesHistory.put(CARPOOLING_TRAVEL, totalDistance.get(CARPOOLING_TRAVEL));
-        }
-        if (totalDistance.get(INDIVIDUAL_TRAVEL) == null) {
-            totalDistancesHistory.put(INDIVIDUAL_TRAVEL, 0.0);
-        } else {
-            totalDistancesHistory.put(INDIVIDUAL_TRAVEL, totalDistance.get(INDIVIDUAL_TRAVEL));
-        }
-        if (totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL) == null) {
-            totalDistancesHistory.put(BEFORE_AFTER_CARPOOLING_TRAVEL, 0.0);
-        } else {
-            totalDistancesHistory.put(BEFORE_AFTER_CARPOOLING_TRAVEL,
-                    totalDistance.get(BEFORE_AFTER_CARPOOLING_TRAVEL));
-        }
-        this.iterationHistories.put(event.getIteration(), totalDistancesHistory);
+        this.iterationHistories.put(event.getIteration(), distances);
 
-        BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt");
-
-        try {
+        try (BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt")) {
             requestOut.write("Iteration");
             requestOut.write("\t" + CARPOOLING_TRAVEL);
             requestOut.write("\t" + BEFORE_AFTER_CARPOOLING_TRAVEL);
@@ -129,21 +91,13 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
+                Map<String, Double> distancesAtIteration = this.iterationHistories.get(iteration);
                 requestOut.write(String.valueOf(iteration));
-
-                Map<String, Double> carpoolMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + carpoolMap.get(CARPOOLING_TRAVEL));
-
-                Map<String, Double> beforeAfterCarpoolMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + beforeAfterCarpoolMap.get(BEFORE_AFTER_CARPOOLING_TRAVEL));
-
-                Map<String, Double> individualMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + individualMap.get(INDIVIDUAL_TRAVEL));
-
+                requestOut.write("\t" + distancesAtIteration.getOrDefault(CARPOOLING_TRAVEL, 0d));
+                requestOut.write("\t" + distancesAtIteration.getOrDefault(BEFORE_AFTER_CARPOOLING_TRAVEL, 0d));
+                requestOut.write("\t" + distancesAtIteration.getOrDefault(INDIVIDUAL_TRAVEL, 0d));
                 requestOut.write("\n");
             }
-            requestOut.flush();
-            requestOut.close();
         } catch (IOException var1) {
             var1.printStackTrace();
             throw new UncheckedIOException(var1);
@@ -179,6 +133,5 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             chart.addMatsimLogo();
             chart.saveAsPng(this.requestFileName + ".png", 800, 600);
         }
-        this.totalDistance.clear();
     }
 }
