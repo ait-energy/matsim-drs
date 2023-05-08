@@ -58,18 +58,14 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
                     if (leg.getMode().equals(TransportMode.car)) {
                         type = INDIVIDUAL_TRAVEL;
-                    } else if (leg.getMode().equals(Carpooling.RIDER_MODE)) {
-                        if (CarpoolingUtil.getCarpoolingStatus((Leg) planElement) == null) {
-                            type = INDIVIDUAL_TRAVEL;
-                        }
                     } else if (leg.getMode().equals(Carpooling.DRIVER_MODE)) {
                         String carpoolingStatus = CarpoolingUtil.getCarpoolingStatus(leg);
-                        if (carpoolingStatus != null) {
-                            if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
-                                type = BEFORE_AFTER_CARPOOLING_TRAVEL;
-                            } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
-                                type = CARPOOLING_TRAVEL;
-                            }
+                        if (carpoolingStatus == null) {
+                            type = INDIVIDUAL_TRAVEL;
+                        } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
+                            type = BEFORE_AFTER_CARPOOLING_TRAVEL;
+                        } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
+                            type = CARPOOLING_TRAVEL;
                         }
                     }
 
@@ -98,9 +94,8 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                 requestOut.write("\t" + distancesAtIteration.getOrDefault(INDIVIDUAL_TRAVEL, 0d));
                 requestOut.write("\n");
             }
-        } catch (IOException var1) {
-            var1.printStackTrace();
-            throw new UncheckedIOException(var1);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
 
         if (this.createPNG) {
