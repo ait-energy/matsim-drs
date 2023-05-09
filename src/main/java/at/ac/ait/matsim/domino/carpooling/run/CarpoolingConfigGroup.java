@@ -30,6 +30,9 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String DRIVER_PROFIT_PER_KM = "driverProfitPerKm";
     private double driverProfitPerKm = 0;
 
+    public static final String RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT = "riderMobilityGuaranteeMonetaryConstant";
+    private double riderMobilityGuaranteeMonetaryConstant = 0;
+
     public static final String CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT = "carAndCarpoolingDailyMonetaryConstant";
     private double carAndCarpoolingDailyMonetaryConstant = 0;
 
@@ -66,6 +69,8 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
                 "The amount of time the driver is expected to wait until the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
+        map.put(RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT,
+                "Price for an unmatched rider trip. Such trips are typically teleported, imagine the rider e.g. gets provided a taxi. Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)");
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
                 "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
@@ -139,6 +144,16 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     @StringSetter(DRIVER_PROFIT_PER_KM)
     public void setDriverProfitPerKm(double driverProfitPerKm) {
         this.driverProfitPerKm = driverProfitPerKm;
+    }
+
+    @StringGetter(RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT)
+    public double getRiderMobilityGuaranteeMonetaryConstant() {
+        return riderMobilityGuaranteeMonetaryConstant;
+    }
+
+    @StringSetter(RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT)
+    public void setRiderMobilityGuaranteeMonetaryConstant(double riderMobilityGuaranteeMonetaryConstant) {
+        this.riderMobilityGuaranteeMonetaryConstant = riderMobilityGuaranteeMonetaryConstant;
     }
 
     @StringGetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)

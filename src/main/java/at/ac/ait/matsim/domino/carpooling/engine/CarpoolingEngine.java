@@ -143,6 +143,13 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 waitingRiders.put(agent.getId(), linkId);
                 return true;
             }
+            eventsManager.processEvent(new PersonMoneyEvent(
+                    now,
+                    agent.getId(),
+                    cfgGroup.getRiderMobilityGuaranteeMonetaryConstant(),
+                    Carpooling.RIDER_MODE + " mobility guarantee",
+                    null,
+                    null));
         }
         return false;
     }
