@@ -63,12 +63,11 @@
             <param name="teleportedModeFreespeedFactor" value="2.0" />
         </parameterset>
 
-        <!-- The mode carpoolingRider here is ONLY used for UNMATCHED riders.
+        <!-- The routing config for carpoolingRider here is ONLY relevant for UNMATCHED riders,
+             since matched riders will either be picked up by the driver (or stuck).
              The idea is that unmatched riders should not be stuck but get a mobility guarantee.
-             To avoid persons switching from car to carpoolingRider begin late 
-             the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended.
-             To avoid masses of unmatched riders costs should be configured either here (per distance)
-             or with carpooling.riderMobilityGuaranteeMonetaryConstant) -->
+             To avoid persons switching from fast modes (such as car) to carpoolingRider arrive late 
+             the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended. -->
         <parameterset type="teleportedModeParameters">
             <param name="beelineDistanceFactor" value="2" />
             <param name="mode" value="carpoolingRider" />
@@ -121,6 +120,9 @@
             <!-- should be the same as monetaryDistanceRate for carpoolingDriver -->
             <param name="monetaryDistanceRate" value="-0.000091"/>
         </parameterset>
+        <!-- The scoring config for carpoolingRider applies to BOTH matched an unmatched riders.
+             To avoid masses of unmatched riders we should apply costs to the that,
+             but ideally not here but in carpooling.riderMobilityGuaranteeMonetaryConstant -->
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
             <param name="dailyMonetaryConstant" value="0.0" />
@@ -164,6 +166,7 @@
     <module name="carpooling">
         <param name="driverProfitPerKm" value="0.8" />
         <param name="carAndCarpoolingDailyMonetaryConstant" value="-12.34" />
+        <!-- cost per UNMATCHED rider trips (used to avoid too many riders that can not be served by the drivers)-->
         <param name="riderMobilityGuaranteeMonetaryConstant" value="-10" />
         <param name="pickupWaitingSeconds" value="180" />
     </module>

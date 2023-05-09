@@ -70,7 +70,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
         map.put(RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT,
-                "Price for an unmatched rider trip. Such trips are typically teleported, imagine the rider e.g. gets provided a taxi. Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)");
+                "Price per unmatched rider trip. Such trips are typically teleported, imagine the rider e.g. gets provided a taxi. Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)");
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
                 "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
