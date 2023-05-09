@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
-<!-- example config with mode innovation and a regular population not containing initial carpoolingDriver/Riders -->
+<!-- minimal example showing how to set up carpooling (with mode innovation and a regular population not containing initial carpoolingDriver/Riders) -->
 <config>
     <module name="global">
         <param name="numberOfThreads" value="3" />
@@ -63,8 +63,12 @@
             <param name="teleportedModeFreespeedFactor" value="2.0" />
         </parameterset>
 
-        <!-- unmatched riders will teleport with the following param values -->
-        <!-- NOTE: beelineDistanceFactor preferably should be high (>=2) to avoid unmatched carpoolingRider plans with high scores  -->
+        <!-- The mode carpoolingRider here is ONLY used for UNMATCHED riders.
+             The idea is that unmatched riders should not be stuck but get a mobility guarantee.
+             To avoid persons switching from car to carpoolingRider begin late 
+             the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended.
+             To avoid masses of unmatched riders costs should be configured either here (per distance)
+             or with carpooling.riderMobilityGuaranteeMonetaryConstant) -->
         <parameterset type="teleportedModeParameters">
             <param name="beelineDistanceFactor" value="2" />
             <param name="mode" value="carpoolingRider" />
@@ -98,7 +102,8 @@
             <param name="typicalDuration" value="08:00:00" />
         </parameterset>
 
-        <!-- activityParams and modeParams must be added for carpooling-->
+        <!-- activityParams and modeParams must be added for carpooling 
+             (the others are added by default)-->
         <parameterset type="activityParams">
             <param name="activityType" value="carpoolingDriver interaction" />
             <param name="priority" value="1.0" />
@@ -107,24 +112,34 @@
         </parameterset>
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
+            <!-- dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes
+                 (use carpooling.carAndCarpoolingDailyMonetaryConstant instead) -->
             <param name="dailyMonetaryConstant" value="0.0" />
-            <param name="dailyUtilityConstant" value="0.0" />
             <param name="marginalUtilityOfDistance_util_m" value="0.0" />
             <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-            <param name="mode" value="carpoolingRider" />
-            <!-- NOTE configure costs for using carpooling as rider here-->
-            <param name="monetaryDistanceRate" value="-0.0002"/>
+            <param name="mode" value="car" />
+            <!-- should be the same as monetaryDistanceRate for carpoolingDriver -->
+            <param name="monetaryDistanceRate" value="-0.000091"/>
         </parameterset>
-        <!-- NOTE: carpoolingDriver monetaryDistanceRate should be similar to car monetaryDistanceRate since carpoolingDriver can receive profit during the simulation   -->
-        <!-- NOTE: carpoolingDriver and car dailyMonetaryConstant must be both set to zero to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes. dailyMonetaryCost is however included as a configurable parameter in CarpoolingConfigGroup  -->
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
             <param name="dailyMonetaryConstant" value="0.0" />
-            <param name="dailyUtilityConstant" value="0.0" />
+            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
+            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+            <param name="mode" value="carpoolingRider" />
+            <!-- costs for using carpooling as rider -->
+            <param name="monetaryDistanceRate" value="-0.0002"/>
+        </parameterset>
+        <parameterset type="modeParams">
+            <param name="constant" value="0.0" />
+            <!-- dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes
+                 (use carpooling.carAndCarpoolingDailyMonetaryConstant instead) -->
+            <param name="dailyMonetaryConstant" value="0.0" />
             <param name="marginalUtilityOfDistance_util_m" value="0.0" />
             <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
             <param name="mode" value="carpoolingDriver" />
-            <param name="monetaryDistanceRate" value="0.0" />
+            <!-- should be the same as monetaryDistanceRate for car -->
+            <param name="monetaryDistanceRate" value="-0.000091"/>
         </parameterset>
     </module>
 
@@ -145,10 +160,11 @@
         </parameterset>
     </module>
 
+    <!-- Specify carpooling details, leave empty to use defaults -->
     <module name="carpooling">
-        <!-- can be left empty in case you are happy with the defaults -->
-        <param name="driverProfitPerKm" value="1.0" />
+        <param name="driverProfitPerKm" value="0.8" />
         <param name="carAndCarpoolingDailyMonetaryConstant" value="-12.34" />
-        <param name="pickupWaitingSeconds" value="30" />
+        <param name="riderMobilityGuaranteeMonetaryConstant" value="-10" />
+        <param name="pickupWaitingSeconds" value="180" />
     </module>
 </config>
