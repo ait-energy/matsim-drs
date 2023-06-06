@@ -15,7 +15,7 @@ public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling.xml", new DrsConfigGroup());
+        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_drs.xml", new DrsConfigGroup());
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
@@ -24,13 +24,13 @@ public class RunSimpleDrsExample {
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
-        // necessary to kick-start the carpooling driver pool
+        // necessary to kick-start the drs driver pool
         int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
-        LOGGER.info("added initial carpooling driver plan to {} agent(s)", count);
+        LOGGER.info("added initial drs driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);
 
-        // necessary to register the carpooling module
+        // necessary to register the drs module
         Drs.prepareController(controller);
 
         controller.run();

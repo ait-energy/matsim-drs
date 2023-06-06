@@ -17,7 +17,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RunViennaExample {
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/vienna/config_carpooling.xml");
+        Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml");
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         editPopulation(scenario.getPopulation());
@@ -27,11 +27,11 @@ public class RunViennaExample {
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
-        // necessary to kick-start the carpooling driver pool
+        // necessary to kick-start the drs driver pool
         DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
 
         Controler controller = new Controler(scenario);
-        // necessary to register the carpooling module
+        // necessary to register the drs module
         Drs.prepareController(controller);
 
         controller.run();

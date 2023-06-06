@@ -12,7 +12,7 @@
         <attributes>
             <attribute class="java.lang.Integer" name="age">38</attribute>
             <attribute class="java.lang.Boolean" name="bikeAvailable">false</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">none</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">none</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.Boolean" name="carParkingAtWork">true</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
@@ -32,7 +32,7 @@
     <person id="person2_car+bike">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">none</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">none</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">false</attribute>
@@ -47,7 +47,7 @@
     </person>
     <person id="person3_bike">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">none</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">none</attribute>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
             <attribute class="java.lang.Boolean" name="carAvailable">false</attribute>
             <attribute class="java.lang.String" name="carAvail">never</attribute>
@@ -66,7 +66,7 @@
         <!-- for this person: home = Fultonstraße # An der oberen alten Donau, work = Universumstraße # Hellwagstraße -->
         <!-- should use 33A and 31 to get to work -->
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">none</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">none</attribute>
             <attribute class="java.lang.Boolean" name="bikeAvailable">false</attribute>
             <attribute class="java.lang.Boolean" name="carAvailable">false</attribute>
             <attribute class="java.lang.String" name="carAvail">never</attribute>
@@ -90,7 +90,7 @@
     <person id="person_HH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -104,7 +104,7 @@
     <person id="person_HW">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -118,7 +118,7 @@
     <person id="person_HWH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -134,7 +134,7 @@
     <person id="person_HWSH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -152,7 +152,7 @@
     <person id="person_HWLH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -170,7 +170,7 @@
     <person id="person_WLW">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -186,7 +186,7 @@
     <person id="person_HWHSH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -206,7 +206,7 @@
     <person id="person_HWHSH_differentMiddleHome">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -226,7 +226,7 @@
     <person id="person_HWHEH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -246,7 +246,7 @@
     <person id="person_HWSWH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -266,7 +266,7 @@
     <person id="person_HLWLH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -286,7 +286,7 @@
     <person id="person_HLWSWLH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -310,7 +310,7 @@
     <person id="person_HWE">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -326,7 +326,7 @@
     <person id="person_HEH">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>
@@ -342,7 +342,7 @@
     <person id="person_leisureOverMidnight">
         <attributes>
             <attribute class="java.lang.Boolean" name="bikeAvailable">true</attribute>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
             <attribute class="java.lang.Boolean" name="transitSeasonTicket">true</attribute>

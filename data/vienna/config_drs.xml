@@ -15,7 +15,7 @@
 	</module>
 
 	<module name="controler">
-		<param name="outputDirectory" value="./output-floridsdorf-carpooling" />
+		<param name="outputDirectory" value="./output-floridsdorf-drs" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
 		<param name="firstIteration" value="0" />
 		<param name="lastIteration" value="5" />
@@ -23,17 +23,17 @@
 		<param name="writePlansInterval" value="1" />
 		<param name="writeSnapshotsInterval" value="1" />
 	</module>
-	<!-- carpoolingDriver mode must be added as a mainMode to QSim -->
+	<!-- drsDriver mode must be added as a mainMode to QSim -->
 	<module name="qsim">
 		<param name="numberOfThreads" value="3" />
 		<param name="startTime" value="00:00:00" />
 		<param name="endTime" value="30:00:00" />
-		<param name="mainMode" value="car,carpoolingDriver" />
+		<param name="mainMode" value="car,drsDriver" />
 	</module>
 
 	<module name="planscalcroute">
-		<!-- carpoolingDriver mode must be added as a networkMode -->
-		<param name="networkModes" value="car,carpoolingDriver" />
+		<!-- drsDriver mode must be added as a networkMode -->
+		<param name="networkModes" value="car,drsDriver" />
 		<param name="clearDefaultTeleportedModeParams" value="true" />
 
 		<parameterset type="teleportedModeParameters">
@@ -63,10 +63,10 @@
 		</parameterset>
 
 		<!-- unmatched riders will teleport with the following param values -->
-		<!-- NOTE: beelineDistanceFactor preferably should be high (>=2) to avoid unmatched carpoolingRider plans with high scores  -->
+		<!-- NOTE: beelineDistanceFactor preferably should be high (>=2) to avoid unmatched drsRider plans with high scores  -->
 		<parameterset type="teleportedModeParameters">
 			<param name="beelineDistanceFactor" value="2" />
-			<param name="mode" value="carpoolingRider" />
+			<param name="mode" value="drsRider" />
 			<param name="teleportedModeSpeed" value="8.3" />
 		</parameterset>
 	</module>
@@ -97,9 +97,9 @@
 			<param name="typicalDuration" value="08:00:00" />
 		</parameterset>
 
-		<!-- activityParams and modeParams must be added for carpooling-->
+		<!-- activityParams and modeParams must be added for drs-->
 		<parameterset type="activityParams">
-			<param name="activityType" value="carpoolingDriver interaction" />
+			<param name="activityType" value="drsDriver interaction" />
 			<param name="priority" value="1.0" />
 			<param name="scoringThisActivityAtAll" value="false" />
 			<param name="typicalDurationScoreComputation" value="relative" />
@@ -110,18 +110,18 @@
 			<param name="dailyUtilityConstant" value="0.0" />
 			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
 			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-			<param name="mode" value="carpoolingRider" />
+			<param name="mode" value="drsRider" />
 			<param name="monetaryDistanceRate" value="0.0" />
 		</parameterset>
-		<!-- NOTE: carpoolingDriver monetaryDistanceRate should be similar to car monetaryDistanceRate since carpoolingDriver can receive profit during the simulation   -->
-		<!-- NOTE: carpoolingDriver and car dailyMonetaryConstant must be both set to zero to avoid double dailyMonetaryCost in case a plan has both car and carpoolingDriver modes. dailyMonetaryCost is however included as a configurable parameter in CarpoolingConfigGroup  -->
+		<!-- NOTE: drsDriver monetaryDistanceRate should be similar to car monetaryDistanceRate since drsDriver can receive profit during the simulation   -->
+		<!-- NOTE: drsDriver and car dailyMonetaryConstant must be both set to zero to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes. dailyMonetaryCost is however included as a configurable parameter in DrsConfigGroup  -->
 		<parameterset type="modeParams">
 			<param name="constant" value="0.0" />
 			<param name="dailyMonetaryConstant" value="0.0" />
 			<param name="dailyUtilityConstant" value="0.0" />
 			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
 			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-			<param name="mode" value="carpoolingDriver" />
+			<param name="mode" value="drsDriver" />
 			<param name="monetaryDistanceRate" value="0.0" />
 		</parameterset>
 	</module>
@@ -137,13 +137,13 @@
 			<param name="weight" value="0.1"/>
 		</parameterset>
 		<parameterset type="strategysettings">
-			<!-- for carpooling this strategy must be used instead of regular SubtourModeChoice -->
-			<param name="strategyName" value="SubtourModeChoiceForCarpooling"/>
+			<!-- for drs this strategy must be used instead of regular SubtourModeChoice -->
+			<param name="strategyName" value="SubtourModeChoiceForDrs"/>
 			<param name="weight" value="0.1"/>
 		</parameterset>
 	</module>
 
-	<module name="carpooling">
+	<module name="drs">
 		<!-- can be left empty in case you are happy with the defaults -->
 	</module>
 </config>

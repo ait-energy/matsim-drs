@@ -70,7 +70,7 @@ public class DrsUtil {
                 .collect(Collectors.toList());
     }
 
-    public static String getCarpoolingAffinity(Person person) {
+    public static String getDrsAffinity(Person person) {
         Object affinity = person.getAttributes().getAttribute(Drs.ATTRIB_AFFINITY);
         return affinity == null ? "" : affinity.toString();
     }
@@ -216,15 +216,15 @@ public class DrsUtil {
         }
     }
 
-    public static String getCarpoolingStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_CARPOOLING_STATUS);
+    public static String getDrsStatus(Leg leg) {
+        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_DRS_STATUS);
     }
 
-    public static void setCarpoolingStatus(Leg leg, String status) {
+    public static void setDrsStatus(Leg leg, String status) {
         if (status != null) {
-            leg.getAttributes().putAttribute(Drs.ATTRIB_CARPOOLING_STATUS, status);
+            leg.getAttributes().putAttribute(Drs.ATTRIB_DRS_STATUS, status);
         } else {
-            leg.getAttributes().removeAttribute(Drs.ATTRIB_CARPOOLING_STATUS);
+            leg.getAttributes().removeAttribute(Drs.ATTRIB_DRS_STATUS);
         }
     }
 

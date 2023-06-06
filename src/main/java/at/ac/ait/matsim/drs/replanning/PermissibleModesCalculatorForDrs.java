@@ -33,7 +33,7 @@ public class PermissibleModesCalculatorForDrs implements PermissibleModesCalcula
         boolean hasLicense = !"no".equals(PersonUtils.getLicense(person));
         boolean carAvailable = !"never".equals(PersonUtils.getCarAvail(person));
 
-        String affinity = DrsUtil.getCarpoolingAffinity(person);
+        String affinity = DrsUtil.getDrsAffinity(person);
         boolean willingToDrive = Drs.AFFINITY_DRIVER_OR_RIDER.equals(affinity)
                 || Drs.AFFINITY_DRIVER_ONLY.equals(affinity);
         boolean willingToRide = Drs.AFFINITY_DRIVER_OR_RIDER.equals(affinity)

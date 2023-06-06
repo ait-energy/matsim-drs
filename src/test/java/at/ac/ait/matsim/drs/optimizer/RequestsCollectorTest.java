@@ -19,15 +19,15 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsCollectorTest {
-    private static Population population, populationWithZeroCarpoolingDrivers;
+    private static Population population, populationWithZeroDrsDrivers;
     private static Network network;
     private static RoutingModule driverRouter;
 
     @BeforeAll
     static void setup() {
         // population with predefined driver/rider legs (see length in xml comments)
-        population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
-        populationWithZeroCarpoolingDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
+        population = PopulationUtils.readPopulation("data/floridsdorf/population_drs.xml");
+        populationWithZeroDrsDrivers = PopulationUtils.readPopulation("data/floridsdorf/population.xml");
 
         RoutingForTests routingForTests = new RoutingForTests("data/floridsdorf/network.xml");
         network = routingForTests.getNetwork();
@@ -90,9 +90,9 @@ class RequestsCollectorTest {
     }
 
     @Test
-    void testNoCarpoolingRequests() {
+    void testNoDrsRequests() {
         RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(),
-                populationWithZeroCarpoolingDrivers, NetworkUtils.createNetwork(), driverRouter);
+                populationWithZeroDrsDrivers, NetworkUtils.createNetwork(), driverRouter);
         collector.collectRequests();
         List<DrsRequest> driverRequests = collector.getDriverRequests();
         List<DrsRequest> riderRequests = collector.getRiderRequests();

@@ -47,10 +47,10 @@ public class DailyMonetaryConstantListener implements BeforeMobsimListener {
                 eventsManager.processEvent(new PersonMoneyEvent(
                         0,
                         person.getId(),
-                        cfgGroup.getCarAndCarpoolingDailyMonetaryConstant(),
+                        cfgGroup.getCarAndDrsDailyMonetaryConstant(),
                         "dailyMonetaryConstant",
                         null,
-                        "carpoolingDriver or car"));
+                        "drsDriver or car"));
             }
         }
     }

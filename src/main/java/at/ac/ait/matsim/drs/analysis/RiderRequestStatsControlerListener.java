@@ -20,7 +20,7 @@ import java.util.*;
 
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
-    public static final String FILENAME_REQUEST_STATS = "carpooling_rider_request_stats";
+    public static final String FILENAME_REQUEST_STATS = "drs_rider_request_stats";
     public static final String MATCHED = Drs.REQUEST_STATUS_MATCHED;
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
@@ -108,7 +108,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
-            StackedBarChart chart = new StackedBarChart("Carpooling Rider Request Statistics", "iteration", "requests",
+            StackedBarChart chart = new StackedBarChart("Drs Rider Request Statistics", "iteration", "requests",
                     categories);
 
             double[] matchedValues = iterationHistories.values().stream()

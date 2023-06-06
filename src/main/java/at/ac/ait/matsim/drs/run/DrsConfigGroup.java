@@ -10,7 +10,7 @@ import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForDrs;
 
 public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
-    public static final String GROUP_NAME = "carpooling";
+    public static final String GROUP_NAME = "drs";
 
     public static final String CELL_SIZE = "cellSize";
     private int cellSize = 4000;
@@ -33,8 +33,8 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
     public static final String RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT = "riderMobilityGuaranteeMonetaryConstant";
     private double riderMobilityGuaranteeMonetaryConstant = 0;
 
-    public static final String CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT = "carAndCarpoolingDailyMonetaryConstant";
-    private double carAndCarpoolingDailyMonetaryConstant = 0;
+    public static final String CAR_AND_DRS_DAILY_MONETARY_CONSTANT = "carAndDrsDailyMonetaryConstant";
+    private double carAndDrsDailyMonetaryConstant = 0;
 
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
     private String[] subtourModeChoiceModes = { TransportMode.car, Drs.DRIVER_MODE, Drs.RIDER_MODE,
@@ -58,7 +58,7 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
     public Map<String, String> getComments() {
         Map<String, String> map = super.getComments();
         map.put(CELL_SIZE,
-                "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low carpooling share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
+                "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low drs share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
         map.put(MAX_POSSIBLE_CANDIDATES,
                 "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
         map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS,
@@ -71,8 +71,8 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
         map.put(RIDER_MOBILITY_GUARANTEE_MONETARY_CONSTANT,
                 "Price per unmatched rider trip. Such trips are typically teleported, imagine the rider e.g. gets provided a taxi. Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)");
-        map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
-                "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
+        map.put(CAR_AND_DRS_DAILY_MONETARY_CONSTANT,
+                "Daily price for car usage including when using the private car as drsDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
@@ -80,9 +80,9 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
                 "Defines the chain-based modes for the'" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, separated by commas");
         map.put(MIN_DRIVER_LEG_METERS,
-                "minimum length of legs (routed with the carpoolingDriver mode) to be considered for the carpooling driver mode. 0 means no minimum.");
+                "minimum length of legs (routed with the drsDriver mode) to be considered for the drs driver mode. 0 means no minimum.");
         map.put(MIN_RIDER_LEG_METERS,
-                "minimum length of legs (routed with the carpoolingDriver mode) to be considered for the carpooling ride mode. 0 means no minimum.");
+                "minimum length of legs (routed with the drsDriver mode) to be considered for the drs ride mode. 0 means no minimum.");
         return map;
     }
 
@@ -156,14 +156,14 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
         this.riderMobilityGuaranteeMonetaryConstant = riderMobilityGuaranteeMonetaryConstant;
     }
 
-    @StringGetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)
-    public double getCarAndCarpoolingDailyMonetaryConstant() {
-        return carAndCarpoolingDailyMonetaryConstant;
+    @StringGetter(CAR_AND_DRS_DAILY_MONETARY_CONSTANT)
+    public double getCarAndDrsDailyMonetaryConstant() {
+        return carAndDrsDailyMonetaryConstant;
     }
 
-    @StringSetter(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT)
-    public void setCarAndCarpoolingDailyMonetaryConstant(double carAndCarpoolingDailyMonetaryConstant) {
-        this.carAndCarpoolingDailyMonetaryConstant = carAndCarpoolingDailyMonetaryConstant;
+    @StringSetter(CAR_AND_DRS_DAILY_MONETARY_CONSTANT)
+    public void setCarAndDrsDailyMonetaryConstant(double carAndDrsDailyMonetaryConstant) {
+        this.carAndDrsDailyMonetaryConstant = carAndDrsDailyMonetaryConstant;
     }
 
     public String[] getSubtourModeChoiceModes() {

@@ -10,7 +10,7 @@ import org.matsim.vehicles.Vehicle;
 
 public class DrsPickupEvent extends Event {
 
-    public final static String EVENT_TYPE = "carpoolingPickup";
+    public final static String EVENT_TYPE = "drsPickup";
 
     private Id<Link> linkId;
     private Id<Person> driverId;

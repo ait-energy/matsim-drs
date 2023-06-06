@@ -27,7 +27,7 @@ public class DrsSimulationStats
         AfterMobsimListener {
 
     private static final String DEBUG_FILE = "debug_events.txt";
-    private static final String CSV_FILE = "carpooling_sim_stats.csv";
+    private static final String CSV_FILE = "drs_sim_stats.csv";
     private int currentIteration, successfulPickups, stuckRiders;
     private OutputDirectoryHierarchy outputHierarchy;
     private BufferedWriter debugWriter;

@@ -10,7 +10,7 @@
     <!-- this unfortunately does not correspond exactly with the router we configured in RoutingForTests -->
     <person id="person1_carDriver">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
@@ -31,20 +31,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person2_carpoolingDriver">
+    <person id="person2_drsDriver">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1540" end_time="05:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 5393m -->
+            <leg mode="drsDriver">                <!-- 5393m -->
             </leg>
             <activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 5793mm -->
+            <leg mode="drsDriver">                <!-- 5793mm -->
             </leg>
             <activity type="home" link="1540" start_time="13:45:00">
             </activity>
@@ -54,20 +54,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person3_carpoolingDriver">
+    <person id="person3_drsDriver">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="186" end_time="05:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 4041m -->
+            <leg mode="drsDriver">                <!-- 4041m -->
             </leg>
             <activity type="work" link="574" start_time="05:45:00" end_time="13:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 4171m -->
+            <leg mode="drsDriver">                <!-- 4171m -->
             </leg>
             <activity type="home" link="186" start_time="13:45:00">
             </activity>
@@ -77,20 +77,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person4_carpoolingDriver">
+    <person id="person4_drsDriver">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1540" end_time="03:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 5393mm -->
+            <leg mode="drsDriver">                <!-- 5393mm -->
             </leg>
             <activity type="work" link="688" start_time="03:45:00" end_time="11:00:00">
             </activity>
-            <leg mode="carpoolingDriver">                <!-- 5793m -->
+            <leg mode="drsDriver">                <!-- 5793m -->
             </leg>
             <activity type="home" link="1540" start_time="11:45:00">
             </activity>
@@ -100,20 +100,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person5_carpoolingRider">
+    <person id="person5_drsRider">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1541" end_time="05:10:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5855m -->
+            <leg mode="drsRider">                <!-- 5855m -->
             </leg>
             <activity type="work" link="688" start_time="05:45:00" end_time="13:10:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5807m -->
+            <leg mode="drsRider">                <!-- 5807m -->
             </leg>
             <activity type="home" link="1541" start_time="13:45:00">
             </activity>
@@ -123,20 +123,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person6_carpoolingRider">
+    <person id="person6_drsRider">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1037" end_time="05:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5869m -->
+            <leg mode="drsRider">                <!-- 5869m -->
             </leg>
             <activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5672m -->
+            <leg mode="drsRider">                <!-- 5672m -->
             </leg>
             <activity type="home" link="1037" start_time="13:45:00">
             </activity>
@@ -146,20 +146,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person7_carpoolingRider">
+    <person id="person7_drsRider">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1871" end_time="05:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 750m -->
+            <leg mode="drsRider">                <!-- 750m -->
             </leg>
             <activity type="work" link="454" start_time="05:45:00" end_time="13:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 999m -->
+            <leg mode="drsRider">                <!-- 999m -->
             </leg>
             <activity type="home" link="1871" start_time="13:45:00">
             </activity>
@@ -169,20 +169,20 @@
 
     <!-- ====================================================================== -->
 
-    <person id="person8_carpoolingRider">
+    <person id="person8_drsRider">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>
         <plan selected="yes">
             <activity type="home" link="1541" end_time="08:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5855m -->
+            <leg mode="drsRider">                <!-- 5855m -->
             </leg>
             <activity type="work" link="688" start_time="08:45:00" end_time="16:00:00">
             </activity>
-            <leg mode="carpoolingRider">                <!-- 5807m -->
+            <leg mode="drsRider">                <!-- 5807m -->
             </leg>
             <activity type="home" link="1541" start_time="16:45:00">
             </activity>
@@ -193,7 +193,7 @@
     <!-- ====================================================================== -->
     <person id="person9_carDriver">
         <attributes>
-            <attribute class="java.lang.String" name="carpoolingAffinity">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">never</attribute>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
             <attribute class="java.lang.String" name="hasLicense">yes</attribute>
         </attributes>

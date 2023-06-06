@@ -25,7 +25,7 @@ import at.ac.ait.matsim.drs.run.DrsConfigGroup;
  */
 public class SubtourModeChoiceForDrs extends AbstractMultithreadedModule {
 
-    public static final String STRATEGY_NAME = "SubtourModeChoiceForCarpooling";
+    public static final String STRATEGY_NAME = "SubtourModeChoiceForDrs";
 
     private final PermissibleModesCalculator permissibleModesCalculator;
     private final String[] chainBasedModes;
@@ -34,9 +34,9 @@ public class SubtourModeChoiceForDrs extends AbstractMultithreadedModule {
     public SubtourModeChoiceForDrs(Config config,
             PermissibleModesCalculator permissibleModesCalculator) {
         super(config.global().getNumberOfThreads());
-        DrsConfigGroup carpoolingConfig = Drs.addOrGetConfigGroup(config);
-        this.modes = carpoolingConfig.getSubtourModeChoiceModes().clone();
-        this.chainBasedModes = carpoolingConfig.getSubtourModeChoiceChainBasedModes().clone();
+        DrsConfigGroup drsConfig = Drs.addOrGetConfigGroup(config);
+        this.modes = drsConfig.getSubtourModeChoiceModes().clone();
+        this.chainBasedModes = drsConfig.getSubtourModeChoiceChainBasedModes().clone();
         this.permissibleModesCalculator = permissibleModesCalculator;
     }
 

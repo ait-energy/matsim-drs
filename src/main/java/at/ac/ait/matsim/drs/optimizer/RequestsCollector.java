@@ -68,7 +68,7 @@ public class RequestsCollector {
                     Link toLink = network.getLinks().get(endActivity.getLinkId());
                     double activityEndTime = startActivity.getEndTime().seconds();
 
-                    String msg = "link {} ({}) not found in carpooling network for person {}.";
+                    String msg = "link {} ({}) not found in drs network for person {}.";
                     if (fromLink == null) {
                         LOGGER.warn(msg, startActivity.getLinkId(), DrsUtil.toWktPoint(startActivity),
                                 person.getId());

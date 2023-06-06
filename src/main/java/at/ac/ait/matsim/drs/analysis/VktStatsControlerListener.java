@@ -26,10 +26,10 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
-    public static final String FILENAME_VKT_STATS = "carpooling_vkt_stats";
-    public static final String CARPOOLING_TRAVEL = "carpooling travel";
+    public static final String FILENAME_VKT_STATS = "drs_vkt_stats";
+    public static final String DRS_TRAVEL = "drs travel";
     public static final String INDIVIDUAL_TRAVEL = "individual travel";
-    public static final String BEFORE_AFTER_CARPOOLING_TRAVEL = "before and after carpooling";
+    public static final String BEFORE_AFTER_DRS_TRAVEL = "before and after drs";
     private final Population population;
     private final String requestFileName;
     private final boolean createPNG;
@@ -59,13 +59,13 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                     if (leg.getMode().equals(TransportMode.car)) {
                         type = INDIVIDUAL_TRAVEL;
                     } else if (leg.getMode().equals(Drs.DRIVER_MODE)) {
-                        String carpoolingStatus = DrsUtil.getCarpoolingStatus(leg);
-                        if (carpoolingStatus == null) {
+                        String drsStatus = DrsUtil.getDrsStatus(leg);
+                        if (drsStatus == null) {
                             type = INDIVIDUAL_TRAVEL;
-                        } else if (carpoolingStatus.equals(Drs.VALUE_STATUS_BEFORE_AFTER)) {
-                            type = BEFORE_AFTER_CARPOOLING_TRAVEL;
-                        } else if (carpoolingStatus.equals(Drs.VALUE_STATUS_CARPOOLING)) {
-                            type = CARPOOLING_TRAVEL;
+                        } else if (drsStatus.equals(Drs.VALUE_STATUS_BEFORE_AFTER)) {
+                            type = BEFORE_AFTER_DRS_TRAVEL;
+                        } else if (drsStatus.equals(Drs.VALUE_STATUS_DRS)) {
+                            type = DRS_TRAVEL;
                         }
                     }
 
@@ -81,16 +81,16 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
         try (BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt")) {
             requestOut.write("Iteration");
-            requestOut.write("\t" + CARPOOLING_TRAVEL);
-            requestOut.write("\t" + BEFORE_AFTER_CARPOOLING_TRAVEL);
+            requestOut.write("\t" + DRS_TRAVEL);
+            requestOut.write("\t" + BEFORE_AFTER_DRS_TRAVEL);
             requestOut.write("\t" + INDIVIDUAL_TRAVEL);
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 Map<String, Double> distancesAtIteration = this.iterationHistories.get(iteration);
                 requestOut.write(String.valueOf(iteration));
-                requestOut.write("\t" + distancesAtIteration.getOrDefault(CARPOOLING_TRAVEL, 0d));
-                requestOut.write("\t" + distancesAtIteration.getOrDefault(BEFORE_AFTER_CARPOOLING_TRAVEL, 0d));
+                requestOut.write("\t" + distancesAtIteration.getOrDefault(DRS_TRAVEL, 0d));
+                requestOut.write("\t" + distancesAtIteration.getOrDefault(BEFORE_AFTER_DRS_TRAVEL, 0d));
                 requestOut.write("\t" + distancesAtIteration.getOrDefault(INDIVIDUAL_TRAVEL, 0d));
                 requestOut.write("\n");
             }
@@ -106,15 +106,15 @@ public class VktStatsControlerListener implements AfterMobsimListener {
                     "iteration",
                     "Kilometer", categories);
 
-            double[] carpoolValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(CARPOOLING_TRAVEL, 0.0))
+            double[] drsValues = iterationHistories.values().stream()
+                    .mapToDouble(map -> map.getOrDefault(DRS_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(CARPOOLING_TRAVEL, carpoolValues);
+            chart.addSeries(DRS_TRAVEL, drsValues);
 
-            double[] beforeAfterCarpoolValues = iterationHistories.values().stream()
-                    .mapToDouble(map -> map.getOrDefault(BEFORE_AFTER_CARPOOLING_TRAVEL, 0.0))
+            double[] beforeAfterDrsValues = iterationHistories.values().stream()
+                    .mapToDouble(map -> map.getOrDefault(BEFORE_AFTER_DRS_TRAVEL, 0.0))
                     .toArray();
-            chart.addSeries(BEFORE_AFTER_CARPOOLING_TRAVEL, beforeAfterCarpoolValues);
+            chart.addSeries(BEFORE_AFTER_DRS_TRAVEL, beforeAfterDrsValues);
 
             double[] individualValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(INDIVIDUAL_TRAVEL, 0.0))

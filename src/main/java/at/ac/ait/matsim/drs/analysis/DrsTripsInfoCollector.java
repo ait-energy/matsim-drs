@@ -15,14 +15,14 @@ import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsTripsInfoCollector {
-    public static final String FILENAME_MATCHED_CARPOOLING_TRIPS = "carpooling_matched_trips";
+    public static final String FILENAME_MATCHED_DRS_TRIPS = "drs_matched_trips";
     private final String matchedTripsFileName;
-    public static final String FILENAME_UNMATCHED_CARPOOLING_TRIPS = "carpooling_unmatched_trips";
+    public static final String FILENAME_UNMATCHED_DRS_TRIPS = "drs_unmatched_trips";
     private final String unmatchedTripsFileName;
 
     public DrsTripsInfoCollector(OutputDirectoryHierarchy controlerIO) {
-        this.matchedTripsFileName = controlerIO.getOutputFilename(FILENAME_MATCHED_CARPOOLING_TRIPS);
-        this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOLING_TRIPS);
+        this.matchedTripsFileName = controlerIO.getOutputFilename(FILENAME_MATCHED_DRS_TRIPS);
+        this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_DRS_TRIPS);
     }
 
     public void printMatchedRequestsToCsv(List<DrsMatch> matches) {

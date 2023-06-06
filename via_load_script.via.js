@@ -27,8 +27,8 @@ osmLayer.style = "osm";
 osmLayer.opacity = 100;
 osmLayer.visible = false;
 
-network = via.createDataset("/home/mstraub/projects/domino-carpooling/output/output_network.xml.gz");
-events = via.createDataset("/home/mstraub/projects/domino-carpooling/output/output_events.xml.gz");
+network = via.createDataset("/tmp/matsim/output_network.xml.gz");
+events = via.createDataset("/tmp/matsim/output_events.xml.gz");
 
 // create a layer of type "network" with the specified network dataset
 networkLayer = via.createLayer("network", network);
@@ -40,5 +40,5 @@ vehiclesLayer.loadEvents();
 agentsLayer = via.createLayer("agents", network, events);
 agentsLayer.loadEvents();
 
-//via.metadata().importAll("/home/mstraub/projects/matsim/matsim-playground/via_metadata.xml");
+//via.metadata().importAll("/tmp/matsim/via_metadata.xml");
 //networkLayer.loadStyle("Current Styles");

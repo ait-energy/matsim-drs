@@ -6,8 +6,8 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 
 public class Drs {
-    public static final String DRIVER_MODE = "carpoolingDriver";
-    public static final String RIDER_MODE = "carpoolingRider";
+    public static final String DRIVER_MODE = "drsDriver";
+    public static final String RIDER_MODE = "drsRider";
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
 
     public static final String ATTRIB_ORIGINAL_DEP_TIME = "originalDepTime";
@@ -15,21 +15,21 @@ public class Drs {
     public static final String ATTRIB_RIDER_ID = "riderId";
     public static final String ATTRIB_ACTIVITY_TYPE = "type";
     /**
-     * status of a carpooling rider leg after the optimization/matching phase,
+     * status of a drs rider leg after the optimization/matching phase,
      * i.e. planned / scheduled matching of drivers to riders
      */
     public static final String ATTRIB_REQUEST_STATUS = "requestStatus";
     public static final String REQUEST_STATUS_MATCHED = "matched";
 
     /**
-     * status of a carpooling driver leg after qsim,
+     * status of a drs driver leg after qsim,
      * i.e. if picking up riders was successful during qsim
      */
-    public static final String ATTRIB_CARPOOLING_STATUS = "carpoolingStatus";
-    public static final String VALUE_STATUS_CARPOOLING = "carpooling";
-    public static final String VALUE_STATUS_BEFORE_AFTER = "beforeAndAfterCarpooling";
+    public static final String ATTRIB_DRS_STATUS = "drsStatus";
+    public static final String VALUE_STATUS_DRS = "drs";
+    public static final String VALUE_STATUS_BEFORE_AFTER = "beforeAndAfterDrs";
 
-    public static final String ATTRIB_AFFINITY = "carpoolingAffinity";
+    public static final String ATTRIB_AFFINITY = "drsAffinity";
     public static final String AFFINITY_DRIVER_OR_RIDER = "driverOrRider";
     public static final String AFFINITY_DRIVER_ONLY = "driverOnly";
     public static final String AFFINITY_RIDER_ONLY = "riderOnly";

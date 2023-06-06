@@ -35,7 +35,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 public class PlanModifier implements ReplanningListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
-    private final Network carpoolingNetwork;
+    private final Network drsNetwork;
     private final DrsConfigGroup cfgGroup;
     private final RoutingModule driverRouter, riderRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
@@ -43,7 +43,7 @@ public class PlanModifier implements ReplanningListener {
     @Inject
     public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
         this.scenario = scenario;
-        this.carpoolingNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
+        this.drsNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
                 ImmutableSet.of(Drs.DRIVER_MODE));
         cfgGroup = Drs.addOrGetConfigGroup(scenario);
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
@@ -60,16 +60,16 @@ public class PlanModifier implements ReplanningListener {
 
     private void preplanDay(ReplanningEvent event) {
         Population population = scenario.getPopulation();
-        DrsOptimizer optimizer = new DrsOptimizer(carpoolingNetwork, cfgGroup, population,
+        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, cfgGroup, population,
                 driverRouter, event.isLastIteration(), outputDirectoryHierarchy);
         List<DrsMatch> matches = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
-        LOGGER.info("Modifying carpooling agents plans started.");
+        LOGGER.info("Modifying drs agents plans started.");
         for (DrsMatch match : matches) {
             modifyPlans(match, populationFactory);
         }
         addRoutingModeAndRouteForRiders();
-        LOGGER.info("Modifying carpooling agents plans finished.");
+        LOGGER.info("Modifying drs agents plans finished.");
     }
 
     private void modifyPlans(DrsMatch match, PopulationFactory factory) {
@@ -136,7 +136,7 @@ public class PlanModifier implements ReplanningListener {
      * TODO this should be integrated into the optimizer/matchmaker process
      * 
      * for all rider legs: add a routing mode and a generic route (that is provided
-     * through the carpooling rider mode configured as teleporting mode)
+     * through the drs rider mode configured as teleporting mode)
      * so that PersonPrepareForSim does not reroute our legs (and thereby discards
      * our leg attributes where we store if the person found a match or not)
      */

@@ -8,14 +8,14 @@
 	</attributes>
 
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
 	<person id="person1_carDriver">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person1_carDriver","carpoolingDriver":"person1_carDriver_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person1_carDriver","drsDriver":"person1_carDriver_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1511" end_time="04:00:00" >
+			<activity type="home" link="1511" end_time="04:00:00">
 			</activity>
 			<leg mode="car" dep_time="04:00:00" trav_time="00:03:07">
 				<attributes>
@@ -23,7 +23,7 @@
 				</attributes>
 				<route type="links" start_link="1511" end_link="1364" trav_time="00:03:07" distance="1655.877211086899" vehicleRefId="null">1511 1512 683 685 1623 1853 1851 1849 180 181 1626 487 1364</route>
 			</leg>
-			<activity type="work" link="1364" start_time="04:45:00" end_time="12:00:00" >
+			<activity type="work" link="1364" start_time="04:45:00" end_time="12:00:00">
 			</activity>
 			<leg mode="car" dep_time="12:00:00" trav_time="00:03:09">
 				<attributes>
@@ -31,263 +31,263 @@
 				</attributes>
 				<route type="links" start_link="1364" end_link="1511" trav_time="00:03:09" distance="1655.787980572936" vehicleRefId="null">1364 1365 488 1625 179 192 1848 1850 1852 1624 686 684 1511</route>
 			</leg>
-			<activity type="home" link="1511" start_time="12:45:00" >
+			<activity type="home" link="1511" start_time="12:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
 	<person id="p2">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"p2","carpoolingDriver":"p2_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"p2","drsDriver":"p2_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1540" end_time="05:00:00" >
+			<activity type="home" link="1540" end_time="05:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="05:00:00" trav_time="00:00:07">
+			<leg mode="drsDriver" dep_time="05:00:00" trav_time="00:00:07">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="1540" end_link="1541" trav_time="00:00:07" distance="134.66376404866602" vehicleRefId="null">1540 1523 1541</route>
 			</leg>
-			<activity type="carpoolingDriver interaction" link="1541" end_time="05:00:07" >
+			<activity type="drsDriver interaction" link="1541" end_time="05:00:07">
 				<attributes>
 					<attribute name="passengerId" class="java.lang.String">p5</attribute>
 					<attribute name="type" class="java.lang.String">pickup</attribute>
 				</attributes>
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="05:00:07" trav_time="00:09:39">
+			<leg mode="drsDriver" dep_time="05:00:07" trav_time="00:09:39">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="1541" end_link="688" trav_time="00:09:39" distance="5025.323972400143" vehicleRefId="null">1541 417 1540 538 1450 539 613 615 1508 1720 1994 705 512 495 905 48 46 924 982 1522 1575 324 325 1808 1809 1810 1811 1360 1369 1353 931 932 933 934 935 1326 437 319 320 321 1045 1046 1044 386 1823 571 1350 1269 1270 183 1033 611 1181 983 527 1507 1792 688</route>
 			</leg>
-			<activity type="carpoolingDriver interaction" link="688" end_time="05:09:46" >
+			<activity type="drsDriver interaction" link="688" end_time="05:09:46">
 				<attributes>
 					<attribute name="passengerId" class="java.lang.String">p5</attribute>
 					<attribute name="type" class="java.lang.String">dropoff</attribute>
 				</attributes>
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="05:09:46" trav_time="00:00:00">
+			<leg mode="drsDriver" dep_time="05:09:46" trav_time="00:00:00">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="688" end_link="688" trav_time="00:00:00" distance="0.0" vehicleRefId="null">688</route>
 			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
+			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="13:00:00" trav_time="00:00:00">
+			<leg mode="drsDriver" dep_time="13:00:00" trav_time="00:00:00">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="688" end_link="688" trav_time="00:00:00" distance="0.0" vehicleRefId="null">688</route>
 			</leg>
-			<activity type="carpoolingDriver interaction" link="688" end_time="13:00:00" >
+			<activity type="drsDriver interaction" link="688" end_time="13:00:00">
 				<attributes>
 					<attribute name="passengerId" class="java.lang.String">p5</attribute>
 					<attribute name="type" class="java.lang.String">pickup</attribute>
 				</attributes>
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="13:00:00" trav_time="00:09:49">
+			<leg mode="drsDriver" dep_time="13:00:00" trav_time="00:09:49">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="688" end_link="1541" trav_time="00:09:49" distance="4982.996476711092" vehicleRefId="null">688 104 1312 1313 1314 1315 1316 1317 1318 570 1303 1304 1305 1826 1827 1828 317 1325 438 439 440 1605 1606 1352 1368 1358 930 316 908 861 1596 1597 1598 1397 276 488 1625 179 192 1848 1850 1852 548 550 552 62 535 537 267 1541</route>
 			</leg>
-			<activity type="carpoolingDriver interaction" link="1541" end_time="13:09:49" >
+			<activity type="drsDriver interaction" link="1541" end_time="13:09:49">
 				<attributes>
 					<attribute name="passengerId" class="java.lang.String">p5</attribute>
 					<attribute name="type" class="java.lang.String">dropoff</attribute>
 				</attributes>
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="13:09:49" trav_time="00:00:07">
+			<leg mode="drsDriver" dep_time="13:09:49" trav_time="00:00:07">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="1541" end_link="1540" trav_time="00:00:07" distance="133.7211121461577" vehicleRefId="null">1541 417 1540</route>
 			</leg>
-			<activity type="home" link="1540" start_time="13:45:00" >
+			<activity type="home" link="1540" start_time="13:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
-	<person id="person3_carpoolingDriver">
+	<person id="person3_drsDriver">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person3_carpoolingDriver","carpoolingDriver":"person3_carpoolingDriver_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person3_drsDriver","drsDriver":"person3_drsDriver_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="186" end_time="05:00:00" >
+			<activity type="home" link="186" end_time="05:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="05:00:00" trav_time="00:07:02">
+			<leg mode="drsDriver" dep_time="05:00:00" trav_time="00:07:02">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="186" end_link="574" trav_time="00:07:02" distance="3703.7765849591133" vehicleRefId="null">186 108 583 1311 1312 1313 1314 1315 1316 1317 1318 570 1303 1304 1305 1826 1827 1828 317 1325 438 439 440 1617 1618 264 748 1440 388 1001 677 1568 118 707 788 796 10 1084 1085 641 574</route>
 			</leg>
-			<activity type="work" link="574" start_time="05:45:00" end_time="13:00:00" >
+			<activity type="work" link="574" start_time="05:45:00" end_time="13:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="13:00:00" trav_time="00:07:16">
+			<leg mode="drsDriver" dep_time="13:00:00" trav_time="00:07:16">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="574" end_link="186" trav_time="00:07:16" distance="3833.0922642103733" vehicleRefId="null">574 573 640 642 631 374 9 795 787 708 119 1569 678 1000 387 1162 758 761 1484 1335 1414 1415 1416 1629 935 1326 437 319 320 321 1045 1046 1044 386 1823 571 1350 1269 1270 183 1033 611 1181 983 527 1507 1792 688 186</route>
 			</leg>
-			<activity type="home" link="186" start_time="13:45:00" >
+			<activity type="home" link="186" start_time="13:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
-	<person id="person4_carpoolingDriver">
+	<person id="person4_drsDriver">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person4_carpoolingDriver","carpoolingDriver":"person4_carpoolingDriver_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person4_drsDriver","drsDriver":"person4_drsDriver_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1540" end_time="03:00:00" >
+			<activity type="home" link="1540" end_time="03:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="03:00:00" trav_time="00:09:22">
+			<leg mode="drsDriver" dep_time="03:00:00" trav_time="00:09:22">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="1540" end_link="688" trav_time="00:09:22" distance="4891.602860253985" vehicleRefId="null">1540 538 1450 539 613 615 1508 1720 1994 705 512 495 905 48 46 924 982 1522 1575 324 325 1808 1809 1810 1811 1360 1369 1353 931 932 933 934 935 1326 437 319 320 321 1045 1046 1044 386 1823 571 1350 1269 1270 183 1033 611 1181 983 527 1507 1792 688</route>
 			</leg>
-			<activity type="work" link="688" start_time="03:45:00" end_time="11:00:00" >
+			<activity type="work" link="688" start_time="03:45:00" end_time="11:00:00">
 			</activity>
-			<leg mode="carpoolingDriver" dep_time="11:00:00" trav_time="00:10:05">
+			<leg mode="drsDriver" dep_time="11:00:00" trav_time="00:10:05">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingDriver</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsDriver</attribute>
 				</attributes>
 				<route type="links" start_link="688" end_link="1540" trav_time="00:10:05" distance="5116.71758885725" vehicleRefId="null">688 104 1312 1313 1314 1315 1316 1317 1318 570 1303 1304 1305 1826 1827 1828 317 1325 438 439 440 1605 1606 1352 1368 1358 930 316 908 861 1596 1597 1598 1397 276 488 1625 179 192 1848 1850 1852 548 550 552 62 535 537 267 1541 417 1540</route>
 			</leg>
-			<activity type="home" link="1540" start_time="11:45:00" >
+			<activity type="home" link="1540" start_time="11:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
 	<person id="p5">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"p5","carpoolingDriver":"p5_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"p5","drsDriver":"p5_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1541" end_time="05:00:00" >
+			<activity type="home" link="1541" end_time="05:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="05:00:00" trav_time="00:10:03">
+			<leg mode="drsPassenger" dep_time="05:00:00" trav_time="00:10:03">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="1541" end_link="688" trav_time="00:10:03" distance="3837.927883893173"></route>
 			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
+			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="13:00:00" trav_time="00:09:57">
+			<leg mode="drsPassenger" dep_time="13:00:00" trav_time="00:09:57">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="688" end_link="1541" trav_time="00:09:57" distance="3837.927883893173"></route>
 			</leg>
-			<activity type="home" link="1541" start_time="13:45:00" >
+			<activity type="home" link="1541" start_time="13:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
-	<person id="person6_carpoolingPassenger">
+	<person id="person6_drsPassenger">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person6_carpoolingPassenger","carpoolingDriver":"person6_carpoolingPassenger_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person6_drsPassenger","drsDriver":"person6_drsPassenger_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1037" end_time="05:00:00" >
+			<activity type="home" link="1037" end_time="05:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="05:00:00" trav_time="00:09:54">
+			<leg mode="drsPassenger" dep_time="05:00:00" trav_time="00:09:54">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="1037" end_link="688" trav_time="00:09:54" distance="3761.728290706728"></route>
 			</leg>
-			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00" >
+			<activity type="work" link="688" start_time="05:45:00" end_time="13:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="13:00:00" trav_time="00:09:58">
+			<leg mode="drsPassenger" dep_time="13:00:00" trav_time="00:09:58">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="688" end_link="1037" trav_time="00:09:58" distance="3761.728290706728"></route>
 			</leg>
-			<activity type="home" link="1037" start_time="13:45:00" >
+			<activity type="home" link="1037" start_time="13:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
-	<person id="person7_carpoolingPassenger">
+	<person id="person7_drsPassenger">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person7_carpoolingPassenger","carpoolingDriver":"person7_carpoolingPassenger_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person7_drsPassenger","drsDriver":"person7_drsPassenger_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1871" end_time="05:00:00" >
+			<activity type="home" link="1871" end_time="05:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="05:00:00" trav_time="00:01:29">
+			<leg mode="drsPassenger" dep_time="05:00:00" trav_time="00:01:29">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="1871" end_link="454" trav_time="00:01:29" distance="784.7750974515222"></route>
 			</leg>
-			<activity type="work" link="454" start_time="05:45:00" end_time="13:00:00" >
+			<activity type="work" link="454" start_time="05:45:00" end_time="13:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="13:00:00" trav_time="00:01:58">
+			<leg mode="drsPassenger" dep_time="13:00:00" trav_time="00:01:58">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="454" end_link="1871" trav_time="00:01:58" distance="784.7750974515222"></route>
 			</leg>
-			<activity type="home" link="1871" start_time="13:45:00" >
+			<activity type="home" link="1871" start_time="13:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
-	<person id="person8_carpoolingPassenger">
+	<person id="person8_drsPassenger">
 		<attributes>
-			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person8_carpoolingPassenger","carpoolingDriver":"person8_carpoolingPassenger_carpoolingDriver"}</attribute>
+			<attribute name="vehicles" class="org.matsim.vehicles.PersonVehicles">{"car":"person8_drsPassenger","drsDriver":"person8_drsPassenger_drsDriver"}</attribute>
 		</attributes>
 		<plan selected="yes">
-			<activity type="home" link="1037" end_time="08:00:00" >
+			<activity type="home" link="1037" end_time="08:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="08:00:00" trav_time="00:09:54">
+			<leg mode="drsPassenger" dep_time="08:00:00" trav_time="00:09:54">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="1037" end_link="688" trav_time="00:09:54" distance="3761.728290706728"></route>
 			</leg>
-			<activity type="work" link="688" start_time="08:45:00" end_time="16:00:00" >
+			<activity type="work" link="688" start_time="08:45:00" end_time="16:00:00">
 			</activity>
-			<leg mode="carpoolingPassenger" dep_time="16:00:00" trav_time="00:09:58">
+			<leg mode="drsPassenger" dep_time="16:00:00" trav_time="00:09:58">
 				<attributes>
-					<attribute name="routingMode" class="java.lang.String">carpoolingPassenger</attribute>
+					<attribute name="routingMode" class="java.lang.String">drsPassenger</attribute>
 				</attributes>
 				<route type="generic" start_link="688" end_link="1037" trav_time="00:09:58" distance="3761.728290706728"></route>
 			</leg>
-			<activity type="home" link="1037" start_time="16:45:00" >
+			<activity type="home" link="1037" start_time="16:45:00">
 			</activity>
 		</plan>
 
 	</person>
 
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
 
 </population>

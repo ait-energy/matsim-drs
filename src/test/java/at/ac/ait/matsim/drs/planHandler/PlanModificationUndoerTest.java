@@ -20,12 +20,12 @@ class PlanModificationUndoerTest {
 
     @BeforeAll
     static void setup() {
-        population = PopulationUtils.readPopulation("data/floridsdorf/population_carpooling.xml");
+        population = PopulationUtils.readPopulation("data/floridsdorf/population_drs.xml");
     }
 
     @Disabled // TODO reenable test with new API (requires a router)
     @Test
-    void testUndoCarpoolingDriversPlans() {
+    void testUndoDrsDriversPlans() {
         for (Person person : population.getPersons().values()) {
             int planSizeOriginal = person.getSelectedPlan().getPlanElements().size();
 
@@ -35,7 +35,7 @@ class PlanModificationUndoerTest {
             // PlanModificationUndoer.undoDriverPlan(person);
             int planSizeAfterUndoing = person.getSelectedPlan().getPlanElements().size();
 
-            if (person.getId().toString().equals("person2_carpoolingDriver")) {
+            if (person.getId().toString().equals("person2_drsDriver")) {
                 assertEquals(planSizeAfterUndoing, planSizeOriginal);
                 assertEquals(planSizeAfterUndoing, planSizeAfterModifying - 8);
             }

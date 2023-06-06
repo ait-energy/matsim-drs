@@ -30,11 +30,11 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 public class PlanModificationUndoer implements IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final RoutingModule carpoolingDriverRouter;
+    private final RoutingModule drsDriverRouter;
 
     @Inject
     public PlanModificationUndoer(TripRouter tripRouter) {
-        this.carpoolingDriverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
+        this.drsDriverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
     }
 
     private void undoPlans(IterationStartsEvent event) {
-        LOGGER.info("undoing carpooling plans at the beginning of the iteration before replan happens");
+        LOGGER.info("undoing drs plans at the beginning of the iteration before replan happens");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 
@@ -52,7 +52,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
             undoDriverPlan(person);
             undoRiderPlan(person);
         }
-        LOGGER.info("undoing carpooling plans finished");
+        LOGGER.info("undoing drs plans finished");
     }
 
     static void undoRiderPlan(Person person) {
@@ -71,8 +71,8 @@ public class PlanModificationUndoer implements IterationStartsListener {
                 if (planElement.getAttributes().getAttribute(Drs.ATTRIB_REQUEST_STATUS) != null) {
                     DrsUtil.setRequestStatus((Leg) planElement, null);
                 }
-                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_CARPOOLING_STATUS) != null) {
-                    DrsUtil.setCarpoolingStatus(((Leg) planElement), null);
+                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_DRS_STATUS) != null) {
+                    DrsUtil.setDrsStatus(((Leg) planElement), null);
                 }
             }
         }
@@ -104,7 +104,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
                     FacilitiesUtils.wrapActivity(to),
                     trip.getOriginActivity().getEndTime().orElse(0),
                     person);
-            List<? extends PlanElement> route = carpoolingDriverRouter.calcRoute(routingRequest);
+            List<? extends PlanElement> route = drsDriverRouter.calcRoute(routingRequest);
             TripRouter.insertTrip(selectedPlan, from, route, to);
         }
         if (before != selectedPlan.getPlanElements().size()) {

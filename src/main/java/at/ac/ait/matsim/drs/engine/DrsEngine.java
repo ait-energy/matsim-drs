@@ -45,7 +45,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
  */
 public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
-    public static final String COMPONENT_NAME = "carpoolingEngine";
+    public static final String COMPONENT_NAME = "drsEngine";
     private static final Logger LOGGER = LogManager.getLogger();
     private final DrsConfigGroup cfgGroup;
     private InternalInterface internalInterface;
@@ -54,7 +54,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
     @Inject
     public DrsEngine(Scenario scenario, EventsManager eventsManager) {
-        LOGGER.info("Constructing new CarpoolingEngine");
+        LOGGER.info("Constructing new DrsEngine");
         this.cfgGroup = Drs.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
@@ -107,13 +107,13 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     public void afterSim() {
         double now = this.internalInterface.getMobsim().getSimTimer().getTimeOfDay();
         if (!pickupQueue.isEmpty()) {
-            LOGGER.warn("{} carpooling drivers were still waiting for their pickup and are stuck.", pickupQueue.size());
+            LOGGER.warn("{} drs drivers were still waiting for their pickup and are stuck.", pickupQueue.size());
             pickupQueue.forEach(d -> eventsManager.processEvent(
                     new PersonStuckEvent(now, d.driver.getId(), d.linkId, Drs.DRIVER_MODE)));
             pickupQueue.clear();
         }
         if (!waitingRiders.isEmpty()) {
-            LOGGER.warn("{} carpooling riders were still waiting to be picked up and are stuck.", waitingRiders.size());
+            LOGGER.warn("{} drs riders were still waiting to be picked up and are stuck.", waitingRiders.size());
             waitingRiders.keySet().forEach(d -> eventsManager.processEvent(
                     new PersonStuckEvent(now, d, null, Drs.RIDER_MODE)));
             waitingRiders.clear();
@@ -196,7 +196,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     /**
      * Drop off rider on a link (if it is actually in the vehicle) and pay the
      * driver (MoneyEvent).
-     * Sets the carpooling status of legs, which is relevant for the vkt analysis.
+     * Sets the drs status of legs, which is relevant for the vkt analysis.
      */
     private void handleDropoff(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
             double now, int dropoffIndex) {
@@ -211,18 +211,18 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                 .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
                 .getPlanElements();
         Leg legWithRider = (Leg) driverPlanElements.get(dropoffIndex - 1);
-        DrsUtil.setCarpoolingStatus(legWithRider, Drs.VALUE_STATUS_CARPOOLING);
+        DrsUtil.setDrsStatus(legWithRider, Drs.VALUE_STATUS_DRS);
 
         int legBeforeRiderIndex = dropoffIndex - 3;
         if (0 <= legBeforeRiderIndex && legBeforeRiderIndex < driverPlanElements.size()) {
             Leg legBeforeRider = (Leg) driverPlanElements.get(legBeforeRiderIndex);
-            DrsUtil.setCarpoolingStatus(legBeforeRider, Drs.VALUE_STATUS_BEFORE_AFTER);
+            DrsUtil.setDrsStatus(legBeforeRider, Drs.VALUE_STATUS_BEFORE_AFTER);
         }
 
         int legAfterRiderIndex = dropoffIndex + 1;
         if (0 <= legAfterRiderIndex && legAfterRiderIndex < driverPlanElements.size()) {
             Leg legAfterRider = (Leg) driverPlanElements.get(legAfterRiderIndex);
-            DrsUtil.setCarpoolingStatus(legAfterRider, Drs.VALUE_STATUS_BEFORE_AFTER);
+            DrsUtil.setDrsStatus(legAfterRider, Drs.VALUE_STATUS_BEFORE_AFTER);
         }
 
         Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
@@ -232,7 +232,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                 .getSelectedPlan()
                 .getPlanElements();
         Leg leg = (Leg) riderPlanElements.get(legIndex);
-        DrsUtil.setCarpoolingStatus(leg, Drs.VALUE_STATUS_CARPOOLING);
+        DrsUtil.setDrsStatus(leg, Drs.VALUE_STATUS_DRS);
         double distance = legWithRider.getRoute().getDistance();
 
         if (cfgGroup.getDriverProfitPerKm() != 0) {
