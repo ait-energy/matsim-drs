@@ -6,9 +6,9 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 import org.matsim.core.utils.misc.StringUtils;
 
-import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForCarpooling;
+import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForDrs;
 
-public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
+public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 
     public static final String GROUP_NAME = "carpooling";
 
@@ -37,11 +37,11 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     private double carAndCarpoolingDailyMonetaryConstant = 0;
 
     public static final String SUBTOUR_MODE_CHOICE_MODES = "subtourModeChoiceModes";
-    private String[] subtourModeChoiceModes = { TransportMode.car, Carpooling.DRIVER_MODE, Carpooling.RIDER_MODE,
+    private String[] subtourModeChoiceModes = { TransportMode.car, Drs.DRIVER_MODE, Drs.RIDER_MODE,
             TransportMode.pt, TransportMode.bike, TransportMode.walk };
 
     public static final String SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES = "subtourModeChoiceChainBasedModes";
-    private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Carpooling.DRIVER_MODE,
+    private String[] subtourModeChoiceChainBasedModes = new String[] { TransportMode.car, Drs.DRIVER_MODE,
             TransportMode.bike };
 
     public static final String MIN_DRIVER_LEG_METERS = "minDriverLegMeters";
@@ -50,7 +50,7 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
     public static final String MIN_RIDER_LEG_METERS = "minRiderLegMeters";
     private int minRiderLegMeters = 10;
 
-    public CarpoolingConfigGroup() {
+    public DrsConfigGroup() {
         super(GROUP_NAME);
     }
 
@@ -74,10 +74,10 @@ public class CarpoolingConfigGroup extends ReflectiveConfigGroupWithConfigurable
         map.put(CAR_AND_CARPOOLING_DAILY_MONETARY_CONSTANT,
                 "Daily price for car usage including when using the private car as carpoolingDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
-                "Defines all modes available for the '" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
+                "Defines all modes available for the '" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
         map.put(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES,
-                "Defines the chain-based modes for the'" + SubtourModeChoiceForCarpooling.STRATEGY_NAME
+                "Defines the chain-based modes for the'" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, separated by commas");
         map.put(MIN_DRIVER_LEG_METERS,
                 "minimum length of legs (routed with the carpoolingDriver mode) to be considered for the carpooling driver mode. 0 means no minimum.");

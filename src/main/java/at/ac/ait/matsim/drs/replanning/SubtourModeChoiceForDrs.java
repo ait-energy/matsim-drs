@@ -17,13 +17,13 @@ import org.matsim.core.replanning.modules.SubtourModeChoice;
 import org.matsim.core.replanning.selectors.RandomPlanSelector;
 import org.matsim.core.router.TripStructureUtils;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 /**
  * Based on {@link org.matsim.core.replanning.modules.SubtourModeChoice}
  */
-public class SubtourModeChoiceForCarpooling extends AbstractMultithreadedModule {
+public class SubtourModeChoiceForDrs extends AbstractMultithreadedModule {
 
     public static final String STRATEGY_NAME = "SubtourModeChoiceForCarpooling";
 
@@ -31,10 +31,10 @@ public class SubtourModeChoiceForCarpooling extends AbstractMultithreadedModule 
     private final String[] chainBasedModes;
     private final String[] modes;
 
-    public SubtourModeChoiceForCarpooling(Config config,
+    public SubtourModeChoiceForDrs(Config config,
             PermissibleModesCalculator permissibleModesCalculator) {
         super(config.global().getNumberOfThreads());
-        CarpoolingConfigGroup carpoolingConfig = Carpooling.addOrGetConfigGroup(config);
+        DrsConfigGroup carpoolingConfig = Drs.addOrGetConfigGroup(config);
         this.modes = carpoolingConfig.getSubtourModeChoiceModes().clone();
         this.chainBasedModes = carpoolingConfig.getSubtourModeChoiceChainBasedModes().clone();
         this.permissibleModesCalculator = permissibleModesCalculator;
@@ -70,9 +70,9 @@ public class SubtourModeChoiceForCarpooling extends AbstractMultithreadedModule 
 
         @Override
         public PlanStrategy get() {
-            LOGGER.info("Provider builds a new instance of {}", SubtourModeChoiceForCarpooling.STRATEGY_NAME);
+            LOGGER.info("Provider builds a new instance of {}", SubtourModeChoiceForDrs.STRATEGY_NAME);
             PlanStrategyImpl.Builder builder = new Builder(new RandomPlanSelector<>());
-            builder.addStrategyModule(new SubtourModeChoiceForCarpooling(config, permissibleModesCalculator));
+            builder.addStrategyModule(new SubtourModeChoiceForDrs(config, permissibleModesCalculator));
             return builder.build();
         }
 

@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.drs.planHandler;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import com.google.inject.Inject;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -15,13 +15,13 @@ import java.util.*;
 
 public class DailyMonetaryConstantListener implements BeforeMobsimListener {
     private final Scenario scenario;
-    private final CarpoolingConfigGroup cfgGroup;
+    private final DrsConfigGroup cfgGroup;
     private final EventsManager eventsManager;
 
     @Inject
     public DailyMonetaryConstantListener(Scenario scenario, EventsManager eventsManager) {
         this.scenario = scenario;
-        cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
+        cfgGroup = Drs.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
 
@@ -37,7 +37,7 @@ public class DailyMonetaryConstantListener implements BeforeMobsimListener {
             isUsingCar = false;
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
-                    if (Objects.equals(((Leg) planElement).getMode(), Carpooling.DRIVER_MODE) ||
+                    if (Objects.equals(((Leg) planElement).getMode(), Drs.DRIVER_MODE) ||
                             Objects.equals(((Leg) planElement).getMode(), TransportMode.car)) {
                         isUsingCar = true;
                     }

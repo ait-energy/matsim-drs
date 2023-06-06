@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.optimizer.Request;
@@ -12,23 +12,23 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PotentialRequestsFinderTest {
-        List<CarpoolingRequest> originNearRequests = new ArrayList<>();
-        List<CarpoolingRequest> destinationNearRequests = new ArrayList<>();
-        List<CarpoolingRequest> temporalNearRequests = new ArrayList<>();
-        CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
+        List<DrsRequest> originNearRequests = new ArrayList<>();
+        List<DrsRequest> destinationNearRequests = new ArrayList<>();
+        List<DrsRequest> temporalNearRequests = new ArrayList<>();
+        DrsRequest request1 = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
                         null,
                         null, null);
-        CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+        DrsRequest request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                         null,
                         null, null);
-        CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+        DrsRequest request3 = new DrsRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                         null,
                         null, null);
 
         @Test
         void testEmptyStreamsIntersection() {
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -40,7 +40,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -53,7 +53,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -67,7 +67,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(1,
-                                PotentialRequestsFinder.getIntersection(new CarpoolingConfigGroup(),
+                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());

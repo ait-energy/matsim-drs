@@ -29,14 +29,14 @@ import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsFilterTest {
         static Network network;
         static RequestsFilter requestsFilter;
-        static CarpoolingRequest driverRequest, request2, request3, request4, request5, request6;
-        List<CarpoolingRequest> passengersRequests = new ArrayList<>();
+        static DrsRequest driverRequest, request2, request3, request4, request5, request6;
+        List<DrsRequest> passengersRequests = new ArrayList<>();
 
         @BeforeAll
         static void setup() {
@@ -44,20 +44,20 @@ class RequestsFilterTest {
                 network = routingForTests.getNetwork();
                 RoutingModule driverRouter = routingForTests.getDriverRouter();
 
-                CarpoolingConfigGroup cfg = new CarpoolingConfigGroup();
+                DrsConfigGroup cfg = new DrsConfigGroup();
                 cfg.setRiderDepartureTimeAdjustmentSeconds(180);
                 requestsFilter = new RequestsFilter(cfg, driverRouter);
-                driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
+                driverRequest = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                                 null, network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+                request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1674)), null, null);
-                request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+                request3 = new DrsRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
+                request4 = new DrsRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
+                request5 = new DrsRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request6 = new CarpoolingRequest(Id.create(6, Request.class), null, null, 8 * 60 * 60, null,
+                request6 = new DrsRequest(Id.create(6, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1037)), null, null);
         }
 
@@ -121,7 +121,7 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(1, Request.class), personA, trip,
+                DrsRequest riderRequest = new DrsRequest(Id.create(1, Request.class), personA, trip,
                                 trip.getOriginActivity().getEndTime().seconds(),
                                 null, null, null, null);
                 assertTrue(RequestsFilter.checkRiderTimeConstraints(riderRequest,
@@ -168,7 +168,7 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                CarpoolingRequest riderRequest = new CarpoolingRequest(Id.create(1, Request.class), personA, trip,
+                DrsRequest riderRequest = new DrsRequest(Id.create(1, Request.class), personA, trip,
                                 trip.getOriginActivity().getEndTime().seconds(),
                                 null, null, null, null);
                 assertFalse(RequestsFilter.checkRiderTimeConstraints(riderRequest,

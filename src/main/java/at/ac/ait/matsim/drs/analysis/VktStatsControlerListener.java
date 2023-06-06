@@ -22,8 +22,8 @@ import org.matsim.core.utils.io.UncheckedIOException;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class VktStatsControlerListener implements AfterMobsimListener {
     public static final String FILENAME_VKT_STATS = "carpooling_vkt_stats";
@@ -58,13 +58,13 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
                     if (leg.getMode().equals(TransportMode.car)) {
                         type = INDIVIDUAL_TRAVEL;
-                    } else if (leg.getMode().equals(Carpooling.DRIVER_MODE)) {
-                        String carpoolingStatus = CarpoolingUtil.getCarpoolingStatus(leg);
+                    } else if (leg.getMode().equals(Drs.DRIVER_MODE)) {
+                        String carpoolingStatus = DrsUtil.getCarpoolingStatus(leg);
                         if (carpoolingStatus == null) {
                             type = INDIVIDUAL_TRAVEL;
-                        } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_BEFORE_AFTER)) {
+                        } else if (carpoolingStatus.equals(Drs.VALUE_STATUS_BEFORE_AFTER)) {
                             type = BEFORE_AFTER_CARPOOLING_TRAVEL;
-                        } else if (carpoolingStatus.equals(Carpooling.VALUE_STATUS_CARPOOLING)) {
+                        } else if (carpoolingStatus.equals(Drs.VALUE_STATUS_CARPOOLING)) {
                             type = CARPOOLING_TRAVEL;
                         }
                     }

@@ -24,8 +24,8 @@ import org.matsim.facilities.FacilitiesUtils;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class PlanModificationUndoer implements IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -34,7 +34,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
 
     @Inject
     public PlanModificationUndoer(TripRouter tripRouter) {
-        this.carpoolingDriverRouter = tripRouter.getRoutingModule(Carpooling.DRIVER_MODE);
+        this.carpoolingDriverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
     }
 
     @Override
@@ -58,21 +58,21 @@ public class PlanModificationUndoer implements IterationStartsListener {
     static void undoRiderPlan(Person person) {
         for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
             if (planElement instanceof Activity) {
-                if (!(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement) == null)) {
+                if (!(DrsUtil.getActivityOriginalDepartureTime((Activity) planElement) == null)) {
                     LOGGER.debug("Before undoing, " + person.getId().toString() + "'s departure time is "
                             + ((Activity) planElement).getEndTime().seconds());
                     ((Activity) planElement)
-                            .setEndTime(CarpoolingUtil.getActivityOriginalDepartureTime((Activity) planElement));
-                    CarpoolingUtil.setActivityOriginalDepartureTime((Activity) planElement, null);
+                            .setEndTime(DrsUtil.getActivityOriginalDepartureTime((Activity) planElement));
+                    DrsUtil.setActivityOriginalDepartureTime((Activity) planElement, null);
                     LOGGER.debug("After undoing, " + person.getId().toString() + "'s departure time is "
                             + ((Activity) planElement).getEndTime().seconds());
                 }
             } else if (planElement instanceof Leg) {
-                if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS) != null) {
-                    CarpoolingUtil.setRequestStatus((Leg) planElement, null);
+                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_REQUEST_STATUS) != null) {
+                    DrsUtil.setRequestStatus((Leg) planElement, null);
                 }
-                if (planElement.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS) != null) {
-                    CarpoolingUtil.setCarpoolingStatus(((Leg) planElement), null);
+                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_CARPOOLING_STATUS) != null) {
+                    DrsUtil.setCarpoolingStatus(((Leg) planElement), null);
                 }
             }
         }
@@ -86,7 +86,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
         for (TripStructureUtils.Trip trip : trips) {
             boolean isDriverTrip = false;
             for (Leg leg : trip.getLegsOnly()) {
-                if (leg.getMode().equals(Carpooling.DRIVER_MODE)) {
+                if (leg.getMode().equals(Drs.DRIVER_MODE)) {
                     isDriverTrip = true;
                 }
             }

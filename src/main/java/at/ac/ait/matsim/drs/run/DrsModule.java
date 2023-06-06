@@ -7,14 +7,14 @@ import com.google.inject.Singleton;
 
 import at.ac.ait.matsim.drs.analysis.RiderRequestStatsControlerListener;
 import at.ac.ait.matsim.drs.analysis.VktStatsControlerListener;
-import at.ac.ait.matsim.drs.engine.CarpoolingSimulationStats;
+import at.ac.ait.matsim.drs.engine.DrsSimulationStats;
 import at.ac.ait.matsim.drs.planHandler.DailyMonetaryConstantListener;
 import at.ac.ait.matsim.drs.planHandler.PlanModificationUndoer;
 import at.ac.ait.matsim.drs.planHandler.PlanModifier;
-import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForCarpooling;
-import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForCarpooling;
+import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForDrs;
+import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForDrs;
 
-public final class CarpoolingModule extends AbstractModule {
+public final class DrsModule extends AbstractModule {
 
     @Override
     public void install() {
@@ -24,15 +24,15 @@ public final class CarpoolingModule extends AbstractModule {
         addControlerListenerBinding().to(RiderRequestStatsControlerListener.class);
         addControlerListenerBinding().to(VktStatsControlerListener.class);
 
-        bind(CarpoolingSimulationStats.class).in(Singleton.class);
-        addControlerListenerBinding().to(CarpoolingSimulationStats.class);
-        addEventHandlerBinding().to(CarpoolingSimulationStats.class);
+        bind(DrsSimulationStats.class).in(Singleton.class);
+        addControlerListenerBinding().to(DrsSimulationStats.class);
+        addEventHandlerBinding().to(DrsSimulationStats.class);
 
-        bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForCarpooling.class);
-        addPlanStrategyBinding(SubtourModeChoiceForCarpooling.STRATEGY_NAME)
-                .toProvider(SubtourModeChoiceForCarpooling.Provider.class);
+        bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForDrs.class);
+        addPlanStrategyBinding(SubtourModeChoiceForDrs.STRATEGY_NAME)
+                .toProvider(SubtourModeChoiceForDrs.Provider.class);
 
-        installQSimModule(new CarpoolingEngineQSimModule());
+        installQSimModule(new DrsEngineQSimModule());
     }
 
 }

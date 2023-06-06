@@ -13,7 +13,7 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RunViennaExample {
     public static void main(String[] args) {
@@ -24,15 +24,15 @@ public class RunViennaExample {
 
         // optional steps to prepare the scenario
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
-        CarpoolingUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
-        CarpoolingUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Carpooling.DRIVER_MODE);
+        DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
+        DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
         // necessary to kick-start the carpooling driver pool
-        CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+        DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
 
         Controler controller = new Controler(scenario);
         // necessary to register the carpooling module
-        Carpooling.prepareController(controller);
+        Drs.prepareController(controller);
 
         controller.run();
     }
@@ -44,11 +44,11 @@ public class RunViennaExample {
                 if (planElement instanceof Leg) {
                     if (((Leg) planElement).getMode().equals("ride")) {
                         if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode(Carpooling.RIDER_MODE);
+                            ((Leg) planElement).setMode(Drs.RIDER_MODE);
                         }
                     } else if (((Leg) planElement).getMode().equals("car")) {
                         if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode(Carpooling.DRIVER_MODE);
+                            ((Leg) planElement).setMode(Drs.DRIVER_MODE);
                         }
                     }
                 }

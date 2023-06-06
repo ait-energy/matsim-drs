@@ -2,13 +2,13 @@ package at.ac.ait.matsim.drs.request;
 
 import org.matsim.api.core.v01.population.Leg;
 
-public class CarpoolingMatch {
+public class DrsMatch {
 
-    private final CarpoolingRequest driver, rider;
+    private final DrsRequest driver, rider;
     private final Leg toPickup, withCustomer, afterDropoff;
     private final Double detourFactor;
 
-    private CarpoolingMatch(CarpoolingRequest driver, CarpoolingRequest rider, Leg toPickup, Leg withCustomer,
+    private DrsMatch(DrsRequest driver, DrsRequest rider, Leg toPickup, Leg withCustomer,
             Leg afterDropoff, Double detourFactor) {
         this.driver = driver;
         this.rider = rider;
@@ -18,20 +18,20 @@ public class CarpoolingMatch {
         this.detourFactor = detourFactor;
     }
 
-    public static CarpoolingMatch createMinimal(CarpoolingRequest driver, CarpoolingRequest rider, Leg toPickup) {
-        return new CarpoolingMatch(driver, rider, toPickup, null, null, null);
+    public static DrsMatch createMinimal(DrsRequest driver, DrsRequest rider, Leg toPickup) {
+        return new DrsMatch(driver, rider, toPickup, null, null, null);
     }
 
-    public static CarpoolingMatch create(CarpoolingRequest driver, CarpoolingRequest rider, Leg toPickup,
+    public static DrsMatch create(DrsRequest driver, DrsRequest rider, Leg toPickup,
             Leg withCustomer, Leg afterDropoff, Double detourFactor) {
-        return new CarpoolingMatch(driver, rider, toPickup, withCustomer, afterDropoff, detourFactor);
+        return new DrsMatch(driver, rider, toPickup, withCustomer, afterDropoff, detourFactor);
     }
 
-    public CarpoolingRequest getDriver() {
+    public DrsRequest getDriver() {
         return driver;
     }
 
-    public CarpoolingRequest getRider() {
+    public DrsRequest getRider() {
         return rider;
     }
 

@@ -1,9 +1,9 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
@@ -22,21 +22,21 @@ class RequestZonalRegistryTest {
 
     static Network network;
     static ZonalSystem zonalSystem;
-    static CarpoolingRequest request1, request2, request3;
+    static DrsRequest request1, request2, request3;
     RequestZonalRegistry zonalRegistry;
 
     @BeforeAll
     public static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
-        CarpoolingConfigGroup cfg = new CarpoolingConfigGroup();
+        DrsUtil.addNewAllowedModeToCarLinks(network, Drs.DRIVER_MODE);
+        DrsConfigGroup cfg = new DrsConfigGroup();
         cfg.setCellSize(800);
         zonalSystem = new SquareGridSystem(network.getNodes().values(), cfg.getCellSize());
-        request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
+        request1 = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1540)), null, null);
-        request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+        request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1037)), null, null);
-        request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+        request3 = new DrsRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                 network.getLinks().get(Id.createLinkId(1674)), null, null);
     }
 

@@ -30,10 +30,10 @@ import org.matsim.facilities.Facility;
 
 import com.google.common.collect.Sets;
 
-import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForCarpooling;
-import at.ac.ait.matsim.drs.run.Carpooling;
+import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForDrs;
+import at.ac.ait.matsim.drs.run.Drs;
 
-public class CarpoolingUtil {
+public class DrsUtil {
 
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
@@ -48,8 +48,8 @@ public class CarpoolingUtil {
     public static void addMissingCoordsToPlanElementsFromLinks(Population population, Network network) {
         for (Person person : population.getPersons().values()) {
             for (Plan plan : person.getPlans()) {
-                List<Activity> activities = CarpoolingUtil.getActivities(plan.getPlanElements());
-                CarpoolingUtil.addMissingCoordToActivitiesFromLink(activities, network);
+                List<Activity> activities = DrsUtil.getActivities(plan.getPlanElements());
+                DrsUtil.addMissingCoordToActivitiesFromLink(activities, network);
             }
         }
     }
@@ -71,71 +71,71 @@ public class CarpoolingUtil {
     }
 
     public static String getCarpoolingAffinity(Person person) {
-        Object affinity = person.getAttributes().getAttribute(Carpooling.ATTRIB_AFFINITY);
+        Object affinity = person.getAttributes().getAttribute(Drs.ATTRIB_AFFINITY);
         return affinity == null ? "" : affinity.toString();
     }
 
     public static Id<Person> getRiderId(Activity activity) {
-        Object id = activity.getAttributes().getAttribute(Carpooling.ATTRIB_RIDER_ID);
+        Object id = activity.getAttributes().getAttribute(Drs.ATTRIB_RIDER_ID);
         return id == null ? null : Id.createPersonId(id.toString());
     }
 
     public static void setRiderId(Activity activity, Id<Person> id) {
         if (id != null) {
-            activity.getAttributes().putAttribute(Carpooling.ATTRIB_RIDER_ID, id.toString());
+            activity.getAttributes().putAttribute(Drs.ATTRIB_RIDER_ID, id.toString());
         } else {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_RIDER_ID);
+            activity.getAttributes().removeAttribute(Drs.ATTRIB_RIDER_ID);
         }
     }
 
-    public static Carpooling.ActivityType getActivityType(Activity activity) {
-        Object type = activity.getAttributes().getAttribute(Carpooling.ATTRIB_ACTIVITY_TYPE);
-        return type == null ? null : Carpooling.ActivityType.valueOf(type.toString());
+    public static Drs.ActivityType getActivityType(Activity activity) {
+        Object type = activity.getAttributes().getAttribute(Drs.ATTRIB_ACTIVITY_TYPE);
+        return type == null ? null : Drs.ActivityType.valueOf(type.toString());
     }
 
-    public static void setActivityType(Activity activity, Carpooling.ActivityType type) {
+    public static void setActivityType(Activity activity, Drs.ActivityType type) {
         if (type != null) {
-            activity.getAttributes().putAttribute(Carpooling.ATTRIB_ACTIVITY_TYPE, type.toString());
+            activity.getAttributes().putAttribute(Drs.ATTRIB_ACTIVITY_TYPE, type.toString());
         } else {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_ACTIVITY_TYPE);
+            activity.getAttributes().removeAttribute(Drs.ATTRIB_ACTIVITY_TYPE);
         }
     }
 
     public static Double getActivityOriginalDepartureTime(Activity activity) {
-        return (Double) activity.getAttributes().getAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
+        return (Double) activity.getAttributes().getAttribute(Drs.ATTRIB_ORIGINAL_DEP_TIME);
     }
 
     public static void setActivityOriginalDepartureTime(Activity activity, Double originalDepartureTime) {
         if (originalDepartureTime != null) {
-            activity.getAttributes().putAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME, originalDepartureTime);
+            activity.getAttributes().putAttribute(Drs.ATTRIB_ORIGINAL_DEP_TIME, originalDepartureTime);
         } else {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_ORIGINAL_DEP_TIME);
+            activity.getAttributes().removeAttribute(Drs.ATTRIB_ORIGINAL_DEP_TIME);
         }
     }
 
     public static String getLinkageActivityToRiderRequest(Activity activity) {
-        return (String) activity.getAttributes().getAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
+        return (String) activity.getAttributes().getAttribute(Drs.ATTRIB_LINKED_REQUEST);
     }
 
     public static void setLinkageActivityToRiderRequest(Activity activity, String riderRequestId) {
         if (riderRequestId != null) {
-            activity.getAttributes().putAttribute(Carpooling.ATTRIB_LINKED_REQUEST, riderRequestId);
+            activity.getAttributes().putAttribute(Drs.ATTRIB_LINKED_REQUEST, riderRequestId);
         } else {
-            activity.getAttributes().removeAttribute(Carpooling.ATTRIB_LINKED_REQUEST);
+            activity.getAttributes().removeAttribute(Drs.ATTRIB_LINKED_REQUEST);
         }
     }
 
     public static void setRoutingModeToDriver(List<? extends PlanElement> legList) {
         for (PlanElement planElement : legList) {
             if (planElement instanceof Leg) {
-                TripStructureUtils.setRoutingMode(((Leg) planElement), Carpooling.DRIVER_MODE);
+                TripStructureUtils.setRoutingMode(((Leg) planElement), Drs.DRIVER_MODE);
             }
         }
     }
 
     public static int addDriverPlanForEligibleAgents(Population population, Config config,
             String... excludedSubpopulations) {
-        PermissibleModesCalculatorForCarpooling permissible = new PermissibleModesCalculatorForCarpooling(config);
+        PermissibleModesCalculatorForDrs permissible = new PermissibleModesCalculatorForDrs(config);
         int count = 0;
         Set<String> excludedSubpopulationSet = Sets.newHashSet(excludedSubpopulations);
         for (Person person : population.getPersons().values()) {
@@ -145,7 +145,7 @@ public class CarpoolingUtil {
             }
 
             Plan plan = person.getSelectedPlan();
-            if (permissible.getPermissibleModes(plan).contains(Carpooling.DRIVER_MODE)) {
+            if (permissible.getPermissibleModes(plan).contains(Drs.DRIVER_MODE)) {
                 Plan newPlan = PopulationUtils.createPlan();
                 PopulationUtils.copyFromTo(plan, newPlan);
 
@@ -153,7 +153,7 @@ public class CarpoolingUtil {
                     TripRouter.insertTrip(
                             newPlan,
                             trip.getOriginActivity(),
-                            Collections.singletonList(PopulationUtils.createLeg(Carpooling.DRIVER_MODE)),
+                            Collections.singletonList(PopulationUtils.createLeg(Drs.DRIVER_MODE)),
                             trip.getDestinationActivity());
                 }
 
@@ -205,26 +205,26 @@ public class CarpoolingUtil {
     }
 
     public static String getRequestStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
+        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_REQUEST_STATUS);
     }
 
     public static void setRequestStatus(Leg leg, String status) {
         if (status != null) {
-            leg.getAttributes().putAttribute(Carpooling.ATTRIB_REQUEST_STATUS, status);
+            leg.getAttributes().putAttribute(Drs.ATTRIB_REQUEST_STATUS, status);
         } else {
-            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_REQUEST_STATUS);
+            leg.getAttributes().removeAttribute(Drs.ATTRIB_REQUEST_STATUS);
         }
     }
 
     public static String getCarpoolingStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS);
+        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_CARPOOLING_STATUS);
     }
 
     public static void setCarpoolingStatus(Leg leg, String status) {
         if (status != null) {
-            leg.getAttributes().putAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS, status);
+            leg.getAttributes().putAttribute(Drs.ATTRIB_CARPOOLING_STATUS, status);
         } else {
-            leg.getAttributes().removeAttribute(Carpooling.ATTRIB_CARPOOLING_STATUS);
+            leg.getAttributes().removeAttribute(Drs.ATTRIB_CARPOOLING_STATUS);
         }
     }
 

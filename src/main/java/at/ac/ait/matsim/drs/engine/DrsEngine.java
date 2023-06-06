@@ -34,28 +34,28 @@ import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.misc.Time;
 
-import at.ac.ait.matsim.drs.events.CarpoolingPickupEvent;
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.run.Carpooling.ActivityType;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.events.DrsPickupEvent;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.run.Drs.ActivityType;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 /**
  * Heavily inspired by ActivityEngineDefaultImpl and
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
  */
-public class CarpoolingEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
+public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
     public static final String COMPONENT_NAME = "carpoolingEngine";
     private static final Logger LOGGER = LogManager.getLogger();
-    private final CarpoolingConfigGroup cfgGroup;
+    private final DrsConfigGroup cfgGroup;
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
     private final Map<Id<Person>, Id<Link>> waitingRiders = new ConcurrentHashMap<>();
 
     @Inject
-    public CarpoolingEngine(Scenario scenario, EventsManager eventsManager) {
+    public DrsEngine(Scenario scenario, EventsManager eventsManager) {
         LOGGER.info("Constructing new CarpoolingEngine");
-        this.cfgGroup = Carpooling.addOrGetConfigGroup(scenario);
+        this.cfgGroup = Drs.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
     }
 
@@ -109,13 +109,13 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         if (!pickupQueue.isEmpty()) {
             LOGGER.warn("{} carpooling drivers were still waiting for their pickup and are stuck.", pickupQueue.size());
             pickupQueue.forEach(d -> eventsManager.processEvent(
-                    new PersonStuckEvent(now, d.driver.getId(), d.linkId, Carpooling.DRIVER_MODE)));
+                    new PersonStuckEvent(now, d.driver.getId(), d.linkId, Drs.DRIVER_MODE)));
             pickupQueue.clear();
         }
         if (!waitingRiders.isEmpty()) {
             LOGGER.warn("{} carpooling riders were still waiting to be picked up and are stuck.", waitingRiders.size());
             waitingRiders.keySet().forEach(d -> eventsManager.processEvent(
-                    new PersonStuckEvent(now, d, null, Carpooling.RIDER_MODE)));
+                    new PersonStuckEvent(now, d, null, Drs.RIDER_MODE)));
             waitingRiders.clear();
         }
     }
@@ -133,11 +133,11 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
      */
     @Override
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> linkId) {
-        if (agent.getMode().equals(Carpooling.RIDER_MODE)) {
+        if (agent.getMode().equals(Drs.RIDER_MODE)) {
             // LOGGER.debug("handleDeparture {} for agent {} @ {} on link {}",
             // agent.getMode(), agent.getId(), now, linkId);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
-            if (Objects.equals(CarpoolingUtil.getRequestStatus(currentLeg), Carpooling.REQUEST_STATUS_MATCHED)) {
+            if (Objects.equals(DrsUtil.getRequestStatus(currentLeg), Drs.REQUEST_STATUS_MATCHED)) {
                 LOGGER.debug("{} {} is waiting to be picked up on link {}.",
                         Time.writeTime(now), agent.getId(), linkId);
                 waitingRiders.put(agent.getId(), linkId);
@@ -147,7 +147,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     now,
                     agent.getId(),
                     cfgGroup.getRiderMobilityGuaranteeMonetaryConstant(),
-                    Carpooling.RIDER_MODE + " mobility guarantee",
+                    Drs.RIDER_MODE + " mobility guarantee",
                     null,
                     null));
         }
@@ -163,10 +163,10 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
     public boolean handleActivity(MobsimAgent agent) {
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
             Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
-            if (act.getType().equals(Carpooling.DRIVER_INTERACTION)) {
+            if (act.getType().equals(Drs.DRIVER_INTERACTION)) {
                 double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
-                ActivityType type = CarpoolingUtil.getActivityType(act);
-                Id<Person> riderId = CarpoolingUtil.getRiderId(act);
+                ActivityType type = DrsUtil.getActivityType(act);
+                Id<Person> riderId = DrsUtil.getRiderId(act);
                 Id<Link> linkId = agent.getCurrentLinkId();
                 MobsimPassengerAgent rider = (MobsimPassengerAgent) internalInterface.getMobsim().getAgents()
                         .get(riderId);
@@ -211,18 +211,18 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 .findPerson(driver.getId(), internalInterface.getMobsim().getScenario()).getSelectedPlan()
                 .getPlanElements();
         Leg legWithRider = (Leg) driverPlanElements.get(dropoffIndex - 1);
-        CarpoolingUtil.setCarpoolingStatus(legWithRider, Carpooling.VALUE_STATUS_CARPOOLING);
+        DrsUtil.setCarpoolingStatus(legWithRider, Drs.VALUE_STATUS_CARPOOLING);
 
         int legBeforeRiderIndex = dropoffIndex - 3;
         if (0 <= legBeforeRiderIndex && legBeforeRiderIndex < driverPlanElements.size()) {
             Leg legBeforeRider = (Leg) driverPlanElements.get(legBeforeRiderIndex);
-            CarpoolingUtil.setCarpoolingStatus(legBeforeRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+            DrsUtil.setCarpoolingStatus(legBeforeRider, Drs.VALUE_STATUS_BEFORE_AFTER);
         }
 
         int legAfterRiderIndex = dropoffIndex + 1;
         if (0 <= legAfterRiderIndex && legAfterRiderIndex < driverPlanElements.size()) {
             Leg legAfterRider = (Leg) driverPlanElements.get(legAfterRiderIndex);
-            CarpoolingUtil.setCarpoolingStatus(legAfterRider, Carpooling.VALUE_STATUS_BEFORE_AFTER);
+            DrsUtil.setCarpoolingStatus(legAfterRider, Drs.VALUE_STATUS_BEFORE_AFTER);
         }
 
         Leg planElement = (Leg) ((PlanAgent) rider).getCurrentPlanElement();
@@ -232,7 +232,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                 .getSelectedPlan()
                 .getPlanElements();
         Leg leg = (Leg) riderPlanElements.get(legIndex);
-        CarpoolingUtil.setCarpoolingStatus(leg, Carpooling.VALUE_STATUS_CARPOOLING);
+        DrsUtil.setCarpoolingStatus(leg, Drs.VALUE_STATUS_CARPOOLING);
         double distance = legWithRider.getRoute().getDistance();
 
         if (cfgGroup.getDriverProfitPerKm() != 0) {
@@ -240,7 +240,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
                     now,
                     driver.getId(),
                     cfgGroup.getDriverProfitPerKm() * distance / 1000d,
-                    Carpooling.DRIVER_MODE + " profit",
+                    Drs.DRIVER_MODE + " profit",
                     rider.getId().toString(),
                     null));
         }
@@ -291,7 +291,7 @@ public class CarpoolingEngine implements MobsimEngine, ActivityHandler, Departur
         rider.setVehicle(driver.getVehicle());
         internalInterface.unregisterAdditionalAgentOnLink(rider.getId(), linkId);
         eventsManager.processEvent(
-                new CarpoolingPickupEvent(now, linkId, driver.getId(), rider.getId(), driver.getVehicle().getId()));
+                new DrsPickupEvent(now, linkId, driver.getId(), rider.getId(), driver.getVehicle().getId()));
         eventsManager.processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         waitingRiders.remove(rider.getId());
         return false;

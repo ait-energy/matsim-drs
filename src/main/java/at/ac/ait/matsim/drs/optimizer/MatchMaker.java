@@ -14,10 +14,10 @@ import org.matsim.api.core.v01.population.PlanElement;
 
 import com.google.common.collect.Lists;
 
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class MatchMaker {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -27,9 +27,9 @@ public class MatchMaker {
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
 
-    private List<CarpoolingMatch> matches;
-    private List<CarpoolingRequest> unmatchedDriverRequests;
-    private List<CarpoolingRequest> unmatchedRiderRequests;
+    private List<DrsMatch> matches;
+    private List<DrsRequest> unmatchedDriverRequests;
+    private List<DrsRequest> unmatchedRiderRequests;
 
     public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
             PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
@@ -47,36 +47,36 @@ public class MatchMaker {
         }
 
         requestsCollector.collectRequests();
-        List<CarpoolingRequest> driverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
+        List<DrsRequest> driverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
         Collections.shuffle(driverRequests);
-        List<CarpoolingRequest> riderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
+        List<DrsRequest> riderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
         Collections.shuffle(riderRequests);
 
-        for (CarpoolingRequest ridersRequest : riderRequests) {
+        for (DrsRequest ridersRequest : riderRequests) {
             requestsRegister.addRequest(ridersRequest);
         }
 
         matches = new ArrayList<>();
-        for (Iterator<CarpoolingRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
-            CarpoolingRequest driverRequest = iterator.next();
-            List<CarpoolingRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
+        for (Iterator<DrsRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
+            DrsRequest driverRequest = iterator.next();
+            List<DrsRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
                     driverRequest.getFromLink().getFromNode(), driverRequest.getToLink().getFromNode(),
                     driverRequest.getDepartureTime());
-            List<CarpoolingMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRequests);
-            CarpoolingMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);
+            List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRequests);
+            DrsMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);
 
             if (bestMatch == null) {
                 continue;
             }
 
-            CarpoolingRequest bestRider = bestMatch.getRider();
-            CarpoolingUtil.setRequestStatus(bestRider.getLeg(), Carpooling.REQUEST_STATUS_MATCHED);
+            DrsRequest bestRider = bestMatch.getRider();
+            DrsUtil.setRequestStatus(bestRider.getLeg(), Drs.REQUEST_STATUS_MATCHED);
             for (PlanElement planElement : bestRider.getPerson().getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Activity) {
                     if (((Activity) planElement).getEndTime().isDefined()) {
                         if (((Activity) planElement).getEndTime().seconds() == bestRider
                                 .getDepartureTime()) {
-                            CarpoolingUtil.setLinkageActivityToRiderRequest((Activity) planElement,
+                            DrsUtil.setLinkageActivityToRiderRequest((Activity) planElement,
                                     bestRider.getId().toString());
                             break;
                         }
@@ -93,10 +93,10 @@ public class MatchMaker {
 
         unmatchedDriverRequests = driverRequests;
 
-        Set<CarpoolingRequest> matchedRiders = matches.stream().map(CarpoolingMatch::getRider)
+        Set<DrsRequest> matchedRiders = matches.stream().map(DrsMatch::getRider)
                 .collect(Collectors.toSet());
         unmatchedRiderRequests = new ArrayList<>();
-        for (CarpoolingRequest request : riderRequests) {
+        for (DrsRequest request : riderRequests) {
             if (!matchedRiders.contains(request)) {
                 unmatchedRiderRequests.add(request);
             }
@@ -105,15 +105,15 @@ public class MatchMaker {
         LOGGER.info(matches.size() + " matches happened. Matching process finished!");
     }
 
-    public List<CarpoolingMatch> getMatches() {
+    public List<DrsMatch> getMatches() {
         return Collections.unmodifiableList(matches);
     }
 
-    public List<CarpoolingRequest> getUnmatchedDriverRequests() {
+    public List<DrsRequest> getUnmatchedDriverRequests() {
         return Collections.unmodifiableList(unmatchedDriverRequests);
     }
 
-    public List<CarpoolingRequest> getUnmatchedRiderRequests() {
+    public List<DrsRequest> getUnmatchedRiderRequests() {
         return Collections.unmodifiableList(unmatchedRiderRequests);
     }
 

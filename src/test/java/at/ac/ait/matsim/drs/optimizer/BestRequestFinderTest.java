@@ -20,12 +20,12 @@ import org.matsim.core.router.RoutingRequest;
 import org.matsim.facilities.FacilitiesUtils;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.request.DrsRequest;
 
 class BestRequestFinderTest {
         static Network network;
-        static CarpoolingRequest driverRequest, request2, request3, request4, request5;
+        static DrsRequest driverRequest, request2, request3, request4, request5;
         static List<? extends PlanElement> request2Route, request3Route, request4Route, request5Route;
         static RoutingRequest toRequest2, toRequest3, toRequest4, toRequest5;
         static BestRequestFinder bestRequestFinder;
@@ -38,11 +38,11 @@ class BestRequestFinderTest {
 
                 bestRequestFinder = new BestRequestFinder(driverRouter);
 
-                driverRequest = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
+                driverRequest = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
                                 null, network.getLinks().get(Id.createLinkId(1540)),
                                 network.getLinks().get(Id.createLinkId(186)), null);
 
-                request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
+                request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1541)),
                                 network.getLinks().get(Id.createLinkId(186)), null);
                 toRequest2 = DefaultRoutingRequest.withoutAttributes(
@@ -51,7 +51,7 @@ class BestRequestFinderTest {
                                 driverRequest.getDepartureTime(), driverRequest.getPerson());
                 request2Route = driverRouter.calcRoute(toRequest2);
 
-                request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
+                request3 = new DrsRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(1037)),
                                 network.getLinks().get(Id.createLinkId(186)), null);
                 toRequest3 = DefaultRoutingRequest.withoutAttributes(
@@ -60,7 +60,7 @@ class BestRequestFinderTest {
                                 driverRequest.getDepartureTime(), driverRequest.getPerson());
                 request3Route = driverRouter.calcRoute(toRequest3);
 
-                request4 = new CarpoolingRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
+                request4 = new DrsRequest(Id.create(4, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(186)),
                                 network.getLinks().get(Id.createLinkId(1037)), null);
                 toRequest4 = DefaultRoutingRequest.withoutAttributes(
@@ -69,7 +69,7 @@ class BestRequestFinderTest {
                                 driverRequest.getDepartureTime(), driverRequest.getPerson());
                 request4Route = driverRouter.calcRoute(toRequest4);
 
-                request5 = new CarpoolingRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
+                request5 = new DrsRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
                                 network.getLinks().get(Id.createLinkId(688)),
                                 network.getLinks().get(Id.createLinkId(1540)), null);
                 toRequest5 = DefaultRoutingRequest.withoutAttributes(
@@ -86,13 +86,13 @@ class BestRequestFinderTest {
 
         @Test
         void findBestRequestTest() {
-                List<CarpoolingMatch> potentialMatches = new ArrayList<>();
-                potentialMatches.add(CarpoolingMatch.createMinimal(driverRequest, request4, null));
-                potentialMatches.add(CarpoolingMatch.createMinimal(driverRequest, request5, null));
-                potentialMatches.add(CarpoolingMatch.createMinimal(driverRequest, request3, null));
-                potentialMatches.add(CarpoolingMatch.createMinimal(driverRequest, request2, null));
+                List<DrsMatch> potentialMatches = new ArrayList<>();
+                potentialMatches.add(DrsMatch.createMinimal(driverRequest, request4, null));
+                potentialMatches.add(DrsMatch.createMinimal(driverRequest, request5, null));
+                potentialMatches.add(DrsMatch.createMinimal(driverRequest, request3, null));
+                potentialMatches.add(DrsMatch.createMinimal(driverRequest, request2, null));
 
-                CarpoolingMatch bestMatch = bestRequestFinder.findBestRequest(potentialMatches);
+                DrsMatch bestMatch = bestRequestFinder.findBestRequest(potentialMatches);
                 assertNotNull(bestMatch);
                 assertEquals("2", bestMatch.getRider().getId().toString());
         }

@@ -18,12 +18,12 @@ import org.matsim.core.utils.misc.Time;
 
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.drs.events.CarpoolingPickupEvent;
-import at.ac.ait.matsim.drs.events.CarpoolingPickupEventHandler;
-import at.ac.ait.matsim.drs.run.Carpooling;
+import at.ac.ait.matsim.drs.events.DrsPickupEvent;
+import at.ac.ait.matsim.drs.events.DrsPickupEventHandler;
+import at.ac.ait.matsim.drs.run.Drs;
 
-public class CarpoolingSimulationStats
-        implements CarpoolingPickupEventHandler, VehicleAbortsEventHandler, PersonStuckEventHandler,
+public class DrsSimulationStats
+        implements DrsPickupEventHandler, VehicleAbortsEventHandler, PersonStuckEventHandler,
         AfterMobsimListener {
 
     private static final String DEBUG_FILE = "debug_events.txt";
@@ -33,7 +33,7 @@ public class CarpoolingSimulationStats
     private BufferedWriter debugWriter;
 
     @Inject
-    public CarpoolingSimulationStats(OutputDirectoryHierarchy outputHierarchy) {
+    public DrsSimulationStats(OutputDirectoryHierarchy outputHierarchy) {
         this.outputHierarchy = outputHierarchy;
     }
 
@@ -76,7 +76,7 @@ public class CarpoolingSimulationStats
 
     @Override
     public void handleEvent(PersonStuckEvent event) {
-        if (event.getLegMode() != null && event.getLegMode().equals(Carpooling.RIDER_MODE)) {
+        if (event.getLegMode() != null && event.getLegMode().equals(Drs.RIDER_MODE)) {
             stuckRiders++;
         }
         String msg = String.format("%s %s: pers: %s, link: %s, legMode: %s",
@@ -89,7 +89,7 @@ public class CarpoolingSimulationStats
     }
 
     @Override
-    public void handleEvent(CarpoolingPickupEvent event) {
+    public void handleEvent(DrsPickupEvent event) {
         successfulPickups++;
         String msg = String.format("%s %s: rider: %s, driver: %s, link: %s, vehicle: %s",
                 Time.writeTime(event.getTime()),

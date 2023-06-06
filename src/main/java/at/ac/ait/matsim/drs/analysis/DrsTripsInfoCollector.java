@@ -10,22 +10,22 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.core.utils.io.UncheckedIOException;
 
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.Carpooling;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
 
-public class CarpoolTripsInfoCollector {
+public class DrsTripsInfoCollector {
     public static final String FILENAME_MATCHED_CARPOOLING_TRIPS = "carpooling_matched_trips";
     private final String matchedTripsFileName;
     public static final String FILENAME_UNMATCHED_CARPOOLING_TRIPS = "carpooling_unmatched_trips";
     private final String unmatchedTripsFileName;
 
-    public CarpoolTripsInfoCollector(OutputDirectoryHierarchy controlerIO) {
+    public DrsTripsInfoCollector(OutputDirectoryHierarchy controlerIO) {
         this.matchedTripsFileName = controlerIO.getOutputFilename(FILENAME_MATCHED_CARPOOLING_TRIPS);
         this.unmatchedTripsFileName = controlerIO.getOutputFilename(FILENAME_UNMATCHED_CARPOOLING_TRIPS);
     }
 
-    public void printMatchedRequestsToCsv(List<CarpoolingMatch> matches) {
+    public void printMatchedRequestsToCsv(List<DrsMatch> matches) {
         BufferedWriter writer = IOUtils.getBufferedWriter(this.matchedTripsFileName + ".csv");
         try {
             writer.write(
@@ -33,7 +33,7 @@ public class CarpoolTripsInfoCollector {
                             +
                             "driver destinationX,driver destinationY,rider originX,rider originY,rider destinationX," +
                             "rider destinationY,driver departure time,rider departure time,detour factor");
-            for (CarpoolingMatch match : matches) {
+            for (DrsMatch match : matches) {
                 Person driver = match.getDriver().getPerson();
                 Person rider = match.getRider().getPerson();
                 Activity driverStartAct = match.getDriver().getTrip().getOriginActivity();
@@ -59,30 +59,30 @@ public class CarpoolTripsInfoCollector {
         }
     }
 
-    public void printUnMatchedRequestsToCsv(List<CarpoolingRequest> unmatchedDriverRequests,
-            List<CarpoolingRequest> unmatchedRiderRequests) {
+    public void printUnMatchedRequestsToCsv(List<DrsRequest> unmatchedDriverRequests,
+            List<DrsRequest> unmatchedRiderRequests) {
         BufferedWriter writer = IOUtils.getBufferedWriter(this.unmatchedTripsFileName + ".csv");
         try {
             writer.write("person,mode,trip origin,trip purpose,originX,originY," +
                     "destinationX,destinationY,departure time");
-            for (CarpoolingRequest unmatchedDriverRequest : unmatchedDriverRequests) {
+            for (DrsRequest unmatchedDriverRequest : unmatchedDriverRequests) {
                 Person driver = unmatchedDriverRequest.getPerson();
                 Activity driverStartAct = unmatchedDriverRequest.getTrip().getOriginActivity();
                 Activity driverEndAct = unmatchedDriverRequest.getTrip().getDestinationActivity();
 
                 writer.write(
-                        "\n" + driver.getId() + "," + Carpooling.DRIVER_MODE + "," + driverStartAct.getType() + "," +
+                        "\n" + driver.getId() + "," + Drs.DRIVER_MODE + "," + driverStartAct.getType() + "," +
                                 driverEndAct.getType() + "," + driverStartAct.getCoord().getX() + ","
                                 + driverStartAct.getCoord().getY()
                                 + "," + driverEndAct.getCoord().getX() + "," + driverEndAct.getCoord().getY() + "," +
                                 unmatchedDriverRequest.getDepartureTime());
             }
-            for (CarpoolingRequest unmatchedRiderRequest : unmatchedRiderRequests) {
+            for (DrsRequest unmatchedRiderRequest : unmatchedRiderRequests) {
                 Person rider = unmatchedRiderRequest.getPerson();
                 Activity riderStartAct = unmatchedRiderRequest.getTrip().getOriginActivity();
                 Activity riderEndAct = unmatchedRiderRequest.getTrip().getDestinationActivity();
 
-                writer.write("\n" + rider.getId() + "," + Carpooling.RIDER_MODE + "," + riderStartAct.getType() + "," +
+                writer.write("\n" + rider.getId() + "," + Drs.RIDER_MODE + "," + riderStartAct.getType() + "," +
                         riderEndAct.getType() + "," + riderStartAct.getCoord().getX() + ","
                         + riderStartAct.getCoord().getY()
                         + "," + riderEndAct.getCoord().getX() + "," + riderEndAct.getCoord().getY() + "," +

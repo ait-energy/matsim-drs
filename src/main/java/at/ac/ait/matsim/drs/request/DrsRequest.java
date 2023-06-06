@@ -8,7 +8,7 @@ import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.router.TripStructureUtils;
 
-public class CarpoolingRequest implements Request {
+public class DrsRequest implements Request {
     private final Id<Request> id;
     private final Person person;
     private final TripStructureUtils.Trip trip;
@@ -22,7 +22,7 @@ public class CarpoolingRequest implements Request {
     /**
      * Request for being either driver or rider (see mode)
      */
-    public CarpoolingRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
+    public DrsRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
             String mode, Link fromLink, Link toLink, Leg leg) {
         this.leg = leg;
         this.id = id;

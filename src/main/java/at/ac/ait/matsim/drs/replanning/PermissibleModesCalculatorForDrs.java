@@ -14,16 +14,16 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
-public class PermissibleModesCalculatorForCarpooling implements PermissibleModesCalculator {
+public class PermissibleModesCalculatorForDrs implements PermissibleModesCalculator {
 
     private final Set<String> availableModes;
 
     @Inject
-    public PermissibleModesCalculatorForCarpooling(Config config) {
-        this.availableModes = ImmutableSet.copyOf(Carpooling.addOrGetConfigGroup(config).getSubtourModeChoiceModes());
+    public PermissibleModesCalculatorForDrs(Config config) {
+        this.availableModes = ImmutableSet.copyOf(Drs.addOrGetConfigGroup(config).getSubtourModeChoiceModes());
     }
 
     @Override
@@ -33,21 +33,21 @@ public class PermissibleModesCalculatorForCarpooling implements PermissibleModes
         boolean hasLicense = !"no".equals(PersonUtils.getLicense(person));
         boolean carAvailable = !"never".equals(PersonUtils.getCarAvail(person));
 
-        String affinity = CarpoolingUtil.getCarpoolingAffinity(person);
-        boolean willingToDrive = Carpooling.AFFINITY_DRIVER_OR_RIDER.equals(affinity)
-                || Carpooling.AFFINITY_DRIVER_ONLY.equals(affinity);
-        boolean willingToRide = Carpooling.AFFINITY_DRIVER_OR_RIDER.equals(affinity)
-                || Carpooling.AFFINITY_RIDER_ONLY.equals(affinity);
+        String affinity = DrsUtil.getCarpoolingAffinity(person);
+        boolean willingToDrive = Drs.AFFINITY_DRIVER_OR_RIDER.equals(affinity)
+                || Drs.AFFINITY_DRIVER_ONLY.equals(affinity);
+        boolean willingToRide = Drs.AFFINITY_DRIVER_OR_RIDER.equals(affinity)
+                || Drs.AFFINITY_RIDER_ONLY.equals(affinity);
 
         Set<String> permissibleModes = Sets.newHashSet(availableModes);
         if (!hasLicense || !carAvailable) {
             permissibleModes.remove(TransportMode.car);
         }
         if (!hasLicense || !carAvailable || !willingToDrive) {
-            permissibleModes.remove(Carpooling.DRIVER_MODE);
+            permissibleModes.remove(Drs.DRIVER_MODE);
         }
         if (!willingToRide) {
-            permissibleModes.remove(Carpooling.RIDER_MODE);
+            permissibleModes.remove(Drs.RIDER_MODE);
         }
         return permissibleModes;
     }

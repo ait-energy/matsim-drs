@@ -11,20 +11,20 @@ import org.matsim.contrib.zone.ZonalSystem;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
-import at.ac.ait.matsim.drs.analysis.CarpoolTripsInfoCollector;
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
-public class CarpoolingOptimizer {
+public class DrsOptimizer {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Network network;
-        private final CarpoolingConfigGroup cfgGroup;
+        private final DrsConfigGroup cfgGroup;
         private final Population population;
         private final RoutingModule driverRouter;
         private final Boolean isLastIteration;
         private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
-        public CarpoolingOptimizer(Network network, CarpoolingConfigGroup cfgGroup, Population population,
+        public DrsOptimizer(Network network, DrsConfigGroup cfgGroup, Population population,
                         RoutingModule driverRouter, boolean isLastIteration,
                         OutputDirectoryHierarchy outputDirectoryHierarchy) {
                 this.network = network;
@@ -35,7 +35,7 @@ public class CarpoolingOptimizer {
                 this.outputDirectoryHierarchy = outputDirectoryHierarchy;
         }
 
-        public List<CarpoolingMatch> optimize() {
+        public List<DrsMatch> optimize() {
                 LOGGER.info("Matching process started!");
                 ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.getCellSize());
                 RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
@@ -55,9 +55,9 @@ public class CarpoolingOptimizer {
                 MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                                 requestsFilter, bestRequestFinder);
                 matchMaker.match();
-                List<CarpoolingMatch> matches = matchMaker.getMatches();
+                List<DrsMatch> matches = matchMaker.getMatches();
                 if (isLastIteration) {
-                        CarpoolTripsInfoCollector infoCollector = new CarpoolTripsInfoCollector(
+                        DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(
                                         outputDirectoryHierarchy);
                         infoCollector.printMatchedRequestsToCsv(matches);
                         infoCollector.printUnMatchedRequestsToCsv(matchMaker.getUnmatchedDriverRequests(),

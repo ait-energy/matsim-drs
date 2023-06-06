@@ -19,22 +19,22 @@ import org.matsim.core.router.TripStructureUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final CarpoolingConfigGroup cfgGroup;
+    private final DrsConfigGroup cfgGroup;
     private final Population population;
     private final Network network;
     private final RoutingModule driverRouter;
-    private List<CarpoolingRequest> driverRequests;
-    private List<CarpoolingRequest> riderRequests;
+    private List<DrsRequest> driverRequests;
+    private List<DrsRequest> riderRequests;
 
-    public RequestsCollector(CarpoolingConfigGroup cfgGroup, Population population, Network network,
+    public RequestsCollector(DrsConfigGroup cfgGroup, Population population, Network network,
             RoutingModule driverRouter) {
         this.cfgGroup = cfgGroup;
         this.population = population;
@@ -56,7 +56,7 @@ public class RequestsCollector {
                 List<Leg> legs = trip.getLegsOnly();
                 for (Leg leg : legs) {
                     String mode = leg.getMode();
-                    if (!mode.equals(Carpooling.DRIVER_MODE) && !mode.equals(Carpooling.RIDER_MODE)) {
+                    if (!mode.equals(Drs.DRIVER_MODE) && !mode.equals(Drs.RIDER_MODE)) {
                         continue;
                     }
 
@@ -70,11 +70,11 @@ public class RequestsCollector {
 
                     String msg = "link {} ({}) not found in carpooling network for person {}.";
                     if (fromLink == null) {
-                        LOGGER.warn(msg, startActivity.getLinkId(), CarpoolingUtil.toWktPoint(startActivity),
+                        LOGGER.warn(msg, startActivity.getLinkId(), DrsUtil.toWktPoint(startActivity),
                                 person.getId());
                         continue;
                     } else if (toLink == null) {
-                        LOGGER.warn(msg, endActivity.getLinkId(), CarpoolingUtil.toWktPoint(endActivity),
+                        LOGGER.warn(msg, endActivity.getLinkId(), DrsUtil.toWktPoint(endActivity),
                                 person.getId());
                         continue;
                     }
@@ -83,14 +83,14 @@ public class RequestsCollector {
                         continue;
                     }
 
-                    long id = mode.equals(Carpooling.DRIVER_MODE) ? ++driverRequestId : ++riderRequestId;
-                    CarpoolingRequest request = new CarpoolingRequest(Id.create(id, Request.class),
+                    long id = mode.equals(Drs.DRIVER_MODE) ? ++driverRequestId : ++riderRequestId;
+                    DrsRequest request = new DrsRequest(Id.create(id, Request.class),
                             person, trip, activityEndTime, mode, fromLink, toLink, leg);
                     if (Double.isInfinite(request.getNetworkRouteDistance())) {
                         // for most driver trips the leg already has a route
                         // (due to prepareForMobsim and PlanModificationUndoer)
                         // but rider trips won't have a distance, so let's calculate a route
-                        Leg driverLeg = CarpoolingUtil.calculateLeg(driverRouter,
+                        Leg driverLeg = DrsUtil.calculateLeg(driverRouter,
                                 fromLink,
                                 toLink,
                                 activityEndTime,
@@ -99,11 +99,11 @@ public class RequestsCollector {
                     }
 
                     double distance = request.getNetworkRouteDistance();
-                    if (mode.equals(Carpooling.DRIVER_MODE)) {
+                    if (mode.equals(Drs.DRIVER_MODE)) {
                         if (cfgGroup.getMinDriverLegMeters() <= 0 || cfgGroup.getMinDriverLegMeters() <= distance) {
                             driverRequests.add(request);
                         }
-                    } else if (mode.equals(Carpooling.RIDER_MODE)) {
+                    } else if (mode.equals(Drs.RIDER_MODE)) {
                         if (cfgGroup.getMinRiderLegMeters() <= 0 || cfgGroup.getMinRiderLegMeters() <= distance) {
                             riderRequests.add(request);
                         }
@@ -115,11 +115,11 @@ public class RequestsCollector {
 
     }
 
-    public List<CarpoolingRequest> getDriverRequests() {
+    public List<DrsRequest> getDriverRequests() {
         return ImmutableList.copyOf(driverRequests);
     }
 
-    public List<CarpoolingRequest> getRiderRequests() {
+    public List<DrsRequest> getRiderRequests() {
         return ImmutableList.copyOf(riderRequests);
     }
 }

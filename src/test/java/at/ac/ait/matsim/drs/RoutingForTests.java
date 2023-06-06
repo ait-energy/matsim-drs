@@ -11,8 +11,8 @@ import org.matsim.core.router.speedy.SpeedyGraph;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RoutingForTests {
 
@@ -21,11 +21,11 @@ public class RoutingForTests {
 
     public RoutingForTests(String networkXmlPath) {
         network = NetworkUtils.readNetwork(networkXmlPath);
-        CarpoolingUtil.addNewAllowedModeToCarLinks(network, Carpooling.DRIVER_MODE);
+        DrsUtil.addNewAllowedModeToCarLinks(network, Drs.DRIVER_MODE);
         LeastCostPathCalculator dijkstra = new SpeedyDijkstra(new SpeedyGraph(network),
                 new FreeSpeedTravelTime(),
                 new TimeAsTravelDisutility(new FreeSpeedTravelTime()));
-        driverRouter = new NetworkRoutingModule(Carpooling.DRIVER_MODE, PopulationUtils.getFactory(),
+        driverRouter = new NetworkRoutingModule(Drs.DRIVER_MODE, PopulationUtils.getFactory(),
                 network, dijkstra);
     }
 

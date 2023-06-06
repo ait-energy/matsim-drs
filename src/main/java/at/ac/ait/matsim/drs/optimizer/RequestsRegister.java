@@ -1,6 +1,6 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
+import at.ac.ait.matsim.drs.request.DrsRequest;
 
 public class RequestsRegister {
     private final RequestZonalRegistry originZonalRegistry;
@@ -14,13 +14,13 @@ public class RequestsRegister {
         this.timeSegmentRegistry = timeSegmentRegistry;
     }
 
-    public void addRequest(CarpoolingRequest riderRequest) {
+    public void addRequest(DrsRequest riderRequest) {
         originZonalRegistry.addRequest(riderRequest);
         destinationZonalRegistry.addRequest(riderRequest);
         timeSegmentRegistry.addRequest(riderRequest);
     }
 
-    public void removeRequest(CarpoolingRequest riderRequest) {
+    public void removeRequest(DrsRequest riderRequest) {
         originZonalRegistry.removeRequest(riderRequest);
         destinationZonalRegistry.removeRequest(riderRequest);
         timeSegmentRegistry.removeRequest(riderRequest);

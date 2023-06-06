@@ -1,6 +1,6 @@
 package at.ac.ait.matsim.drs.planHandler;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
+import at.ac.ait.matsim.drs.run.Drs;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -45,19 +45,19 @@ class PlanModificationUndoerTest {
 
     private void addPseudoPlanElements(List<PlanElement> planElements) {
         ArrayList<PlanElement> legToCustomerList = new ArrayList<>();
-        Leg legToCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
+        Leg legToCustomer = factory.createLeg(Drs.DRIVER_MODE);
         legToCustomerList.add(legToCustomer);
 
         ArrayList<PlanElement> legWithCustomerList = new ArrayList<>();
-        Leg legWithCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
+        Leg legWithCustomer = factory.createLeg(Drs.DRIVER_MODE);
         legWithCustomerList.add(legWithCustomer);
 
         ArrayList<PlanElement> legAfterCustomerList = new ArrayList<>();
-        Leg legAfterCustomer = factory.createLeg(Carpooling.DRIVER_MODE);
+        Leg legAfterCustomer = factory.createLeg(Drs.DRIVER_MODE);
         legAfterCustomerList.add(legAfterCustomer);
 
-        Activity pickup = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION, null);
-        Activity dropoff = factory.createActivityFromLinkId(Carpooling.DRIVER_INTERACTION, null);
+        Activity pickup = factory.createActivityFromLinkId(Drs.DRIVER_INTERACTION, null);
+        Activity dropoff = factory.createActivityFromLinkId(Drs.DRIVER_INTERACTION, null);
         ArrayList<PlanElement> newRoute = new ArrayList<>(legToCustomerList);
         newRoute.add(pickup);
         newRoute.addAll(legWithCustomerList);
@@ -71,7 +71,7 @@ class PlanModificationUndoerTest {
             List<Leg> legs = trip.getLegsOnly();
             for (Leg leg : legs) {
                 String mode = leg.getMode();
-                if (mode.equals(Carpooling.DRIVER_MODE)) {
+                if (mode.equals(Drs.DRIVER_MODE)) {
                     TripRouter.insertTrip(planElements, startActivity, newRoute, endActivity);
                 }
             }

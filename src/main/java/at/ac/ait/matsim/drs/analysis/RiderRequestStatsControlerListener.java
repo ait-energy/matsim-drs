@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.drs.analysis;
 
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 import com.google.inject.Inject;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.matsim.api.core.v01.population.*;
@@ -21,7 +21,7 @@ import java.util.*;
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
     public static final String FILENAME_REQUEST_STATS = "carpooling_rider_request_stats";
-    public static final String MATCHED = Carpooling.REQUEST_STATUS_MATCHED;
+    public static final String MATCHED = Drs.REQUEST_STATUS_MATCHED;
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
@@ -46,8 +46,8 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
         for (Person person : population.getPersons().values()) {
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
-                    if (Objects.equals(((Leg) planElement).getMode(), Carpooling.RIDER_MODE)) {
-                        if (Objects.equals(CarpoolingUtil.getRequestStatus((Leg) planElement), MATCHED)) {
+                    if (Objects.equals(((Leg) planElement).getMode(), Drs.RIDER_MODE)) {
+                        if (Objects.equals(DrsUtil.getRequestStatus((Leg) planElement), MATCHED)) {
                             if (requestCount.get(MATCHED) == null) {
                                 this.requestCount.put(MATCHED, 1);
                             } else {

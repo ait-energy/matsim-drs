@@ -5,7 +5,7 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 
-public class Carpooling {
+public class Drs {
     public static final String DRIVER_MODE = "carpoolingDriver";
     public static final String RIDER_MODE = "carpoolingRider";
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
@@ -38,19 +38,19 @@ public class Carpooling {
         pickup, dropoff
     }
 
-    public static CarpoolingConfigGroup addOrGetConfigGroup(Scenario scenario) {
-        return ConfigUtils.addOrGetModule(scenario.getConfig(), CarpoolingConfigGroup.GROUP_NAME,
-                CarpoolingConfigGroup.class);
+    public static DrsConfigGroup addOrGetConfigGroup(Scenario scenario) {
+        return ConfigUtils.addOrGetModule(scenario.getConfig(), DrsConfigGroup.GROUP_NAME,
+                DrsConfigGroup.class);
     }
 
-    public static CarpoolingConfigGroup addOrGetConfigGroup(Config config) {
-        return ConfigUtils.addOrGetModule(config, CarpoolingConfigGroup.GROUP_NAME, CarpoolingConfigGroup.class);
+    public static DrsConfigGroup addOrGetConfigGroup(Config config) {
+        return ConfigUtils.addOrGetModule(config, DrsConfigGroup.GROUP_NAME, DrsConfigGroup.class);
     }
 
     public static void prepareController(Controler controller) {
-        controller.addOverridingModule(new CarpoolingModule());
+        controller.addOverridingModule(new DrsModule());
         controller.configureQSimComponents(components -> {
-            new CarpoolingEngineQSimModule().configure(components);
+            new DrsEngineQSimModule().configure(components);
         });
     }
 

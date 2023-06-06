@@ -14,9 +14,9 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsCollectorTest {
     private static Population population, populationWithZeroCarpoolingDrivers;
@@ -36,7 +36,7 @@ class RequestsCollectorTest {
 
     @Test
     void testNumberOfRequests() {
-        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(), population, network,
+        RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(), population, network,
                 driverRouter);
         collector.collectRequests();
 
@@ -46,7 +46,7 @@ class RequestsCollectorTest {
 
     @Test
     void testNumberOfRequestsWithMinimumDistances() {
-        CarpoolingConfigGroup cfgWithMinimums = new CarpoolingConfigGroup();
+        DrsConfigGroup cfgWithMinimums = new DrsConfigGroup();
         cfgWithMinimums.setMinDriverLegMeters(4_500);
         cfgWithMinimums.setMinRiderLegMeters(2_000);
         RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
@@ -58,7 +58,7 @@ class RequestsCollectorTest {
 
     @Test
     void testNumberOfRequestsWithMinimumDistancesExtreme() {
-        CarpoolingConfigGroup cfgWithMinimums = new CarpoolingConfigGroup();
+        DrsConfigGroup cfgWithMinimums = new DrsConfigGroup();
         cfgWithMinimums.setMinDriverLegMeters(20_000);
         cfgWithMinimums.setMinRiderLegMeters(20_000);
         RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
@@ -70,32 +70,32 @@ class RequestsCollectorTest {
 
     @Test
     void testRequestsInfo() {
-        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(), population, network,
+        RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(), population, network,
                 driverRouter);
         collector.collectRequests();
-        List<CarpoolingRequest> driverRequests = collector.getDriverRequests();
-        List<CarpoolingRequest> riderRequests = collector.getRiderRequests();
+        List<DrsRequest> driverRequests = collector.getDriverRequests();
+        List<DrsRequest> riderRequests = collector.getRiderRequests();
 
         assertEquals("1", driverRequests.get(0).getId().toString());
         assertEquals(5 * 60 * 60, driverRequests.get(0).getDepartureTime());
-        assertEquals(Carpooling.DRIVER_MODE, driverRequests.get(0).getMode());
+        assertEquals(Drs.DRIVER_MODE, driverRequests.get(0).getMode());
         assertEquals("1540", driverRequests.get(0).getFromLink().getId().toString());
         assertEquals("688", driverRequests.get(0).getToLink().getId().toString());
 
         assertEquals("1", riderRequests.get(0).getId().toString());
         assertEquals(18600, riderRequests.get(0).getDepartureTime());
-        assertEquals(Carpooling.RIDER_MODE, riderRequests.get(0).getMode());
+        assertEquals(Drs.RIDER_MODE, riderRequests.get(0).getMode());
         assertEquals("1541", riderRequests.get(0).getFromLink().getId().toString());
         assertEquals("688", riderRequests.get(0).getToLink().getId().toString());
     }
 
     @Test
     void testNoCarpoolingRequests() {
-        RequestsCollector collector = new RequestsCollector(new CarpoolingConfigGroup(),
+        RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(),
                 populationWithZeroCarpoolingDrivers, NetworkUtils.createNetwork(), driverRouter);
         collector.collectRequests();
-        List<CarpoolingRequest> driverRequests = collector.getDriverRequests();
-        List<CarpoolingRequest> riderRequests = collector.getRiderRequests();
+        List<DrsRequest> driverRequests = collector.getDriverRequests();
+        List<DrsRequest> riderRequests = collector.getRiderRequests();
         assertTrue(driverRequests.isEmpty());
         assertTrue(riderRequests.isEmpty());
     }

@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.optimizer.Request;
@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RequestTimeSegmentRegistryTest {
     RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(
-            new CarpoolingConfigGroup());
-    CarpoolingRequest request1 = new CarpoolingRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
+            new DrsConfigGroup());
+    DrsRequest request1 = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
             null, null);
-    CarpoolingRequest request2 = new CarpoolingRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
+    DrsRequest request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
             null, null);
-    CarpoolingRequest request3 = new CarpoolingRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
+    DrsRequest request3 = new DrsRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
             null, null, null);
 
     @Test

@@ -7,16 +7,16 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RequestsFilter {
-    private final CarpoolingConfigGroup cfgGroup;
+    private final DrsConfigGroup cfgGroup;
     private final RoutingModule router;
 
-    public RequestsFilter(CarpoolingConfigGroup cfgGroup, RoutingModule router) {
+    public RequestsFilter(DrsConfigGroup cfgGroup, RoutingModule router) {
         this.cfgGroup = cfgGroup;
         this.router = router;
     }
@@ -24,11 +24,11 @@ public class RequestsFilter {
     /**
      * @return matches for rider requests that meet the filter criteria
      */
-    public List<CarpoolingMatch> filterRequests(CarpoolingRequest driverRequest,
-            List<CarpoolingRequest> ridersRequests) {
-        List<CarpoolingMatch> filteredRiderRequests = new ArrayList<>();
-        for (CarpoolingRequest riderRequest : ridersRequests) {
-            Leg toPickup = CarpoolingUtil.calculateLeg(router,
+    public List<DrsMatch> filterRequests(DrsRequest driverRequest,
+            List<DrsRequest> ridersRequests) {
+        List<DrsMatch> filteredRiderRequests = new ArrayList<>();
+        for (DrsRequest riderRequest : ridersRequests) {
+            Leg toPickup = DrsUtil.calculateLeg(router,
                     driverRequest.getFromLink(),
                     riderRequest.getFromLink(),
                     driverRequest.getDepartureTime(),
@@ -36,13 +36,13 @@ public class RequestsFilter {
             double expectedPickupTime = driverRequest.getDepartureTime() + toPickup.getTravelTime().seconds();
             if (checkRiderTimeConstraints(riderRequest, expectedPickupTime,
                     cfgGroup.getRiderDepartureTimeAdjustmentSeconds())) {
-                filteredRiderRequests.add(CarpoolingMatch.createMinimal(driverRequest, riderRequest, toPickup));
+                filteredRiderRequests.add(DrsMatch.createMinimal(driverRequest, riderRequest, toPickup));
             }
         }
         return filteredRiderRequests;
     }
 
-    static boolean checkRiderTimeConstraints(CarpoolingRequest riderRequest, double expectedPickupTime,
+    static boolean checkRiderTimeConstraints(DrsRequest riderRequest, double expectedPickupTime,
             double allowedTimeAdjustment) {
         double timeAdjustment = expectedPickupTime - riderRequest.getDepartureTime();
         boolean withinRiderDepartureTimeWindow = Math.abs(timeAdjustment) <= allowedTimeAdjustment;

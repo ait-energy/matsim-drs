@@ -1,7 +1,7 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.CarpoolingConfigGroup;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import java.util.*;
@@ -13,17 +13,17 @@ import java.util.stream.Stream;
  */
 
 public class RequestTimeSegmentRegistry {
-    private final Map<Integer, Map<Id<Request>, CarpoolingRequest>> requestsInTimeSegments;
-    private final CarpoolingConfigGroup cfgGroup;
+    private final Map<Integer, Map<Id<Request>, DrsRequest>> requestsInTimeSegments;
+    private final DrsConfigGroup cfgGroup;
 
-    public RequestTimeSegmentRegistry(CarpoolingConfigGroup cfgGroup) {
+    public RequestTimeSegmentRegistry(DrsConfigGroup cfgGroup) {
         this.cfgGroup = cfgGroup;
         this.requestsInTimeSegments = new HashMap<>();
     }
 
-    public void addRequest(CarpoolingRequest request) {
+    public void addRequest(DrsRequest request) {
         int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
-        Map<Id<Request>, CarpoolingRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
+        Map<Id<Request>, DrsRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
         if (requestsInTimeSegment != null) {
             if (requestsInTimeSegments.get(timeSegment).get(request.getId()) != null) {
                 throw new IllegalStateException(request + " is already in the registry");
@@ -37,18 +37,18 @@ public class RequestTimeSegmentRegistry {
         }
     }
 
-    public void removeRequest(CarpoolingRequest request) {
+    public void removeRequest(DrsRequest request) {
         int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
         if (requestsInTimeSegments.get(timeSegment).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
     }
 
-    public Stream<CarpoolingRequest> findNearestRequests(double departureTime) {
+    public Stream<DrsRequest> findNearestRequests(double departureTime) {
         int timeSegment = getTimeSegment(departureTime, cfgGroup.getTimeSegmentLengthSeconds());
-        Stream<CarpoolingRequest> requestsInPreviousSegment = Stream.empty();
-        Stream<CarpoolingRequest> requestsInCurrentSegment = Stream.empty();
-        Stream<CarpoolingRequest> requestsInNextSegment = Stream.empty();
+        Stream<DrsRequest> requestsInPreviousSegment = Stream.empty();
+        Stream<DrsRequest> requestsInCurrentSegment = Stream.empty();
+        Stream<DrsRequest> requestsInNextSegment = Stream.empty();
         if (requestsInTimeSegments.get(timeSegment - 1) != null) {
             requestsInPreviousSegment = requestsInTimeSegments.get(timeSegment - 1).values().stream();
         }
@@ -72,7 +72,7 @@ public class RequestTimeSegmentRegistry {
         return timeSegment;
     }
 
-    public Map<Integer, Map<Id<Request>, CarpoolingRequest>> getRequestsInTimeSegments() {
+    public Map<Integer, Map<Id<Request>, DrsRequest>> getRequestsInTimeSegments() {
         return requestsInTimeSegments;
     }
 }

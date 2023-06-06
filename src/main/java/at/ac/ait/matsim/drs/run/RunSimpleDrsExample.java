@@ -9,29 +9,29 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
-public class RunSimpleCarpoolingExample {
+public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling.xml", new CarpoolingConfigGroup());
+        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_carpooling.xml", new DrsConfigGroup());
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
         // optional steps to prepare the scenario
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
-        CarpoolingUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
-        CarpoolingUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Carpooling.DRIVER_MODE);
+        DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
+        DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
         // necessary to kick-start the carpooling driver pool
-        int count = CarpoolingUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+        int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
         LOGGER.info("added initial carpooling driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);
 
         // necessary to register the carpooling module
-        Carpooling.prepareController(controller);
+        Drs.prepareController(controller);
 
         controller.run();
     }

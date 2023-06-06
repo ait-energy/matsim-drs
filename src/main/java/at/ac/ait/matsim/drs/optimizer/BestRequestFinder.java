@@ -10,8 +10,8 @@ import org.matsim.core.router.RoutingModule;
 
 import com.google.common.base.Functions;
 
-import at.ac.ait.matsim.drs.request.CarpoolingMatch;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.request.DrsMatch;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class BestRequestFinder {
     private final RoutingModule router;
@@ -23,20 +23,20 @@ public class BestRequestFinder {
     /**
      * @return null if no match was found
      */
-    public CarpoolingMatch findBestRequest(List<CarpoolingMatch> matches) {
+    public DrsMatch findBestRequest(List<DrsMatch> matches) {
         if (matches.isEmpty()) {
             return null;
         }
-        List<CarpoolingMatch> matchesWithDetails = matches.stream().map(m -> calculateDetailsForMatch(m))
+        List<DrsMatch> matchesWithDetails = matches.stream().map(m -> calculateDetailsForMatch(m))
                 .collect(Collectors.toList());
         return findMatchWithLeastDetour(matchesWithDetails);
     }
 
-    CarpoolingMatch calculateDetailsForMatch(CarpoolingMatch match) {
+    DrsMatch calculateDetailsForMatch(DrsMatch match) {
         // Should already be calculated (in the request collection phase)
         Leg originalDriverLeg = match.getDriver().getLegWithRoute();
         if (originalDriverLeg == null) {
-            originalDriverLeg = CarpoolingUtil.calculateLeg(router,
+            originalDriverLeg = DrsUtil.calculateLeg(router,
                     match.getDriver().getFromLink(),
                     match.getDriver().getToLink(),
                     match.getDriver().getDepartureTime(),
@@ -48,7 +48,7 @@ public class BestRequestFinder {
         // if not then calculate it now.
         Leg toPickup = match.getAfterDropoff();
         if (toPickup == null) {
-            toPickup = CarpoolingUtil.calculateLeg(router,
+            toPickup = DrsUtil.calculateLeg(router,
                     match.getDriver().getFromLink(),
                     match.getRider().getFromLink(),
                     match.getDriver().getDepartureTime(),
@@ -62,7 +62,7 @@ public class BestRequestFinder {
         // but that should be OK
         Leg withCustomer = match.getRider().getLegWithRoute();
         if (withCustomer == null) {
-            withCustomer = CarpoolingUtil.calculateLeg(router,
+            withCustomer = DrsUtil.calculateLeg(router,
                     match.getRider().getFromLink(),
                     match.getRider().getToLink(),
                     match.getDriver().getDepartureTime() + travelTimeToPickup,
@@ -70,7 +70,7 @@ public class BestRequestFinder {
         }
         double travelTimeWithCustomer = withCustomer.getTravelTime().seconds();
 
-        Leg afterDropoff = CarpoolingUtil.calculateLeg(router,
+        Leg afterDropoff = DrsUtil.calculateLeg(router,
                 match.getRider().getToLink(),
                 match.getDriver().getToLink(),
                 match.getDriver().getDepartureTime() + travelTimeToPickup + travelTimeWithCustomer,
@@ -79,13 +79,13 @@ public class BestRequestFinder {
 
         double newRouteTravelTime = travelTimeToPickup + travelTimeWithCustomer + travelTimeAfterDropoff;
         double detourFactor = newRouteTravelTime / originalRouteTravelTime;
-        return CarpoolingMatch.create(match.getDriver(), match.getRider(), toPickup, withCustomer, afterDropoff,
+        return DrsMatch.create(match.getDriver(), match.getRider(), toPickup, withCustomer, afterDropoff,
                 detourFactor);
     }
 
-    static CarpoolingMatch findMatchWithLeastDetour(List<CarpoolingMatch> matches) {
-        Map<CarpoolingMatch, Double> match2detour = matches.stream()
-                .collect(Collectors.toMap(Functions.identity(), CarpoolingMatch::getDetourFactor));
+    static DrsMatch findMatchWithLeastDetour(List<DrsMatch> matches) {
+        Map<DrsMatch, Double> match2detour = matches.stream()
+                .collect(Collectors.toMap(Functions.identity(), DrsMatch::getDetourFactor));
         return Collections.min(match2detour.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 }

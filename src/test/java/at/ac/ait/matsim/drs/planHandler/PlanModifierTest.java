@@ -1,8 +1,8 @@
 package at.ac.ait.matsim.drs.planHandler;
 
-import at.ac.ait.matsim.drs.request.CarpoolingRequest;
-import at.ac.ait.matsim.drs.run.Carpooling;
-import at.ac.ait.matsim.drs.util.CarpoolingUtil;
+import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Coord;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlanModifierTest {
 
-    static CarpoolingRequest request;
+    static DrsRequest request;
     static Activity activity1;
     static Activity activity2;
 
@@ -33,16 +33,16 @@ class PlanModifierTest {
         activity1 = factory.createActivityFromCoord("home", homeCoordinate);
         activity1.setEndTime(8 * 60 * 60);
         plan.addActivity(activity1);
-        Leg leg = factory.createLeg(Carpooling.RIDER_MODE);
+        Leg leg = factory.createLeg(Drs.RIDER_MODE);
         plan.addLeg(leg);
         activity2 = factory.createActivityFromCoord("work", workCoordinate);
         activity2.setEndTime(12 * 60 * 60);
         plan.addActivity(activity2);
 
         person.addPlan(plan);
-        request = new CarpoolingRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
+        request = new DrsRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
                 null, null, null);
-        CarpoolingUtil.setLinkageActivityToRiderRequest(activity1, request.getId().toString());
+        DrsUtil.setLinkageActivityToRiderRequest(activity1, request.getId().toString());
     }
 
     @Test
