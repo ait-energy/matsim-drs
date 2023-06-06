@@ -1,4 +1,4 @@
-# Carpooling
+# Dynamic Ride-Sharing for MATSim
 
 This extension simulates carpooling, i.e. agents driving a private car pick up riders for a part of their trip.
 The assignment of carpooling driver to rider is done before each QSim iteration.

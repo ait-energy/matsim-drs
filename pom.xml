@@ -2,18 +2,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Adds the AIT Maven repository (<distributionManagement>), sets project
-		encoding to UTF-8,... Don't forget to set the <repository> in your ~/.m2/settings.xml,
-		otherwise the project can not be found. -->
-    <parent>
-        <groupId>at.ac.ait</groupId>
-        <artifactId>java-project</artifactId>
-        <version>11.1.1</version>
-    </parent>
-    <groupId>at.ac.ait.matsim.domino</groupId>
-    <artifactId>carpooling</artifactId>
-    <version>14.0</version>
-    <description>MATSim carpooling module for project DOMINO</description>
+    <groupId>at.ac.ait.matsim</groupId>
+    <artifactId>matsim-drs</artifactId>
+    <version>14.1-SNAPSHOT</version>
+    <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
         <matsim.version>14.0</matsim.version>
@@ -30,12 +22,6 @@
         <guava.version>30.0-jre</guava.version>
         <jackson.version>2.10.3</jackson.version>
     </properties>
-
-    <scm>
-        <url>https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling</url>
-        <connection>scm:git:https://gitlab-intern.ait.ac.at/energy/commons/matsim/domino-carpooling.git</connection>
-        <tag>HEAD</tag>
-    </scm>
 
     <repositories>
         <repository>
@@ -121,14 +107,84 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <failFast>true</failFast>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.5.0</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>11</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+            </plugin>
+
+            <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
                 <configuration>
                     <source>11</source>
                 </configuration>
+                <!-- <configuration> <additionalparam>-Xdoclint:none</additionalparam>
+						</configuration> -->
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -141,7 +197,7 @@
                             <outputFile>${project.build.directory}/${project.artifactId}-${project.version}_shaded.jar</outputFile>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>at.ac.ait.matsim.domino.carpooling.run.Main</mainClass>
+                                    <mainClass>at.ac.ait.matsim.drs.run.Main</mainClass>
                                     <manifestEntries>
                                         <!-- required for log4j2 to work.. see https://issues.apache.org/jira/browse/LOG4J2-2834 -->
                                         <Multi-Release>true</Multi-Release>
