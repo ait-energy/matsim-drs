@@ -23,10 +23,21 @@
         <jackson.version>2.10.3</jackson.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>ait-matsim-releases</id>
+            <name>MATSim Releases Maven Repository</name>
+            <url>https://repo.matsim.org/repository/ait-matsim-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ait-matsim-snapshots</id>
+            <name>MATSim Snapshots Maven Repository</name>
+            <url>https://repo.matsim.org/repository/ait-matsim-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
-            <!-- Repository for MATSim releases and snapshots (MATSim is not on Maven
-				central) -->
             <id>matsim</id>
             <url>https://repo.matsim.org/repository/matsim</url>
         </repository>
@@ -179,51 +190,6 @@
                 </configuration>
                 <!-- <configuration> <additionalparam>-Xdoclint:none</additionalparam>
 						</configuration> -->
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <!-- by default the shade plugin replaces the original file. -->
-                            <!-- we want to keep the original file and store the shaded one additionally.-->
-                            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}_shaded.jar</outputFile>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>at.ac.ait.matsim.drs.run.Main</mainClass>
-                                    <manifestEntries>
-                                        <!-- required for log4j2 to work.. see https://issues.apache.org/jira/browse/LOG4J2-2834 -->
-                                        <Multi-Release>true</Multi-Release>
-                                    </manifestEntries>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/java.sql.Driver</resource>
-                                </transformer>
-                                <!-- Required to merge the various GeoTools META-INF/services files
-									(necessary for avoiding org.opengis.referencing.NoSuchAuthorityCodeException) -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                            </transformers>
-                            <!-- in case a signed jar is contained in the dependences -->
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

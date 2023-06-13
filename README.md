@@ -1,6 +1,6 @@
-# Dynamic Ride-Sharing for MATSim
+# Dynamic Ride-Sharing (DRS) for MATSim
 
-This extension simulates dynamic ride-sharing (DRS), i.e. agents driving a private car pick up riders for a part of their trip.
+This MATSim module (or extension) simulates dynamic ride-sharing (DRS), i.e. agents driving a private car pick up riders for a part of their trip.
 The assignment of DRS driver to rider is done before each QSim iteration.
 
 The simulated modes of transport are:
@@ -9,7 +9,7 @@ The simulated modes of transport are:
 
 ## Main features
 
-The main components of this extension are:
+The main components of the DRS module are:
 
 1. Matching algorithm.
 2. Modifying agents plans.
@@ -52,9 +52,35 @@ The matching algorithm looks for the best rider for each driver and consists of 
 
 - `config_drs.xml` serves as an example on how to correctly configure DRS.
 
+
+## Binaries
+
+Releases and snapshots are available on [repo.matsim.org](https://repo.matsim.org/service/rest/repository/browse/matsim/at/ac/ait/matsim/matsim-drs/).
+
+To include the DRS module in your maven project, add the MATSim repo and the following dependency to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>matsim</id>
+        <url>https://repo.matsim.org/repository/matsim/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>at.ac.ait.matsim</groupId>
+        <artifactId>matsim-drs</artifactId>
+        <version>14.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
+
+Note, that the DRS module's major version (e.g. 14) corresponds to the MATSim version it is compatible with.
+
 ## Usage
 
-Main method of the `RunSimpleDrsExample` class takes only the config file as an input in order to run the DRS extension.
+The main method of `RunSimpleDrsExample` takes only the config file as an input in order to run.
 
 - It automatically adds `drsDriver` mode as an allowed mode to all car links.
 - It automatically kick-starts all potential `drsDriver` agents, i.e. with an according `drsAffinity` + car + license availability, with a `drsDriver` plan. 
@@ -67,7 +93,7 @@ This should assure, that at the beginning of the simulation many drivers are pre
 Mode innovation relies on an adapted version of the innovation strategy `SubtourModeChoice` named `SubtourModeChoiceForDrs`.
 `SubtourModeChoiceForDrs` will by default add the DRS driver and rider mode to the mix and can also be configured via the relevant parameters in the `drs` config group.
 
-## Output
+### Output
 
 - `drs_rider_request_stats.txt/png`
 - `drs_vkt_stats.txt/png` 
@@ -87,4 +113,4 @@ Das Leitprojekt [DOMINO](https://www.domino-maas.at/) wurde gefördert bzw. fina
 
 ## License
 
-This extension is [GPL-2.0-or-later](LICENSE) licensed for maximum compatibility with [MATSim](https://github.com/matsim-org/matsim-libs).
+The DRS module is [GPL-2.0-or-later](LICENSE) licensed for maximum compatibility with [MATSim](https://github.com/matsim-org/matsim-libs).
