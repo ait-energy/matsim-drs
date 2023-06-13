@@ -1,8 +1,6 @@
-name: Java CI with Maven
+name: Build for all pull requests
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 

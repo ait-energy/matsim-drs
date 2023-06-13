@@ -24,11 +24,12 @@
     </properties>
 
     <distributionManagement>
-        <repository>
+        <!-- disabled so that we don't accidentially release via Github workflow -->
+        <!--<repository>
             <id>ait-matsim-releases</id>
             <name>MATSim Releases Maven Repository</name>
             <url>https://repo.matsim.org/repository/ait-matsim-releases/</url>
-        </repository>
+        </repository>-->
         <snapshotRepository>
             <id>ait-matsim-snapshots</id>
             <name>MATSim Snapshots Maven Repository</name>

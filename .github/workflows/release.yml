@@ -1,8 +1,8 @@
-name: Java CI with Maven (Deploy)
+name: Build and deploy to MATSim repo for each commit to main branch
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
