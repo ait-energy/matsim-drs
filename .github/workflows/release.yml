@@ -1,0 +1,22 @@
+name: Java CI with Maven (Deploy)
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build and publish jars
+      run: mvn -B clean package deploy
+      env:
+        MAVEN_USERNAME: ${{ secrets.MATSIM_REPO_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MATSIM_REPO_PASSWORD }}
