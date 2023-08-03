@@ -26,6 +26,7 @@ public class DrsSimulationStats
         implements DrsPickupEventHandler, VehicleAbortsEventHandler, PersonStuckEventHandler,
         AfterMobsimListener {
 
+    private static final boolean DEBUG = false;
     private static final String DEBUG_FILE = "debug_events.txt";
     private static final String CSV_FILE = "drs_sim_stats.csv";
     private int currentIteration, successfulPickups, stuckRiders;
@@ -50,7 +51,9 @@ public class DrsSimulationStats
                 e.printStackTrace();
             }
         }
-        debugWriter = createWriter(iteration, DEBUG_FILE);
+        if (DEBUG) {
+            debugWriter = createWriter(iteration, DEBUG_FILE);
+        }
     }
 
     private BufferedWriter createWriter(int iteration, String fileName) {
@@ -66,6 +69,10 @@ public class DrsSimulationStats
 
     @Override
     public void handleEvent(VehicleAbortsEvent event) {
+        if (!DEBUG) {
+            return;
+        }
+
         String msg = String.format("%s %s: veh: %s, link: %s",
                 Time.writeTime(event.getTime()),
                 event.getEventType(),
@@ -79,26 +86,32 @@ public class DrsSimulationStats
         if (event.getLegMode() != null && event.getLegMode().equals(Drs.RIDER_MODE)) {
             stuckRiders++;
         }
-        String msg = String.format("%s %s: pers: %s, link: %s, legMode: %s",
-                Time.writeTime(event.getTime()),
-                event.getEventType(),
-                event.getPersonId(),
-                event.getLinkId(),
-                event.getLegMode());
-        writeMessageToDebugFileWithNewline(msg);
+
+        if (DEBUG) {
+            String msg = String.format("%s %s: pers: %s, link: %s, legMode: %s",
+                    Time.writeTime(event.getTime()),
+                    event.getEventType(),
+                    event.getPersonId(),
+                    event.getLinkId(),
+                    event.getLegMode());
+            writeMessageToDebugFileWithNewline(msg);
+        }
     }
 
     @Override
     public void handleEvent(DrsPickupEvent event) {
         successfulPickups++;
-        String msg = String.format("%s %s: rider: %s, driver: %s, link: %s, vehicle: %s",
-                Time.writeTime(event.getTime()),
-                event.getEventType(),
-                event.getRiderId(),
-                event.getDriverId(),
-                event.getLinkId(),
-                event.getVehicleId());
-        writeMessageToDebugFileWithNewline(msg);
+
+        if (DEBUG) {
+            String msg = String.format("%s %s: rider: %s, driver: %s, link: %s, vehicle: %s",
+                    Time.writeTime(event.getTime()),
+                    event.getEventType(),
+                    event.getRiderId(),
+                    event.getDriverId(),
+                    event.getLinkId(),
+                    event.getVehicleId());
+            writeMessageToDebugFileWithNewline(msg);
+        }
     }
 
     private void writeMessageToDebugFileWithNewline(String msg) {
