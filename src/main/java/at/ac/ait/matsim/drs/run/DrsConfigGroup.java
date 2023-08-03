@@ -77,7 +77,7 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
                 "Defines all modes available for the '" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
         map.put(SUBTOUR_MODE_CHOICE_CHAIN_BASED_MODES,
-                "Defines the chain-based modes for the'" + SubtourModeChoiceForDrs.STRATEGY_NAME
+                "Defines the chain-based modes for the '" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, separated by commas");
         map.put(MIN_DRIVER_LEG_METERS,
                 "minimum length of legs (routed with the drsDriver mode) to be considered for the drs driver mode. 0 means no minimum.");
