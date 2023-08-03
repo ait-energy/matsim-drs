@@ -112,24 +112,34 @@ The DRS module's major version (e.g. 14) corresponds to the MATSim version it is
 
 ### Config Parameters
 
-`config_drs.xml` serves as a complete example on how to configure a DRS scenario.
+[config_drs.xml](data/floridsdorf/config_drs.xml) serves as a complete example on how to configure a DRS scenario.
 Note, that other modules must be configured in a specific way as well, e.g. `qsim`.
 
 List of all parameters:
 
 **Costs**
 
-- `carAndDrsDailyMonetaryConstant`: Daily price for car usage including when using the private car as drsDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)
+- `carAndDrsDailyMonetaryConstant`: Daily price for car usage including when using the private car as drsDriver.
+  If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant -
+  otherwise it will be counted twice (typically negative)
 - `driverProfitPerKm`: The amount of money per kilometre the driver gains for a rider (typically positive)
-- `riderMobilityGuaranteeMonetaryConstant` Price per unmatched rider trip. Such trips are typically teleported, imagine the rider e.g. gets provided a taxi. Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)
+- `riderMobilityGuaranteeMonetaryConstant` Price per unmatched rider trip.
+  Such trips are typically teleported, imagine the rider e.g. gets provided a taxi.
+  Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)
 
 **Matching Algorithm**
 
-- `cellSize`: The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low drs share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)
-- `maxPossibleCandidates`: Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)
+- `cellSize`: The side length of square zones in meters used in zonal registers of riders requests.
+  The default value is good for urban areas. For large areas with sparsely distributed population and low drs share,
+  you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better.
+- `maxPossibleCandidates`: Limits the number of possible riders requests considered for a driver during the matching process.
+  Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results.
+  To turn off this feature specify a sufficiently big number (not recommended).
 - `minDriverLegMeters`: minimum length of legs (routed with the drsDriver mode) to be considered for the drs driver mode. 0 means no minimum.
 - `minRiderLegMeters` minimum length of legs (routed with the drsDriver mode) to be considered for the drs ride mode. 0 means no minimum.
-- `timeSegmentLengthSeconds`: The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.
+- `timeSegmentLengthSeconds`: The duration of the time segments used in time segment registers of riders requests.
+  To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary 
+  candidate requests are token not only from the current segment but also from the one before and after.
 
 **Simulation / Plan Adjustment**
 
@@ -143,18 +153,21 @@ List of all parameters:
 
 ### Run Example
 
-The main method of [RunSimpleDrsExample](src/main/java/at/ac/ait/matsim/drs/run/RunSimpleDrsExample.java) takes only the config file as an input in order to run.
+The main method of [RunSimpleDrsExample](src/main/java/at/ac/ait/matsim/drs/run/RunSimpleDrsExample.java)
+takes only the config file as an input in order to run.
 
 - It automatically adds `drsDriver` mode as an allowed mode to all car links.
 - It automatically kick-starts all potential `drsDriver` agents, i.e. with an according `drsAffinity` + car + license availability, with a `drsDriver` plan. 
 
 This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
-(MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` - before a different plan is selected e.g. via `SelectPlanExpBeta`).
+(MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` -
+before a different plan is selected e.g. via `SelectPlanExpBeta`).
 
 ### Mode Innovation
 
 Mode innovation relies on an adapted version of the innovation strategy `SubtourModeChoice` named `SubtourModeChoiceForDrs`.
-`SubtourModeChoiceForDrs` will by default add the DRS driver and rider mode to the mix and can also be configured via the relevant parameters in the `drs` config group.
+`SubtourModeChoiceForDrs` will by default add the DRS driver and rider mode to the mix
+and can also be configured via the relevant parameters in the `drs` config group.
 
 ### Output
 
@@ -167,14 +180,21 @@ The following output files are additionally created in the MATSim output directo
 ## Limitations
 
 - Only one rider is supported per a driver's leg (but a driver may have different riders on different legs).
-- If a `drsDriver` can not pick up a `drsRider` because it is not there it will still go to the dropoff place. A future improvement is to optimize the drivers route on the fly in such cases.
-- `pickupWaitingSeconds` prolongs pickups in case the rider is not already waiting when the driver arrives. However, even if the rider arrives soon after the driver starts waiting for him, the driver will only depart when the full `pickupWaitingSeconds` are over.
+- If a `drsDriver` can not pick up a `drsRider` because it is not there it will still go to the dropoff place.
+  A future improvement is to optimize the drivers route on the fly in such cases.
+- `pickupWaitingSeconds` prolongs pickups in case the rider is not already waiting when the driver arrives.
+  However, even if the rider arrives soon after the driver starts waiting for him, the driver will only depart when the full `pickupWaitingSeconds` are over.
 
 ## Literature
 
-- Nassar, E., 2023. [*Integrating Dynamic Ride-Sharing in MATSim*](https://www.mos.ed.tum.de/fileadmin/w00ccp/tb/theses/2023/Eyad_Masters_Thesis.pdf). Master’s thesis. Technical University Munich.
-- Wang, B., Liang, H., Hörl, S., Ciari, F., 2017. *Dynamic ride sharing implementation and analysis in matsim*. hEART 2017.
-- Ziemke, D., Kaddoura, I., Nagel, K., 2019. *The matsim open berlin scenario: A multimodal agent-based transport simulation scenario based on synthetic demand modeling and open data*. Procedia computer science 151, 870–877.
+- Nassar, E., 2023.
+  [*Integrating Dynamic Ride-Sharing in MATSim*](https://www.mos.ed.tum.de/fileadmin/w00ccp/tb/theses/2023/Eyad_Masters_Thesis.pdf).
+  Master’s thesis. Technical University Munich.
+- Wang, B., Liang, H., Hörl, S., Ciari, F., 2017.
+  *Dynamic ride sharing implementation and analysis in matsim*. hEART 2017.
+- Ziemke, D., Kaddoura, I., Nagel, K., 2019.
+  *The matsim open berlin scenario: A multimodal agent-based transport simulation scenario based on synthetic demand modeling and open data*.
+  Procedia computer science 151, 870–877.
 
 ## License & Credits
 
@@ -182,7 +202,10 @@ The DRS module is [GPL-2.0-or-later](LICENSE) licensed for maximum compatibility
 
 This work was developed by Eyad Nassar for his master's thesis (Nassar, 2023) with support of Markus Straub and Johannes Müller.
 
-It is part of the lead project [DOMINO](https://www.domino-maas.at/), which was promoted and financed within the framework of the RTI programme *Mobility of the Future* by the Federal Ministry for Climate Protection, Environment, Energy, Mobility, Innovation and Technology (BMK) and handled by the Austrian Research Promotion Agency (FFG) under grant [3300226](https://projekte.ffg.at/projekt/3300226).
+It is part of the lead project [DOMINO](https://www.domino-maas.at/),
+which was promoted and financed within the framework of the RTI programme *Mobility of the Future* 
+by the Federal Ministry for Climate Protection, Environment, Energy, Mobility, Innovation and Technology (BMK) 
+and handled by the Austrian Research Promotion Agency (FFG) under grant [3300226](https://projekte.ffg.at/projekt/3300226).
 
 If you have any questions, remarks, or collaboration ideas, please get in touch:
 either via GitHub or via email to `markus.straub` or `johannes.mueller` (both at `ait.ac.at`).
