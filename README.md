@@ -87,9 +87,11 @@ Adjustments to the agents' plans are reverted.
 
 ### Installation
 
-Releases and snapshots are available on [repo.matsim.org](https://repo.matsim.org/service/rest/repository/browse/matsim/at/ac/ait/matsim/matsim-drs/).
+Releases and snapshots are available on
+[repo.matsim.org](https://repo.matsim.org/service/rest/repository/browse/matsim/at/ac/ait/matsim/matsim-drs/).
 
-To include the DRS module in your maven project, add the MATSim repo and the following dependency to your `pom.xml`:
+To include the DRS module in your maven project,
+add the MATSim repo and the following dependency to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -126,6 +128,8 @@ List of all parameters:
 - `riderMobilityGuaranteeMonetaryConstant` Price per unmatched rider trip.
   Such trips are typically teleported, imagine the rider e.g. gets provided a taxi.
   Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)
+- Note, that for the **drsRider's costs** there is no parameter,
+  because this should be set in `planCalcScore.modeParams.monetaryDistanceRate` (typically negative)
 
 **Matching Algorithm**
 
@@ -144,12 +148,14 @@ List of all parameters:
 **Simulation / Plan Adjustment**
 
 - `pickupWaitingSeconds` The amount of time the driver is expected to wait until the rider enters the vehicle.
-- `riderDepartureTimeAdjustmentSeconds` The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.
+- `riderDepartureTimeAdjustmentSeconds` The amount of time the riders are willing to adjust their departure times.
+  During the matching process, the arrival of driver to pick-up point is checked 
+  whether it is within the rider departure time +- the riderDepartureTimeAdjustment.
 
 **Plan Innovation**
 
-- `subtourModeChoiceChainBasedModes`: Defines the chain-based modes for the `SubtourModeChoiceForDrs` strategy, separated by commas
-- `subtourModeChoiceModes`: Defines all modes available for the `SubtourModeChoiceForDrs` strategy, including chain-based modes, separated by commas
+- `subtourModeChoiceChainBasedModes`: Defines the chain-based modes for the `SubtourModeChoiceForDrs` strategy, separated by commas.
+- `subtourModeChoiceModes`: Defines all modes available for the `SubtourModeChoiceForDrs` strategy, including chain-based modes, separated by commas.
 
 ### Run Example
 
@@ -157,7 +163,8 @@ The main method of [RunSimpleDrsExample](src/main/java/at/ac/ait/matsim/drs/run/
 takes only the config file as an input in order to run.
 
 - It automatically adds `drsDriver` mode as an allowed mode to all car links.
-- It automatically kick-starts all potential `drsDriver` agents, i.e. with an according `drsAffinity` + car + license availability, with a `drsDriver` plan. 
+- It automatically kick-starts all potential `drsDriver` agents,
+  i.e. with an according `drsAffinity` + car + license availability, with a `drsDriver` plan.
 
 This should assure, that at the beginning of the simulation many drivers are present and "starvation" of the people choosing rider mode is avoided.
 (MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` -
@@ -181,13 +188,20 @@ The following output files are additionally created in the MATSim output directo
 - `drs_[un]matched_trips.csv`: details for all matched and unmatched trips of the *last iteration*
 - `drs_sim_stats.csv`: number of actually successful pickups and stuck riders in `mobsim` (found in the `ITERS/it.x` folders)
 
-## Limitations
+## Limitations & Future Work
 
-- Only one rider is supported per a driver's leg (but a driver may have different riders on different legs).
-- If a `drsDriver` can not pick up a `drsRider` because it is not there it will still go to the dropoff place.
-  A future improvement is to optimize the drivers route on the fly in such cases.
-- `pickupWaitingSeconds` prolongs pickups in case the rider is not already waiting when the driver arrives.
-  However, even if the rider arrives soon after the driver starts waiting for him, the driver will only depart when the full `pickupWaitingSeconds` are over.
+- Only **one rider is supported per driver's trip** (but a driver may take different riders along on different trips).
+- If a `drsDriver` can not pick up a `drsRider` because it is not there it will still make the **detour** to the dropoff place.
+  A future improvement is to optimize the drivers route on the fly in such cases
+- `pickupWaitingSeconds` **prolongs pickups** in case the rider is not already waiting when the driver arrives
+  However, even if the rider arrives soon after the driver starts waiting for him,
+  the driver will only depart when the full `pickupWaitingSeconds` are over.
+- **Unmatched drivers and riders** even after reaching equilibrium account for 6% and 0.3% respectively for our Upper Austria model.
+  Ideally that should be 0.
+- **Improve the matching algorithm**
+  - Option for predefined pickup points (instead of door-to-door)
+  - Use sociodemographic attributes in the matching algorithm, not only for scoring
+  - Avoid local optimums (and implement a more complex optimization algorithm)
 
 ## Literature
 
