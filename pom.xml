@@ -4,23 +4,23 @@
 
     <groupId>at.ac.ait.matsim</groupId>
     <artifactId>matsim-drs</artifactId>
-    <version>14.1</version>
+    <version>15.0-SNAPSHOT</version>
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
-        <matsim.version>14.0</matsim.version>
+        <matsim.version>15.0</matsim.version>
 
         <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <log4j.version>2.17.1</log4j.version>
-        <geotools.version>24.2</geotools.version>
-        <jts.version>1.17.1</jts.version>
-        <guice.version>5.0.1</guice.version>
-        <guava.version>30.0-jre</guava.version>
-        <jackson.version>2.10.3</jackson.version>
+        <maven.compiler.release>17</maven.compiler.release>
+
+        <geotools.version>29.0</geotools.version>
+        <guava.version>31.1-jre</guava.version>
+        <guice.version>5.1.0</guice.version>
+        <jackson.version>2.14.2</jackson.version>
+        <jts.version>1.19.0</jts.version>
+        <log4j.version>2.20.0</log4j.version>
     </properties>
 
     <distributionManagement>
@@ -66,10 +66,10 @@
         <dependency>
             <groupId>org.matsim</groupId>
             <artifactId>pt2matsim</artifactId>
-            <version>22.11</version>
+            <version>23.4</version>
         </dependency>
 
-        <!-- logging dependencies below this line (same as in MATSim 14.0) -->
+        <!-- logging dependencies below this line (same as in MATSim 15.0) -->
 
         <dependency>
             <groupId>commons-logging</groupId>
@@ -85,11 +85,6 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
 
@@ -135,7 +130,7 @@
                                     <version>3.5.0</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>11</version>
+                                    <version>17</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -146,11 +141,6 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <release>11</release>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -185,12 +175,7 @@
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <source>11</source>
-                </configuration>
-                <!-- <configuration> <additionalparam>-Xdoclint:none</additionalparam>
-						</configuration> -->
+                <version>3.5.0</version>
             </plugin>
         </plugins>
     </build>

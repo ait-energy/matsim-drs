@@ -105,10 +105,14 @@ add the MATSim repo and the following dependency to your `pom.xml`:
     <dependency>
         <groupId>at.ac.ait.matsim</groupId>
         <artifactId>matsim-drs</artifactId>
-        <version>14.1-SNAPSHOT</version>
+        <version>VERSION</version>
     </dependency>
 </dependencies>
 ```
+
+Currently available `VERSION`s are:
+- `14.1`
+- `15.0-SNAPSHOT`
 
 The DRS module's major version (e.g. 14) corresponds to the MATSim version it is compatible with.
 
