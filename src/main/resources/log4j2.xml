@@ -17,20 +17,16 @@
     </Appenders>
 
     <Loggers>
-        <!-- default log level -->
+        <!-- restrict default log level -->
         <Root level="warn">
             <AppenderRef ref="stdout" />
             <AppenderRef ref="stderr" />
         </Root>
         <!-- but always log iteration start/end -->
-        <Logger name="org.matsim.core.controler.AbstractController" level="info" additivity="false">
-            <AppenderRef ref="stdout" />
-            <AppenderRef ref="stderr" />
+        <Logger name="org.matsim.core.controler.AbstractController" level="info">
         </Logger>
-        <!-- logging for our packages -->
-        <Logger name="at.ac.ait.matsim" level="debug" additivity="false">
-            <AppenderRef ref="stdout" />
-            <AppenderRef ref="stderr" />
+        <!-- and enable detailed logging for DRS -->
+        <Logger name="at.ac.ait.matsim" level="info">
         </Logger>
     </Loggers>
 
