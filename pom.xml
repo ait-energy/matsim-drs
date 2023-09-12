@@ -4,7 +4,7 @@
 
     <groupId>at.ac.ait.matsim</groupId>
     <artifactId>matsim-drs</artifactId>
-    <version>14.1-SNAPSHOT</version>
+    <version>14.1</version>
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
