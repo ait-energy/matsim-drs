@@ -209,9 +209,17 @@ The following output files are additionally created in the MATSim output directo
 
 ## Literature
 
+**Reference publications**
+
+- Müller, J., Nassar, E., Straub, M., Chou, A. T. M., 2024.
+  [*Integrating Dynamic Ride-Sharing into an Agent-Based Traffic Simulation: A Sensitivity Analysis*](https://www.researchgate.net/publication/376718010_Integrating_Dynamic_Ride-Sharing_into_an_Agent-Based_Traffic_Simulation_A_Sensitivity_Analysis).
+  103rd Annual Meeting of the Transportation Research Board
 - Nassar, E., 2023.
   [*Integrating Dynamic Ride-Sharing in MATSim*](https://www.mos.ed.tum.de/fileadmin/w00ccp/tb/theses/2023/Eyad_Masters_Thesis.pdf).
   Master’s thesis. Technical University Munich.
+
+**Related**
+
 - Wang, B., Liang, H., Hörl, S., Ciari, F., 2017.
   *Dynamic ride sharing implementation and analysis in matsim*. hEART 2017.
 - Ziemke, D., Kaddoura, I., Nagel, K., 2019.
