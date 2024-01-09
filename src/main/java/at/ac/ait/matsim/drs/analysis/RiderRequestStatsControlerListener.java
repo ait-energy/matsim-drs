@@ -1,22 +1,30 @@
 package at.ac.ait.matsim.drs.analysis;
 
-import at.ac.ait.matsim.drs.run.Drs;
-import at.ac.ait.matsim.drs.util.DrsUtil;
-import com.google.inject.Inject;
+import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
 import org.jfree.chart.axis.CategoryLabelPositions;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.config.groups.ControlerConfigGroup;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.core.config.groups.ControllerConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
 import org.matsim.core.utils.charts.StackedBarChart;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.core.utils.io.UncheckedIOException;
 
-import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.*;
+import com.google.inject.Inject;
+
+import at.ac.ait.matsim.drs.run.Drs;
+import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
@@ -25,16 +33,16 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
-    private final boolean createPNG;
+    private final ControllerConfigGroup controllerConfigGroup;
     Map<Integer, Map<String, Integer>> iterationHistories = new HashMap<>();
     private final Map<String, Integer> requestCount = new TreeMap<>();
 
     @Inject
-    public RiderRequestStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
+    public RiderRequestStatsControlerListener(ControllerConfigGroup controllerConfigGroup, Population population,
             OutputDirectoryHierarchy controlerIO) {
         this.population = population;
         this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUEST_STATS);
-        this.createPNG = controlerConfigGroup.isCreateGraphs();
+        this.controllerConfigGroup = controllerConfigGroup;
     }
 
     @Override
@@ -104,7 +112,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
             throw new UncheckedIOException(var1);
         }
 
-        if (this.createPNG) {
+        if (DrsUtil.writeGraph(event, controllerConfigGroup)) {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);

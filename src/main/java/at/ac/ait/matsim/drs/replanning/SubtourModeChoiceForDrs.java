@@ -1,7 +1,5 @@
 package at.ac.ait.matsim.drs.replanning;
 
-import javax.inject.Inject;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.core.config.Config;
@@ -19,6 +17,7 @@ import org.matsim.core.router.TripStructureUtils;
 
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import jakarta.inject.Inject;
 
 /**
  * Based on {@link org.matsim.core.replanning.modules.SubtourModeChoice}
@@ -59,7 +58,7 @@ public class SubtourModeChoiceForDrs extends AbstractMultithreadedModule {
         return chooseRandomLegMode;
     }
 
-    public static class Provider implements javax.inject.Provider<PlanStrategy> {
+    public static class Provider implements jakarta.inject.Provider<PlanStrategy> {
 
         private static final Logger LOGGER = LogManager.getLogger();
 

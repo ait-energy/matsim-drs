@@ -3,6 +3,7 @@ package at.ac.ait.matsim.drs.analysis;
 import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,13 +13,13 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.core.config.groups.ControlerConfigGroup;
+import org.matsim.core.config.groups.ControllerConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
+import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
 import org.matsim.core.utils.charts.StackedBarChart;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.core.utils.io.UncheckedIOException;
 
 import com.google.inject.Inject;
 
@@ -32,15 +33,15 @@ public class VktStatsControlerListener implements AfterMobsimListener {
     public static final String BEFORE_AFTER_DRS_TRAVEL = "before and after drs";
     private final Population population;
     private final String requestFileName;
-    private final boolean createPNG;
+    private final ControllerConfigGroup controllerConfigGroup;
     private final Map<Integer, Map<String, Double>> iterationHistories = new HashMap<>();
 
     @Inject
-    public VktStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population,
+    public VktStatsControlerListener(ControllerConfigGroup controllerConfigGroup, Population population,
             OutputDirectoryHierarchy controlerIO) {
         this.population = population;
         this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKT_STATS);
-        this.createPNG = controlerConfigGroup.isCreateGraphs();
+        this.controllerConfigGroup = controllerConfigGroup;
     }
 
     @Override
@@ -98,7 +99,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             throw new UncheckedIOException(e);
         }
 
-        if (this.createPNG) {
+        if (DrsUtil.writeGraph(event, controllerConfigGroup)) {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
@@ -129,4 +130,5 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             chart.saveAsPng(this.requestFileName + ".png", 800, 600);
         }
     }
+
 }

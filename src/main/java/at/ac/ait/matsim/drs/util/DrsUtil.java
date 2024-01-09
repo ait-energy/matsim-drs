@@ -18,6 +18,8 @@ import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
+import org.matsim.core.config.groups.ControllerConfigGroup;
+import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
@@ -233,6 +235,11 @@ public class DrsUtil {
             return "POINT EMPTY";
         }
         return String.format("POINT(%.1f %.1f)", activity.getCoord().getX(), activity.getCoord().getY());
+    }
+
+    public static boolean writeGraph(AfterMobsimEvent event, ControllerConfigGroup controllerConfigGroup) {
+        int createGraphsInterval = controllerConfigGroup.getCreateGraphsInterval();
+        return createGraphsInterval > 0 && event.getIteration() % createGraphsInterval == 0;
     }
 
 }

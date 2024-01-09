@@ -7,8 +7,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import javax.inject.Inject;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
@@ -39,6 +37,7 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.Drs.ActivityType;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
+import jakarta.inject.Inject;
 
 /**
  * Heavily inspired by ActivityEngineDefaultImpl and

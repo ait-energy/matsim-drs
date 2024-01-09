@@ -2,13 +2,13 @@ package at.ac.ait.matsim.drs.analysis;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.core.utils.io.UncheckedIOException;
 
 import at.ac.ait.matsim.drs.request.DrsMatch;
 import at.ac.ait.matsim.drs.request.DrsRequest;
