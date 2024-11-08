@@ -15,7 +15,7 @@
         <param name="inputPlansFile" value="./population.xml" />
     </module>
 
-    <module name="controler">
+    <module name="controller">
         <param name="outputDirectory" value="./output-floridsdorf-drs" />
         <param name="overwriteFiles" value="deleteDirectoryIfExists" />
         <param name="firstIteration" value="0" />
@@ -32,7 +32,7 @@
         <param name="mainMode" value="car,drsDriver" />
     </module>
 
-    <module name="planscalcroute">
+    <module name="routing">
         <!-- drsDriver mode must be added as a networkMode -->
         <param name="networkModes" value="car,drsDriver" />
         <param name="clearDefaultTeleportedModeParams" value="true" />
@@ -66,7 +66,7 @@
         <!-- The routing config for drsRider here is ONLY relevant for UNMATCHED riders,
              since matched riders will either be picked up by the driver (or stuck).
              The idea is that unmatched riders should not be stuck but get a mobility guarantee.
-             To avoid persons switching from fast modes (such as car) to drsRider arrive late 
+             To avoid persons switching from fast modes (such as car) to drsRider arrive late
              the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended. -->
         <parameterset type="teleportedModeParameters">
             <param name="beelineDistanceFactor" value="2" />
@@ -75,7 +75,7 @@
         </parameterset>
     </module>
 
-    <module name="planCalcScore">
+    <module name="scoring">
         <parameterset type="activityParams">
             <param name="activityType" value="education" />
             <param name="typicalDuration" value="06:00:00" />
@@ -101,7 +101,7 @@
             <param name="typicalDuration" value="08:00:00" />
         </parameterset>
 
-        <!-- activityParams and modeParams must be added for drs 
+        <!-- activityParams and modeParams must be added for drs
              (the others are added by default)-->
         <parameterset type="activityParams">
             <param name="activityType" value="drsDriver interaction" />
@@ -145,8 +145,9 @@
         </parameterset>
     </module>
 
-    <module name="strategy">
+    <module name="replanning">
         <param name="maxAgentPlanMemorySize" value="5" />
+        <param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
             <param name="weight" value="0.8"/>

@@ -2,6 +2,10 @@
 <!DOCTYPE network SYSTEM "http://www.matsim.org/files/dtd/network_v2.dtd">
 <network>
 
+	<attributes>
+		<attribute name="coordinateReferenceSystem" class="java.lang.String" >epsg:31256</attribute>
+	</attributes>
+
 <!-- ====================================================================== -->
 
 	<nodes>

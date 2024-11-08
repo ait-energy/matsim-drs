@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE config SYSTEM "http://www.matsim.org/files/dtd/config_v2.dtd">
 <config>
-	<module name="global" >
+	<module name="global">
 		<param name="numberOfThreads" value="3" />
 		<param name="coordinateSystem" value="epsg:31256" />
 	</module>
@@ -14,7 +14,7 @@
 		<param name="inputPlansFile" value="./population_with_transit.xml" />
 	</module>
 
-	<module name="controler">
+	<module name="controller">
 		<param name="outputDirectory" value="./output" />
 		<!-- Possible values: failIfDirectoryExists, overwriteExistingFiles, deleteDirectoryIfExists -->
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
@@ -52,48 +52,49 @@
 		<param name="useIntermodalAccessEgress" value="false" />
 	</module>
 
-	<module name="planscalcroute" >
+	<module name="routing">
 		<!-- All the modes for which the router is supposed to generate network routes (like car) -->
 		<param name="networkModes" value="car" />
 	</module>
 
-	<module name="qsim" >
+	<module name="qsim">
 		<param name="numberOfThreads" value="3" />
 		<param name="startTime" value="00:00:00" />
 		<param name="endTime" value="30:00:00" />
 		<param name="mainMode" value="car" />
 	</module>
 
-	<module name="planCalcScore">
+	<module name="scoring">
 		<!-- specify possible activities of agents -->
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="education" />
 			<param name="typicalDuration" value="06:00:00" />
 		</parameterset>
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="errand" />
 			<param name="typicalDuration" value="01:00:00" />
 		</parameterset>
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="home" />
 			<param name="typicalDuration" value="12:00:00" />
 		</parameterset>
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="leisure" />
 			<param name="typicalDuration" value="01:00:00" />
 		</parameterset>
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="shopping" />
 			<param name="typicalDuration" value="00:30:00" />
 		</parameterset>
-		<parameterset type="activityParams" >
+		<parameterset type="activityParams">
 			<param name="activityType" value="work" />
 			<param name="typicalDuration" value="08:00:00" />
 		</parameterset>
 	</module>
 
-	<module name="strategy">
-		<param name="maxAgentPlanMemorySize" value="0" /> <!-- 0 means unlimited -->
+	<module name="replanning">
+		<param name="maxAgentPlanMemorySize" value="0" />
+		<!-- 0 means unlimited -->
 		<parameterset type="strategysettings">
 			<param name="strategyName" value="SelectExpBeta"/>
 			<param name="weight" value="0.8"/>
@@ -108,7 +109,7 @@
 		</parameterset>
 	</module>
 
-	<module name="subtourModeChoice" >
+	<module name="subtourModeChoice">
 		<!-- Defines the chain-based modes, seperated by commas -->
 		<param name="chainBasedModes" value="car" />
 		<!-- Defines whether car availability must be considered or not. A agent has no car only if it has no license, or never access to a car -->

@@ -14,7 +14,7 @@
 		<param name="inputPlansFile" value="./population.xml.gz" />
 	</module>
 
-	<module name="controler">
+	<module name="controller">
 		<param name="outputDirectory" value="./output-floridsdorf-drs" />
 		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
 		<param name="firstIteration" value="0" />
@@ -31,7 +31,7 @@
 		<param name="mainMode" value="car,drsDriver" />
 	</module>
 
-	<module name="planscalcroute">
+	<module name="routing">
 		<!-- drsDriver mode must be added as a networkMode -->
 		<param name="networkModes" value="car,drsDriver" />
 		<param name="clearDefaultTeleportedModeParams" value="true" />
@@ -71,7 +71,7 @@
 		</parameterset>
 	</module>
 
-	<module name="planCalcScore">
+	<module name="scoring">
 		<parameterset type="activityParams">
 			<param name="activityType" value="education" />
 			<param name="typicalDuration" value="06:00:00" />
@@ -126,7 +126,7 @@
 		</parameterset>
 	</module>
 
-	<module name="strategy">
+	<module name="replanning">
 		<param name="maxAgentPlanMemorySize" value="5" />
 		<parameterset type="strategysettings">
 			<param name="strategyName" value="SelectExpBeta"/>
