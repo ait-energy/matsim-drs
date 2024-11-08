@@ -8,7 +8,7 @@ and drop them off before continuing their own trip.
 In more detail DRS can be defined as follows:
 
 - Drivers using a private car pick up riders for a part of their trip
-- The driver's trip is part of the daily routine 
+- The driver's trip is part of the daily routine
   (not an additional trip with the sole purpose of picking up a rider)
 - Driver and rider are not necessarily acquaintances
 - Matching is facilitated through a platform (e.g. app) on a *trip-by-trip basis*
@@ -16,11 +16,11 @@ In more detail DRS can be defined as follows:
 
 **Related Work**:
 
-Often passengers in cars have been incorporated as `ride` agents 
-teleported from one activity location to another using car travel times 
+Often passengers in cars have been incorporated as `ride` agents
+teleported from one activity location to another using car travel times
 and without being matched with other agents (e.g. Ziemke et al (2019)).
 While this approach suffices for private ride-sharing,
-it fails to represent the potential for DRS where non-acquaintances share rides to reach similar destinations. 
+it fails to represent the potential for DRS where non-acquaintances share rides to reach similar destinations.
 
 Wang et al (2017) conducted previous endeavors to model DRS in MATSim,
 employing the `dvrp`module [(source code)](https://github.com/strawrange/matsim/tree/master/contribs/dvrp).
@@ -64,7 +64,7 @@ The riders' acceptance of deviations to their desired departure time can be cont
 The agents' plans are adjusted accordingly.
 This entails adding pickup and dropoff activities at the riders' origins and destinations to the plans of matched drivers.
 For matched riders the departure time is adjusted if necessary.
-    
+
 ### Mobsim
 
 Each matched driver proceeds to the specified pickup point to collect the assigned rider.
@@ -73,12 +73,13 @@ Subsequently, the driver transports the rider to the designated dropoff point.
 Concurrently, matched riders await the arrival of their driver for pickup and subsequently for dropoff at the predetermined locations.
 Riders that could not be matched still get a *mobility guarantee*
 and are teleported to their next activity based on `teleportedModeParameters` in the `planscalcroute` config.
-    
+
 Note, that to successfully simulate DRS it is necessary to (1) kickstart the pool of potential drivers and (2) to assign costs to the mobility guarantee.
 Before the first iteration all agents that can potentially act as a driver are assigned a copy of their original plan with as many driver legs as possible.
 This avoids the problem of riders not finding a match.
 On the other hand the mobility guarantee must be assigned a cost with the DRS config parameter `riderMobilityGuaranteeMonetaryConstant`.
 Otherwise unmatched ride trips can make up a relevant part of the modal split when ideally they should only occur in negligible amounts.
+
 ### Before next iteration
 
 Adjustments to the agents' plans are reverted.
@@ -109,11 +110,6 @@ add the MATSim repo and the following dependency to your `pom.xml`:
     </dependency>
 </dependencies>
 ```
-
-Currently available `VERSION`s are:
-- `14.1`
-- `15.0-SNAPSHOT`
-- `16.0-SNAPSHOT`
 
 The DRS module's major version (e.g. 14) corresponds to the MATSim version it is compatible with.
 
@@ -147,14 +143,14 @@ List of all parameters:
 - `minDriverLegMeters`: minimum length of legs (routed with the drsDriver mode) to be considered for the drs driver mode. 0 means no minimum.
 - `minRiderLegMeters` minimum length of legs (routed with the drsDriver mode) to be considered for the drs ride mode. 0 means no minimum.
 - `timeSegmentLengthSeconds`: The duration of the time segments used in time segment registers of riders requests.
-  To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary 
+  To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary
   candidate requests are token not only from the current segment but also from the one before and after.
 
 **Simulation / Plan Adjustment**
 
 - `pickupWaitingSeconds` The amount of time the driver is expected to wait until the rider enters the vehicle.
 - `riderDepartureTimeAdjustmentSeconds` The amount of time the riders are willing to adjust their departure times.
-  During the matching process, the arrival of driver to pick-up point is checked 
+  During the matching process, the arrival of driver to pick-up point is checked
   whether it is within the rider departure time +- the riderDepartureTimeAdjustment.
 
 **Plan Innovation**
@@ -234,8 +230,8 @@ The DRS module is [GPL-2.0-or-later](LICENSE) licensed for maximum compatibility
 This work was developed by Eyad Nassar for his master's thesis (Nassar, 2023) with support of Markus Straub and Johannes Müller.
 
 It is part of the lead project [DOMINO](https://www.domino-maas.at/),
-which was promoted and financed within the framework of the RTI programme *Mobility of the Future* 
-by the Federal Ministry for Climate Protection, Environment, Energy, Mobility, Innovation and Technology (BMK) 
+which was promoted and financed within the framework of the RTI programme *Mobility of the Future*
+by the Federal Ministry for Climate Protection, Environment, Energy, Mobility, Innovation and Technology (BMK)
 and handled by the Austrian Research Promotion Agency (FFG) under grant [3300226](https://projekte.ffg.at/projekt/3300226).
 
 If you have any questions, remarks, or collaboration ideas, please get in touch:

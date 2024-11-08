@@ -8,18 +8,20 @@
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
-        <matsim.version>16.0-2024w02</matsim.version>
+        <matsim.version>2024.0</matsim.version>
 
         <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>17</maven.compiler.release>
 
-        <geotools.version>29.2</geotools.version>
+        <commonslogging.version>1.2</commonslogging.version>
+        <geotools.version>29.5</geotools.version>
         <guice.version>7.0.0</guice.version>
-        <jackson.version>2.16.1</jackson.version>
+        <guava.version>33.1.0-jre</guava.version>
+        <jackson.version>2.16.2</jackson.version>
         <jts.version>1.19.0</jts.version>
-        <log4j.version>2.22.1</log4j.version>
+        <log4j.version>2.23.1</log4j.version>
     </properties>
 
     <distributionManagement>
@@ -58,7 +60,7 @@
         <dependency>
             <groupId>org.matsim</groupId>
             <artifactId>pt2matsim</artifactId>
-            <version>23.4</version>
+            <version>24.4</version>
         </dependency>
 
         <!-- logging dependencies below this line (same as in MATSim) -->
@@ -66,7 +68,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
+            <version>${commonslogging.version}</version>
         </dependency>
 
         <dependency>
@@ -85,7 +87,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.1</version>
+            <version>5.11.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
