@@ -4,7 +4,7 @@
 
     <groupId>at.ac.ait.matsim</groupId>
     <artifactId>matsim-drs</artifactId>
-    <version>16.0-SNAPSHOT</version>
+    <version>2024.0-SNAPSHOT</version>
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
@@ -23,12 +23,11 @@
     </properties>
 
     <distributionManagement>
-        <!-- disabled so that we don't accidentially release via Github workflow -->
-        <!--<repository>
+        <repository>
             <id>ait-matsim-releases</id>
             <name>MATSim Releases Maven Repository</name>
             <url>https://repo.matsim.org/repository/ait-matsim-releases/</url>
-        </repository>-->
+        </repository>
         <snapshotRepository>
             <id>ait-matsim-snapshots</id>
             <name>MATSim Snapshots Maven Repository</name>
