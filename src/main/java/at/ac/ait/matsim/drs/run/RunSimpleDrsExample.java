@@ -11,11 +11,20 @@ import org.matsim.core.scenario.ScenarioUtils;
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
+/**
+ * Main Example starting with regular plans (no drs modes yet).
+ * DRS gets introduced via replanning.
+ */
 public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
+        new RunSimpleDrsExample().run(true);
+    }
+
+    public void run(boolean assignDrsDrivers) {
         Config config = ConfigUtils.loadConfig("data/floridsdorf/config_drs.xml", new DrsConfigGroup());
+        adjustConfig(config);
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
@@ -24,9 +33,11 @@ public class RunSimpleDrsExample {
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
-        // necessary to kick-start the drs driver pool
-        int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
-        LOGGER.info("added initial drs driver plan to {} agent(s)", count);
+        if (assignDrsDrivers) {
+            // necessary to kick-start the drs driver pool
+            int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+            LOGGER.info("added initial drs driver plan to {} agent(s)", count);
+        }
 
         Controler controller = new Controler(scenario);
 
@@ -34,5 +45,11 @@ public class RunSimpleDrsExample {
         Drs.prepareController(controller);
 
         controller.run();
+    }
+
+    /**
+     * Override this method to adjust the default config
+     */
+    public void adjustConfig(Config config) {
     }
 }

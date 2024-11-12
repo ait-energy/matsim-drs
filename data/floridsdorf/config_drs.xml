@@ -169,6 +169,7 @@
 
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">
+        <param name="cellSize" value="800" />
         <param name="driverProfitPerKm" value="0.8" />
         <param name="carAndDrsDailyMonetaryConstant" value="-12.34" />
         <!-- DRS NOTE: cost per UNMATCHED rider trips (used to avoid too many riders that can not be served by the drivers)-->

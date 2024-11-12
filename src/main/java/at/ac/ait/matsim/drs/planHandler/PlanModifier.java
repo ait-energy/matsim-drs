@@ -15,7 +15,9 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.ReplanningEvent;
+import org.matsim.core.controler.events.StartupEvent;
 import org.matsim.core.controler.listener.ReplanningListener;
+import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
@@ -32,7 +34,7 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-public class PlanModifier implements ReplanningListener {
+public class PlanModifier implements ReplanningListener, StartupListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
     private final Network drsNetwork;
@@ -51,17 +53,27 @@ public class PlanModifier implements ReplanningListener {
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
+    /** for iteration 0 */
     @Override
-    public void notifyReplanning(ReplanningEvent replanningEvent) {
+    public void notifyStartup(StartupEvent event) {
         DrsUtil.routeCalculations.set(0);
-        preplanDay(replanningEvent);
+        boolean isLastIteration = scenario.getConfig().controller().getLastIteration() == 0;
+        preplanDay(isLastIteration);
         LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
     }
 
-    private void preplanDay(ReplanningEvent event) {
+    /** for all iterations > 0 */
+    @Override
+    public void notifyReplanning(ReplanningEvent replanningEvent) {
+        DrsUtil.routeCalculations.set(0);
+        preplanDay(replanningEvent.isLastIteration());
+        LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
+    }
+
+    private void preplanDay(boolean isLastIteration) {
         Population population = scenario.getPopulation();
         DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, cfgGroup, population,
-                driverRouter, event.isLastIteration(), outputDirectoryHierarchy);
+                driverRouter, isLastIteration, outputDirectoryHierarchy);
         List<DrsMatch> matches = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying drs agents plans started.");
@@ -134,7 +146,7 @@ public class PlanModifier implements ReplanningListener {
 
     /**
      * TODO this should be integrated into the optimizer/matchmaker process
-     * 
+     *
      * for all rider legs: add a routing mode and a generic route (that is provided
      * through the drs rider mode configured as teleporting mode)
      * so that PersonPrepareForSim does not reroute our legs (and thereby discards
@@ -163,4 +175,5 @@ public class PlanModifier implements ReplanningListener {
             }
         }
     }
+
 }

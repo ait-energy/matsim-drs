@@ -39,7 +39,9 @@ public class PlanModificationUndoer implements IterationStartsListener {
 
     @Override
     public void notifyIterationStarts(IterationStartsEvent iterationStartsEvent) {
-        undoPlans(iterationStartsEvent);
+        if (iterationStartsEvent.getIteration() > 0) {
+            undoPlans(iterationStartsEvent);
+        }
     }
 
     private void undoPlans(IterationStartsEvent event) {

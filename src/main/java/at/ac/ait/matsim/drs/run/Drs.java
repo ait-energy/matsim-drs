@@ -18,7 +18,7 @@ public class Drs {
      * status of a drs rider leg after the optimization/matching phase,
      * i.e. planned / scheduled matching of drivers to riders
      */
-    public static final String ATTRIB_REQUEST_STATUS = "requestStatus";
+    public static final String ATTRIB_REQUEST_STATUS = "drsRequestStatus";
     public static final String REQUEST_STATUS_MATCHED = "matched";
 
     /**

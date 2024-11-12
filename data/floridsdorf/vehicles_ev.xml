@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE vehicles SYSTEM "http://matsim.org/files/dtd/electric_vehicles_v1.dtd">
-
-<vehicles>
-	<vehicle id="drtA_1" battery_capacity="20" initial_soc="20"/>
-	<vehicle id="drtA_2" battery_capacity="20" initial_soc="20"/>
-	<vehicle id="drtB_1" battery_capacity="20" initial_soc="20"/>
-	<vehicle id="drtB_2" battery_capacity="20" initial_soc="20"/>
-</vehicles>
