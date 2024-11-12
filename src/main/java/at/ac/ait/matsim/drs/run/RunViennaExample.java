@@ -2,6 +2,8 @@ package at.ac.ait.matsim.drs.run;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -10,12 +12,15 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.population.PersonUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class RunViennaExample {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public static void main(String[] args) {
         Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml");
 
@@ -28,9 +33,11 @@ public class RunViennaExample {
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
         // necessary to kick-start the drs driver pool
-        DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+        int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+        LOGGER.info("added initial drs driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);
+
         // necessary to register the drs module
         Drs.prepareController(controller);
 
@@ -40,6 +47,13 @@ public class RunViennaExample {
     public static void editPopulation(Population population) {
         Random random = new Random(0);
         for (Person person : population.getPersons().values()) {
+            // for now get rid of subpops
+            person.getAttributes().removeAttribute("subpopulation");
+
+            // everybody can use DRS
+            String drsAffinity = PersonUtils.getCarAvail(person).equals("always") ? "driverOrRider" : "riderOnly";
+            person.getAttributes().putAttribute("drsAffinity", drsAffinity);
+
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
                     if (((Leg) planElement).getMode().equals("ride")) {
