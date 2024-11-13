@@ -126,7 +126,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
     /**
      * Register riders that are ready to be picked up.
-     * 
+     *
      * @return true for riders so that they actually wait for the driver instead of
      *         being handled by a different engine (e.g. teleportation)
      */
@@ -256,7 +256,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
      * Pick up a rider, i.e. put the rider into the driver's simulated vehicle.
      * If the rider is not there yet let the driver wait until the end of the pickup
      * activity
-     * 
+     *
      * @return if the driver handling is finished (note: only returns true if it
      *         needs to wait more time for the rider to show up)
      */
@@ -277,7 +277,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                         Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
                 return false;
             }
-            LOGGER.warn(
+            LOGGER.info(
                     "{} {} wanted to pick up {} from link {}, but it is not ready (code {}). Driver waits until the end of the pickup activity.",
                     Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
             pickupQueue.add(new PickupEntry(driver, rider, linkId, driver.getActivityEndTime()));

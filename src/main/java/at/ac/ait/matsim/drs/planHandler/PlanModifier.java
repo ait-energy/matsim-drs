@@ -14,10 +14,10 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.controler.events.IterationStartsEvent;
 import org.matsim.core.controler.events.ReplanningEvent;
-import org.matsim.core.controler.events.StartupEvent;
+import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.controler.listener.ReplanningListener;
-import org.matsim.core.controler.listener.StartupListener;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
@@ -34,7 +34,12 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-public class PlanModifier implements ReplanningListener, StartupListener {
+/**
+ * Note: PlanModifier should be called after PersonPrepareForSim is
+ * finished, otherwise the leg attributes (where we store machting info) can be
+ * cleared due to rerouting
+ */
+public class PlanModifier implements ReplanningListener, IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
     private final Network drsNetwork;
@@ -53,16 +58,18 @@ public class PlanModifier implements ReplanningListener, StartupListener {
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
     }
 
-    /** for iteration 0 */
+    /** before iteration 0 */
     @Override
-    public void notifyStartup(StartupEvent event) {
+    public void notifyIterationStarts(IterationStartsEvent event) {
+        if (event.getIteration() != 0) {
+            return;
+        }
         DrsUtil.routeCalculations.set(0);
-        boolean isLastIteration = scenario.getConfig().controller().getLastIteration() == 0;
-        preplanDay(isLastIteration);
+        preplanDay(event.isLastIteration());
         LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
     }
 
-    /** for all iterations > 0 */
+    /** before iterations > 0 */
     @Override
     public void notifyReplanning(ReplanningEvent replanningEvent) {
         DrsUtil.routeCalculations.set(0);
