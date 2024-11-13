@@ -1,11 +1,14 @@
 package at.ac.ait.matsim.drs.run;
 
+import java.nio.file.Path;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
@@ -19,12 +22,16 @@ public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        new RunSimpleDrsExample().run(true);
+        new RunSimpleDrsExample().run(true, null);
     }
 
-    public void run(boolean assignDrsDrivers) {
+    public void run(boolean assignDrsDrivers, Path outputDirOverride) {
         Config config = ConfigUtils.loadConfig("data/floridsdorf/config_drs.xml", new DrsConfigGroup());
         adjustConfig(config);
+        if (outputDirOverride != null) {
+            config.controller().setOutputDirectory(outputDirOverride.toAbsolutePath().toString());
+            config.controller().setOverwriteFileSetting(OverwriteFileSetting.overwriteExistingFiles);
+        }
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 

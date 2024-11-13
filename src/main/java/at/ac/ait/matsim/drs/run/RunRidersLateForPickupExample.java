@@ -10,7 +10,7 @@ import org.matsim.core.config.groups.ReplanningConfigGroup.StrategySettings;
 public class RunRidersLateForPickupExample extends RunSimpleDrsExample {
 
     public static void main(String[] args) {
-        new RunRidersLateForPickupExample().run(false);
+        new RunRidersLateForPickupExample().run(false, null);
     }
 
     @Override
@@ -24,8 +24,6 @@ public class RunRidersLateForPickupExample extends RunSimpleDrsExample {
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
         drs.setCellSize(200);
-        // with 2 minutes pickup time the bike rider is picked up
-        // while the pedestrian is late and will get stuck
         drs.setPickupWaitingSeconds(120);
     }
 

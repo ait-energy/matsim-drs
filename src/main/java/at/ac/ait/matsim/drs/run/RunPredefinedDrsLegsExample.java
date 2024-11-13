@@ -8,7 +8,7 @@ import org.matsim.core.config.Config;
 public class RunPredefinedDrsLegsExample extends RunSimpleDrsExample {
 
     public static void main(String[] args) {
-        new RunPredefinedDrsLegsExample().run(false);
+        new RunPredefinedDrsLegsExample().run(false, null);
     }
 
     @Override
