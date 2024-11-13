@@ -193,10 +193,7 @@ The following output files are additionally created in the MATSim output directo
 
 - Only **one rider is supported per driver's trip** (but a driver may take different riders along on different trips).
 - If a `drsDriver` can not pick up a `drsRider` because it is not there it will still make the **detour** to the dropoff place.
-  A future improvement is to optimize the drivers route on the fly in such cases
-- `pickupWaitingSeconds` **prolongs pickups** in case the rider is not already waiting when the driver arrives
-  However, even if the rider arrives soon after the driver starts waiting for him,
-  the driver will only depart when the full `pickupWaitingSeconds` are over.
+  A future improvement is to optimize the drivers' route on the fly in such cases
 - **Unmatched drivers and riders** even after reaching equilibrium account for 6% and 0.3% respectively for our Upper Austria model.
   Ideally that should be 0.
 - **Improve the matching algorithm**

@@ -6,7 +6,8 @@
         <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
     </attributes>
 
-    <!-- two drivers that could bring the two riders -->
+    <!-- Example for temporal pickup variation (rider on time, late, very late) and geographic stability (exactly the same trip coordinates) -->
+
     <person id="carPerson1">
         <attributes>
             <attribute class="java.lang.String" name="carAvail">always</attribute>
@@ -31,7 +32,31 @@
             <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
         </plan>
     </person>
+    <person id="carPerson3">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:20:00" />
+            <leg mode="drsDriver" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
+        </plan>
+    </person>
 
+    <person id="ridePersonPunctual">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="07:20:00" end_time="07:20:00" />
+            <leg mode="drsRider" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
+        </plan>
+    </person>
     <person id="ridePersonWithWalkAccess">
         <attributes>
             <attribute class="java.lang.String" name="carAvail">never</attribute>

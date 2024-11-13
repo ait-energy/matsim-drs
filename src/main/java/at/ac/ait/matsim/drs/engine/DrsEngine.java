@@ -3,9 +3,8 @@ package at.ac.ait.matsim.drs.engine;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +49,11 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
     private final Map<Id<Person>, Id<Link>> waitingRiders = new ConcurrentHashMap<>();
+    private final List<PickupEntry> waitingDrivers = new CopyOnWriteArrayList<>();
+
+    private static record PickupEntry(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId,
+            double latestPickupTime) {
+    };
 
     @Inject
     public DrsEngine(Scenario scenario, EventsManager eventsManager) {
@@ -58,58 +62,43 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
         this.eventsManager = eventsManager;
     }
 
-    private static class PickupEntry {
-        PickupEntry(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double latestPickupTime) {
-            this.driver = driver;
-            this.rider = rider;
-            this.linkId = linkId;
-            this.latestPickupTime = latestPickupTime;
-        }
-
-        private final MobsimDriverAgent driver;
-        private final MobsimPassengerAgent rider;
-        private final Id<Link> linkId;
-        private final double latestPickupTime;
+    @Override
+    public void setInternalInterface(InternalInterface internalInterface) {
+        this.internalInterface = internalInterface;
     }
-
-    private final Queue<PickupEntry> pickupQueue = new PriorityBlockingQueue<>(500, (e0, e1) -> {
-        int cmp = Double.compare(e0.latestPickupTime, e1.latestPickupTime);
-        if (cmp == 0) {
-            return e1.driver.getId().compareTo(e0.driver.getId());
-        }
-        return cmp;
-    });
 
     @Override
     public void onPrepareSim() {
     }
 
-    /**
-     * retry previously unsuccessful pickups at latest pickup time
-     */
     @Override
     public void doSimStep(double time) {
-        while (pickupQueue.peek() != null) {
-            if (pickupQueue.peek().latestPickupTime <= time) {
-                PickupEntry pickup = pickupQueue.poll();
-                if (!handlePickup(pickup.driver, pickup.rider, pickup.linkId, time)) {
-                    pickup.driver.endActivityAndComputeNextState(time);
-                    internalInterface.arrangeNextAgentState(pickup.driver);
-                }
-            } else {
-                return;
-            }
+        retryPreviouslyUnsuccessfulPickups(time);
+    }
+
+    private void retryPreviouslyUnsuccessfulPickups(double time) {
+        if (waitingDrivers.isEmpty()) {
+            return;
         }
+
+        waitingDrivers.removeIf(waitingDriver -> {
+            boolean driverStillWaiting = handlePickup(waitingDriver, time);
+            if (!driverStillWaiting) {
+                waitingDriver.driver.endActivityAndComputeNextState(time);
+                internalInterface.arrangeNextAgentState(waitingDriver.driver);
+            }
+            return !driverStillWaiting;
+        });
     }
 
     @Override
     public void afterSim() {
         double now = this.internalInterface.getMobsim().getSimTimer().getTimeOfDay();
-        if (!pickupQueue.isEmpty()) {
-            LOGGER.warn("{} drs drivers were still waiting for their pickup and are stuck.", pickupQueue.size());
-            pickupQueue.forEach(d -> eventsManager.processEvent(
+        if (!waitingDrivers.isEmpty()) {
+            LOGGER.warn("{} drs drivers were still waiting for their pickup and are stuck.", waitingDrivers.size());
+            waitingDrivers.forEach(d -> eventsManager.processEvent(
                     new PersonStuckEvent(now, d.driver.getId(), d.linkId, Drs.DRIVER_MODE)));
-            pickupQueue.clear();
+            waitingDrivers.clear();
         }
         if (!waitingRiders.isEmpty()) {
             LOGGER.warn("{} drs riders were still waiting to be picked up and are stuck.", waitingRiders.size());
@@ -117,11 +106,6 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                     new PersonStuckEvent(now, d, null, Drs.RIDER_MODE)));
             waitingRiders.clear();
         }
-    }
-
-    @Override
-    public void setInternalInterface(InternalInterface internalInterface) {
-        this.internalInterface = internalInterface;
     }
 
     /**
@@ -183,7 +167,13 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                         handleDropoff((MobsimDriverAgent) agent, rider, linkId, now, dropOffIndex);
                         break;
                     case pickup:
-                        return handlePickup((MobsimDriverAgent) agent, rider, linkId, now);
+                        PickupEntry pickup = new PickupEntry((MobsimDriverAgent) agent, rider, linkId,
+                                agent.getActivityEndTime());
+                        boolean driverStillWaiting = handlePickup(pickup, now);
+                        if (driverStillWaiting) {
+                            waitingDrivers.add(pickup);
+                        }
+                        return driverStillWaiting;
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
@@ -253,14 +243,17 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     }
 
     /**
-     * Pick up a rider, i.e. put the rider into the driver's simulated vehicle.
-     * If the rider is not there yet let the driver wait until the end of the pickup
-     * activity
+     * Either pick up a rider (i.e. put the rider into the driver's simulated
+     * vehicle), wait for the rider to arrive, or continue driving
      *
-     * @return if the driver handling is finished (note: only returns true if it
-     *         needs to wait more time for the rider to show up)
+     * @return true if the rider is not there yet and the driver is still willing
+     *         to wait
      */
-    private boolean handlePickup(MobsimDriverAgent driver, MobsimPassengerAgent rider, Id<Link> linkId, double now) {
+    private boolean handlePickup(PickupEntry entry, double now) {
+        MobsimDriverAgent driver = entry.driver;
+        MobsimPassengerAgent rider = entry.rider;
+        Id<Link> linkId = entry.linkId;
+
         // agents that drive a vehicle before being passenger actually have a vehicle
         // assigned. therefore putting these agents into a different vehicle seems fine.
         boolean riderInVehicle = false; // rider.getVehicle() != null;
@@ -273,14 +266,13 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
         if (riderInVehicle || riderOnOtherLink || riderNotWaitingForThisPickup) {
             if (driver.getActivityEndTime() <= now) {
                 LOGGER.warn(
-                        "{} {} wanted to pick up {} from link {}, but it is still not ready at the end of the pickup activity (code {}). Driving on.",
+                        "{} {} could not pick up {} from link {} at end of pickup activity (code {}). Driving on.",
                         Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
                 return false;
             }
-            LOGGER.info(
-                    "{} {} wanted to pick up {} from link {}, but it is not ready (code {}). Driver waits until the end of the pickup activity.",
+            LOGGER.debug(
+                    "{} {} could not pick up {} from link {} ({}). Waiting.",
                     Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
-            pickupQueue.add(new PickupEntry(driver, rider, linkId, driver.getActivityEndTime()));
             return true;
         }
 
