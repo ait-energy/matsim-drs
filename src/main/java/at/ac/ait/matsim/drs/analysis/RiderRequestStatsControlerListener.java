@@ -91,9 +91,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
         }
         this.iterationHistories.put(event.getIteration(), requestHistory);
 
-        BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".csv");
-
-        try {
+        try (BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".csv")) {
             requestOut.write("Iteration");
             requestOut.write(delimiter + MATCHED);
             requestOut.write(delimiter + NOT_MATCHED);
@@ -110,11 +108,9 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
                 requestOut.write("\n");
             }
-            requestOut.flush();
-            requestOut.close();
-        } catch (IOException var1) {
-            var1.printStackTrace();
-            throw new UncheckedIOException(var1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UncheckedIOException(e);
         }
 
         if (DrsUtil.writeGraph(event, controllerConfigGroup)) {
