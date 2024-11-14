@@ -1,9 +1,12 @@
 package at.ac.ait.matsim.drs.run;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -25,7 +28,10 @@ public class RunViennaExample {
         Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml");
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
-        editPopulation(scenario.getPopulation());
+        enforceMaxPopulationSize(scenario.getPopulation(), 10_000);
+        clearSubpopulation(scenario.getPopulation());
+        addDrsAffinity(scenario.getPopulation());
+        setInitialDrsLegs(scenario.getPopulation());
 
         // optional steps to prepare the scenario
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
@@ -44,16 +50,39 @@ public class RunViennaExample {
         controller.run();
     }
 
-    public static void editPopulation(Population population) {
+    /**
+     * Removes persons from the scenario (keeps the first N persons)
+     *
+     * @return the number of removed persons
+     */
+    public static int enforceMaxPopulationSize(Population population, int maxPopulationSize) {
+        if (population.getPersons().size() <= maxPopulationSize)
+            return 0;
+
+        List<Id<Person>> keys = new ArrayList<>(population.getPersons().keySet());
+        List<Id<Person>> deleteKeys = keys.subList(maxPopulationSize, keys.size());
+        deleteKeys.forEach(k -> population.removePerson(k));
+        return deleteKeys.size();
+    }
+
+    public static void addDrsAffinity(Population population) {
+        for (Person person : population.getPersons().values()) {
+            String drsAffinity = PersonUtils.getCarAvail(person).equals("always")
+                    ? Drs.AFFINITY_DRIVER_OR_RIDER
+                    : Drs.AFFINITY_RIDER_ONLY;
+            person.getAttributes().putAttribute(Drs.ATTRIB_AFFINITY, drsAffinity);
+        }
+    }
+
+    public static void clearSubpopulation(Population population) {
+        for (Person person : population.getPersons().values()) {
+            person.getAttributes().removeAttribute("subpopulation");
+        }
+    }
+
+    public static void setInitialDrsLegs(Population population) {
         Random random = new Random(0);
         for (Person person : population.getPersons().values()) {
-            // for now get rid of subpops
-            person.getAttributes().removeAttribute("subpopulation");
-
-            // everybody can use DRS
-            String drsAffinity = PersonUtils.getCarAvail(person).equals("always") ? "driverOrRider" : "riderOnly";
-            person.getAttributes().putAttribute("drsAffinity", drsAffinity);
-
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
                     if (((Leg) planElement).getMode().equals("ride")) {
@@ -69,4 +98,5 @@ public class RunViennaExample {
             }
         }
     }
+
 }
