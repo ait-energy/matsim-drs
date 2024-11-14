@@ -13,6 +13,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.IterationStartsEvent;
 import org.matsim.core.controler.events.ReplanningEvent;
@@ -43,7 +44,8 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
     private final Network drsNetwork;
-    private final DrsConfigGroup cfgGroup;
+    private final GlobalConfigGroup globalConfig;
+    private final DrsConfigGroup drsConfig;
     private final RoutingModule driverRouter, riderRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
@@ -52,7 +54,8 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         this.scenario = scenario;
         this.drsNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
                 ImmutableSet.of(Drs.DRIVER_MODE));
-        cfgGroup = Drs.addOrGetConfigGroup(scenario);
+        this.globalConfig = scenario.getConfig().global();
+        this.drsConfig = Drs.addOrGetConfigGroup(scenario);
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
         riderRouter = tripRouter.getRoutingModule(Drs.RIDER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
@@ -79,7 +82,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
 
     private void preplanDay(boolean isLastIteration) {
         Population population = scenario.getPopulation();
-        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, cfgGroup, population,
+        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, globalConfig, drsConfig, population,
                 driverRouter, isLastIteration, outputDirectoryHierarchy);
         List<DrsMatch> matches = optimizer.optimize();
         PopulationFactory populationFactory = population.getFactory();
@@ -100,7 +103,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     private void addNewActivitiesToDriverPlan(DrsMatch match, double pickupTime, PopulationFactory factory) {
         Activity pickup = factory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
                 match.getRider().getFromLink().getId());
-        pickup.setEndTime(pickupTime + cfgGroup.getPickupWaitingSeconds());
+        pickup.setEndTime(pickupTime + drsConfig.getPickupWaitingSeconds());
         DrsUtil.setActivityType(pickup, Drs.ActivityType.pickup);
         DrsUtil.setRiderId(pickup, match.getRider().getPerson().getId());
 

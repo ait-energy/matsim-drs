@@ -8,6 +8,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.zone.SquareGridSystem;
 import org.matsim.contrib.zone.ZonalSystem;
+import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
@@ -18,17 +19,21 @@ import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 public class DrsOptimizer {
         private static final Logger LOGGER = LogManager.getLogger();
         private final Network network;
-        private final DrsConfigGroup cfgGroup;
+        private final GlobalConfigGroup globalConfig;
+        private final DrsConfigGroup drsConfig;
         private final Population population;
         private final RoutingModule driverRouter;
         private final Boolean isLastIteration;
         private final OutputDirectoryHierarchy outputDirectoryHierarchy;
 
-        public DrsOptimizer(Network network, DrsConfigGroup cfgGroup, Population population,
+        public DrsOptimizer(Network network,
+                        GlobalConfigGroup globalConfig, DrsConfigGroup drsConfig,
+                        Population population,
                         RoutingModule driverRouter, boolean isLastIteration,
                         OutputDirectoryHierarchy outputDirectoryHierarchy) {
                 this.network = network;
-                this.cfgGroup = cfgGroup;
+                this.globalConfig = globalConfig;
+                this.drsConfig = drsConfig;
                 this.population = population;
                 this.driverRouter = driverRouter;
                 this.isLastIteration = isLastIteration;
@@ -37,27 +42,27 @@ public class DrsOptimizer {
 
         public List<DrsMatch> optimize() {
                 LOGGER.info("Matching process started!");
-                ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), cfgGroup.getCellSize());
+                ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), drsConfig.getCellSize());
                 RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
                                 true);
                 RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(
                                 zonalSystem,
                                 false);
-                RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(cfgGroup);
-                RequestsCollector requestsCollector = new RequestsCollector(cfgGroup, population, network,
+                RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(drsConfig);
+                RequestsCollector requestsCollector = new RequestsCollector(drsConfig, population, network,
                                 driverRouter);
                 RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
                                 timeSegmentRegistry);
-                PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(cfgGroup,
+                PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(drsConfig,
                                 requestsRegister);
-                RequestsFilter requestsFilter = new RequestsFilter(cfgGroup, driverRouter);
+                RequestsFilter requestsFilter = new RequestsFilter(drsConfig, driverRouter);
                 BestRequestFinder bestRequestFinder = new BestRequestFinder(driverRouter);
                 MatchMaker matchMaker = new MatchMaker(requestsCollector, requestsRegister, potentialRequestsFinder,
                                 requestsFilter, bestRequestFinder);
                 matchMaker.match();
                 List<DrsMatch> matches = matchMaker.getMatches();
                 if (isLastIteration) {
-                        DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(
+                        DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(globalConfig,
                                         outputDirectoryHierarchy);
                         infoCollector.printMatchedRequestsToCsv(matches);
                         infoCollector.printUnMatchedRequestsToCsv(matchMaker.getUnmatchedDriverRequests(),

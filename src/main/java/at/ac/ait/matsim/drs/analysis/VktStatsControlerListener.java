@@ -14,9 +14,9 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.groups.ControllerConfigGroup;
+import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
-import org.matsim.core.controler.events.IterationEndsEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
 import org.matsim.core.utils.charts.StackedBarChart;
 import org.matsim.core.utils.io.IOUtils;
@@ -32,15 +32,19 @@ public class VktStatsControlerListener implements AfterMobsimListener {
     public static final String INDIVIDUAL_TRAVEL = "individual travel";
     public static final String BEFORE_AFTER_DRS_TRAVEL = "before and after drs";
     private final Population population;
-    private final String requestFileName;
+    private final String vktFileName;
+    private final String delimiter;
     private final ControllerConfigGroup controllerConfigGroup;
     private final Map<Integer, Map<String, Double>> iterationHistories = new HashMap<>();
 
     @Inject
-    public VktStatsControlerListener(ControllerConfigGroup controllerConfigGroup, Population population,
-            OutputDirectoryHierarchy controlerIO) {
+    public VktStatsControlerListener(ControllerConfigGroup controllerConfigGroup,
+            Population population,
+            OutputDirectoryHierarchy controllerIO,
+            GlobalConfigGroup globalConfig) {
         this.population = population;
-        this.requestFileName = controlerIO.getOutputFilename(FILENAME_VKT_STATS);
+        this.vktFileName = controllerIO.getOutputFilename(FILENAME_VKT_STATS);
+        this.delimiter = globalConfig.getDefaultDelimiter();
         this.controllerConfigGroup = controllerConfigGroup;
     }
 
@@ -80,19 +84,19 @@ public class VktStatsControlerListener implements AfterMobsimListener {
 
         this.iterationHistories.put(event.getIteration(), distances);
 
-        try (BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt")) {
+        try (BufferedWriter requestOut = IOUtils.getBufferedWriter(this.vktFileName + ".csv")) {
             requestOut.write("Iteration");
-            requestOut.write("\t" + DRS_TRAVEL);
-            requestOut.write("\t" + BEFORE_AFTER_DRS_TRAVEL);
-            requestOut.write("\t" + INDIVIDUAL_TRAVEL);
+            requestOut.write(delimiter + DRS_TRAVEL);
+            requestOut.write(delimiter + BEFORE_AFTER_DRS_TRAVEL);
+            requestOut.write(delimiter + INDIVIDUAL_TRAVEL);
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 Map<String, Double> distancesAtIteration = this.iterationHistories.get(iteration);
                 requestOut.write(String.valueOf(iteration));
-                requestOut.write("\t" + distancesAtIteration.getOrDefault(DRS_TRAVEL, 0d));
-                requestOut.write("\t" + distancesAtIteration.getOrDefault(BEFORE_AFTER_DRS_TRAVEL, 0d));
-                requestOut.write("\t" + distancesAtIteration.getOrDefault(INDIVIDUAL_TRAVEL, 0d));
+                requestOut.write(delimiter + distancesAtIteration.getOrDefault(DRS_TRAVEL, 0d));
+                requestOut.write(delimiter + distancesAtIteration.getOrDefault(BEFORE_AFTER_DRS_TRAVEL, 0d));
+                requestOut.write(delimiter + distancesAtIteration.getOrDefault(INDIVIDUAL_TRAVEL, 0d));
                 requestOut.write("\n");
             }
         } catch (IOException e) {
@@ -127,7 +131,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(2, Color.RED);
             chart.getChart().getCategoryPlot().getRenderer().setSeriesPaint(3, Color.BLUE);
             chart.addMatsimLogo();
-            chart.saveAsPng(this.requestFileName + ".png", 800, 600);
+            chart.saveAsPng(this.vktFileName + ".png", 800, 600);
         }
     }
 

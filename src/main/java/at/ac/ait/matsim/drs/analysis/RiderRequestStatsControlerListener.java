@@ -15,6 +15,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.groups.ControllerConfigGroup;
+import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.controler.listener.AfterMobsimListener;
@@ -33,15 +34,19 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
+    private final String delimiter;
     private final ControllerConfigGroup controllerConfigGroup;
     Map<Integer, Map<String, Integer>> iterationHistories = new HashMap<>();
     private final Map<String, Integer> requestCount = new TreeMap<>();
 
     @Inject
-    public RiderRequestStatsControlerListener(ControllerConfigGroup controllerConfigGroup, Population population,
-            OutputDirectoryHierarchy controlerIO) {
+    public RiderRequestStatsControlerListener(ControllerConfigGroup controllerConfigGroup,
+            Population population,
+            OutputDirectoryHierarchy controllerIO,
+            GlobalConfigGroup globalConfigGroup) {
         this.population = population;
-        this.requestFileName = controlerIO.getOutputFilename(FILENAME_REQUEST_STATS);
+        this.requestFileName = controllerIO.getOutputFilename(FILENAME_REQUEST_STATS);
+        this.delimiter = globalConfigGroup.getDefaultDelimiter();
         this.controllerConfigGroup = controllerConfigGroup;
     }
 
@@ -86,22 +91,22 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
         }
         this.iterationHistories.put(event.getIteration(), requestHistory);
 
-        BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".txt");
+        BufferedWriter requestOut = IOUtils.getBufferedWriter(this.requestFileName + ".csv");
 
         try {
             requestOut.write("Iteration");
-            requestOut.write("\t" + MATCHED);
-            requestOut.write("\t" + NOT_MATCHED);
+            requestOut.write(delimiter + MATCHED);
+            requestOut.write(delimiter + NOT_MATCHED);
             requestOut.write("\n");
 
             for (int iteration = 0; iteration <= event.getIteration(); ++iteration) {
                 requestOut.write(String.valueOf(iteration));
 
                 Map<String, Integer> matchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + matchedMap.get(MATCHED));
+                requestOut.write(delimiter + matchedMap.get(MATCHED));
 
                 Map<String, Integer> notMatchedMap = this.iterationHistories.get(iteration);
-                requestOut.write("\t" + notMatchedMap.get(NOT_MATCHED));
+                requestOut.write(delimiter + notMatchedMap.get(NOT_MATCHED));
 
                 requestOut.write("\n");
             }
