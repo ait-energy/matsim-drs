@@ -48,7 +48,7 @@
     <person id="ridePersonPunctual">
         <attributes>
             <attribute class="java.lang.String" name="carAvail">never</attribute>
-            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="hasLicense">no</attribute>
         </attributes>
         <plan selected="yes">
@@ -60,7 +60,7 @@
     <person id="ridePersonWithWalkAccess">
         <attributes>
             <attribute class="java.lang.String" name="carAvail">never</attribute>
-            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="hasLicense">no</attribute>
         </attributes>
         <plan selected="yes">
@@ -75,7 +75,7 @@
     <person id="ridePersonWithBikeAccess">
         <attributes>
             <attribute class="java.lang.String" name="carAvail">never</attribute>
-            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
             <attribute class="java.lang.String" name="hasLicense">no</attribute>
         </attributes>
         <plan selected="yes">

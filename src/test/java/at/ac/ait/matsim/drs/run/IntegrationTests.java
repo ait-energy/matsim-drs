@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.io.TempDirFactory;
+import org.matsim.api.core.v01.TransportMode;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
@@ -102,18 +103,18 @@ public class IntegrationTests {
         // successful DRS trip for the punctual person
         var punctual = tripsCsv.filter("person", "ridePersonPunctual").filter("trip_number", "1");
         Assertions.assertEquals(1, punctual.size());
-        Assertions.assertEquals("drsRider", punctual.row(0).get("modes"));
+        Assertions.assertEquals(Drs.RIDER_MODE, punctual.row(0).get("modes"));
 
         // successful bike + DRS trip for the cyclist
         var cyclist = tripsCsv.filter("person", "ridePersonWithBikeAccess");
         Assertions.assertEquals(2, cyclist.size());
-        Assertions.assertEquals("bike", cyclist.row(0).get("modes"));
-        Assertions.assertEquals("drsRider", cyclist.row(1).get("modes"));
+        Assertions.assertEquals(TransportMode.bike, cyclist.row(0).get("modes"));
+        Assertions.assertEquals(Drs.RIDER_MODE, cyclist.row(1).get("modes"));
 
         // pedestrian misses DRS (therefore no second leg)
         var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
         Assertions.assertEquals(1, pedestrian.size());
-        Assertions.assertEquals("walk", pedestrian.row(0).get("modes"));
+        Assertions.assertEquals(TransportMode.walk, pedestrian.row(0).get("modes"));
     }
 
     @Test

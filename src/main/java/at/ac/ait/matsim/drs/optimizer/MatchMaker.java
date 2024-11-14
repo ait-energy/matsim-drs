@@ -83,7 +83,7 @@ public class MatchMaker {
                     }
                 }
             }
-            LOGGER.info(driverRequest.getPerson().getId() + "'s best rider match is "
+            LOGGER.debug(driverRequest.getPerson().getId() + "'s best rider match is "
                     + bestRider.getPerson().getId() + ". Pickup point is "
                     + bestRider.getFromLink().getId());
             matches.add(bestMatch);
@@ -102,7 +102,7 @@ public class MatchMaker {
             }
         }
 
-        LOGGER.info(matches.size() + " matches happened. Matching process finished!");
+        LOGGER.info(matches.size() + " matches found.");
     }
 
     public List<DrsMatch> getMatches() {
