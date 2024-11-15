@@ -31,6 +31,7 @@ import org.matsim.core.mobsim.qsim.interfaces.MobsimEngine;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.misc.Time;
 
+import at.ac.ait.matsim.drs.events.DrsFailedPickupEvent;
 import at.ac.ait.matsim.drs.events.DrsPickupEvent;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.Drs.ActivityType;
@@ -268,6 +269,8 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                 LOGGER.warn(
                         "{} {} could not pick up {} from link {} at end of pickup activity (code {}). Driving on.",
                         Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
+                eventsManager.processEvent(new DrsFailedPickupEvent(now, linkId, driver.getId(), rider.getId(),
+                        driver.getVehicle().getId()));
                 return false;
             }
             LOGGER.debug(

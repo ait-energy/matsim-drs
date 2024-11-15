@@ -108,6 +108,9 @@ public class IntegrationTests {
         CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
         assertEquals(11, simStatsCsv.size());
         assertEquals("2", simStatsCsv.get(8, "successfulPickups"));
+        assertEquals("0", simStatsCsv.get(8, "failedPickups"));
+        assertEquals("0", simStatsCsv.get(0, "stuckDrsRiders"));
+        assertEquals("0", simStatsCsv.get(0, "stuckDrsDrivers"));
     }
 
     @Test
@@ -133,7 +136,9 @@ public class IntegrationTests {
         CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
         assertEquals(1, simStatsCsv.size());
         assertEquals("2", simStatsCsv.get(0, "successfulPickups"));
-        assertEquals("1", simStatsCsv.get(0, "stuckRiders"));
+        assertEquals("1", simStatsCsv.get(0, "failedPickups"));
+        assertEquals("1", simStatsCsv.get(0, "stuckDrsRiders"));
+        assertEquals("0", simStatsCsv.get(0, "stuckDrsDrivers"));
 
         CSV tripsCsv = readCsv(tempDir.resolve("output_trips.csv.gz"));
 
