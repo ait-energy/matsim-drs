@@ -1,5 +1,7 @@
 package at.ac.ait.matsim.drs.run;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +14,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AnnotatedElementContext;
@@ -51,70 +52,62 @@ public class IntegrationTests {
             return rows.get(i);
         }
 
+        public String get(int row, String col) {
+            return rows.get(row).get(col);
+        }
+
         public int size() {
             return rows.size();
         }
     }
 
+    public static CSV readCsv(Path file) throws Exception {
+        return readCsv(file, ';');
+    }
+
     /**
-     * Parse a gzipped CSV file and return a maping of column name to value for each
-     * row
+     * Parse a CSV file (can be gzipped) and return a maping of column name to value
+     * for each row
      */
-    public static CSV readCsvGz(Path file, char sep) throws Exception {
-        try (FileInputStream fis = new FileInputStream(file.toFile())) {
-            try (GZIPInputStream gis = new GZIPInputStream(fis)) {
-                try (InputStreamReader isr = new InputStreamReader(gis)) {
-                    try (BufferedReader br = new BufferedReader(isr)) {
-                        try (CSVReaderHeaderAware csvReader = new CSVReaderHeaderAwareBuilder(br)
-                                .withCSVParser(new CSVParserBuilder()
-                                        .withSeparator(sep)
-                                        .build())
-                                .build()) {
-                            List<Map<String, String>> rows = new ArrayList<>();
-                            Map<String, String> kv = csvReader.readMap();
-                            while (kv != null) {
-                                rows.add(kv);
-                                kv = csvReader.readMap();
-                            }
-                            return new CSV(rows);
+    public static CSV readCsv(Path file, char sep) throws Exception {
+        if (file.getFileName().toString().toLowerCase().endsWith(".gz")) {
+            try (FileInputStream fis = new FileInputStream(file.toFile())) {
+                try (GZIPInputStream gis = new GZIPInputStream(fis)) {
+                    try (InputStreamReader isr = new InputStreamReader(gis)) {
+                        try (BufferedReader br = new BufferedReader(isr)) {
+                            return readCsv(br, sep);
                         }
                     }
                 }
             }
         }
+        try (BufferedReader br = Files.newBufferedReader(file)) {
+            return readCsv(br, sep);
+        }
+    }
+
+    public static CSV readCsv(BufferedReader br, char sep) throws Exception {
+        try (CSVReaderHeaderAware csvReader = new CSVReaderHeaderAwareBuilder(br)
+                .withCSVParser(new CSVParserBuilder().withSeparator(sep).build()).build()) {
+            List<Map<String, String>> rows = new ArrayList<>();
+            Map<String, String> kv = csvReader.readMap();
+            while (kv != null) {
+                rows.add(kv);
+                kv = csvReader.readMap();
+            }
+            return new CSV(rows);
+        }
     }
 
     @Test
     @Tag("IntegrationTest")
-    public void testSimpleDrsExampleWithoutExceptions(
-            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir) {
-        System.err.println("cwd:" + Path.of(".").toAbsolutePath().toString());
-        System.err.println(tempDir.toAbsolutePath().toString());
-        new RunSimpleDrsExample().run(true, tempDir);
-    }
-
-    @Test
-    @Tag("IntegrationTest")
-    public void testRidersLateForPickup(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+    public void testSimpleDrsExample(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
             throws Exception {
-        new RunRidersLateForPickupExample().run(false, tempDir);
-        CSV tripsCsv = readCsvGz(tempDir.resolve("output_trips.csv.gz"), ';');
+        new RunSimpleDrsExample().run(true, tempDir);
 
-        // successful DRS trip for the punctual person
-        var punctual = tripsCsv.filter("person", "ridePersonPunctual").filter("trip_number", "1");
-        Assertions.assertEquals(1, punctual.size());
-        Assertions.assertEquals(Drs.RIDER_MODE, punctual.row(0).get("modes"));
-
-        // successful bike + DRS trip for the cyclist
-        var cyclist = tripsCsv.filter("person", "ridePersonWithBikeAccess");
-        Assertions.assertEquals(2, cyclist.size());
-        Assertions.assertEquals(TransportMode.bike, cyclist.row(0).get("modes"));
-        Assertions.assertEquals(Drs.RIDER_MODE, cyclist.row(1).get("modes"));
-
-        // pedestrian misses DRS (therefore no second leg)
-        var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
-        Assertions.assertEquals(1, pedestrian.size());
-        Assertions.assertEquals(TransportMode.walk, pedestrian.row(0).get("modes"));
+        CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
+        assertEquals(11, simStatsCsv.size());
+        assertEquals("2", simStatsCsv.get(8, "successfulPickups"));
     }
 
     @Test
@@ -122,6 +115,57 @@ public class IntegrationTests {
     public void testPredefinedDrsLegs(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
             throws Exception {
         new RunPredefinedDrsLegsExample().run(false, tempDir);
+    }
+
+    @Test
+    @Tag("IntegrationTest")
+    public void testRidersLateForPickup(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunRidersLateForPickupExample().run(false, tempDir);
+
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        // we find a match for each rider
+        assertEquals(1, riderRequestStats.size());
+        assertEquals("3", riderRequestStats.get(0, "matched"));
+        assertEquals("0", riderRequestStats.get(0, "unmatched"));
+
+        // but one rider (pedestrian) will miss the ride
+        CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
+        assertEquals(1, simStatsCsv.size());
+        assertEquals("2", simStatsCsv.get(0, "successfulPickups"));
+        assertEquals("1", simStatsCsv.get(0, "stuckRiders"));
+
+        CSV tripsCsv = readCsv(tempDir.resolve("output_trips.csv.gz"));
+
+        // successful DRS trip for the punctual person
+        var punctual = tripsCsv.filter("person", "ridePersonPunctual").filter("trip_number", "1");
+        assertEquals(1, punctual.size());
+        assertEquals(Drs.RIDER_MODE, punctual.get(0, "modes"));
+
+        // successful bike + DRS trip for the cyclist
+        var cyclist = tripsCsv.filter("person", "ridePersonWithBikeAccess");
+        assertEquals(2, cyclist.size());
+        assertEquals(TransportMode.bike, cyclist.get(0, "modes"));
+        assertEquals(Drs.RIDER_MODE, cyclist.get(1, "modes"));
+
+        // pedestrian misses DRS (therefore no second leg)
+        var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
+        assertEquals(1, pedestrian.size());
+        assertEquals(TransportMode.walk, pedestrian.get(0, "modes"));
+    }
+
+    @Test
+    @Tag("IntegrationTest")
+    public void testNoDriver(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunNoDriverExample().run(false, tempDir);
+
+        // In iteration 1 (after replanning)
+        // the agent wants to use DRS but there is no driver
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        assertEquals(2, riderRequestStats.size());
+        assertEquals("0", riderRequestStats.get(1, "matched"));
+        assertEquals("2", riderRequestStats.get(1, "unmatched"));
     }
 
 }
