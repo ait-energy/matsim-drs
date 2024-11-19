@@ -29,9 +29,9 @@ public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdenti
                                 "Unmatched rider '{}': conflict module tries to select a non-conflicting plan",
                                 person.getId());
                         conflictingPersonIds.add(person.getId());
+                        break;
                     }
                 }
-                break;
             }
         }
         return conflictingPersonIds;

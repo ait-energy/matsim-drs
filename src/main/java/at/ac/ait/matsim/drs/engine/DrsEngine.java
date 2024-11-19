@@ -42,6 +42,9 @@ import jakarta.inject.Inject;
 /**
  * Heavily inspired by ActivityEngineDefaultImpl and
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
+ *
+ * Note on multi-threading: this class is bound as Singleton in
+ * DrsEngineQSimModule
  */
 public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
     public static final String COMPONENT_NAME = "drsEngine";
@@ -142,17 +145,20 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
+        Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
+        double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
+        // LOGGER.debug("handleActivity {} for {} @ {} ", agent.getId(),
+        // ((Activity) ((PlanAgent) agent).getCurrentPlanElement()).getType(),
+        // Time.writeTime(now));
         if (agent instanceof PlanAgent && agent instanceof MobsimDriverAgent) {
-            Activity act = (Activity) ((PlanAgent) agent).getCurrentPlanElement();
             if (act.getType().equals(Drs.DRIVER_INTERACTION)) {
-                double now = internalInterface.getMobsim().getSimTimer().getTimeOfDay();
                 ActivityType type = DrsUtil.getActivityType(act);
                 Id<Person> riderId = DrsUtil.getRiderId(act);
                 Id<Link> linkId = agent.getCurrentLinkId();
                 MobsimPassengerAgent rider = (MobsimPassengerAgent) internalInterface.getMobsim().getAgents()
                         .get(riderId);
                 // LOGGER.debug("handleActivity {} for {} @ {} on link {}", act.getType(),
-                // agent.getId(), now, linkId);
+                // agent.getId(), Time.writeTime(now), linkId);
                 if (rider == null) {
                     LOGGER.warn(
                             "{} {} wanted to {} {} on link {}, but it is no longer an active qsim agent",
