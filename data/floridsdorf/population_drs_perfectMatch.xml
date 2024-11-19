@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+    <attributes>
+        <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
+    </attributes>
+
+    <!-- Example where three riders and three drivers should find each other (they all have the same destinations and departure times). -->
+    <!-- Full subtours (h-w-h) so that SubtourModeChoice works properly. -->
+
+    <person id="carPerson1">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="car" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="car" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+    <person id="carPerson2">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="car" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="car" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+    <person id="carPerson3">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="car" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="car" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+
+    <person id="ridePerson1">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="bike" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="bike" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+    <person id="ridePerson2">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="bike" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="bike" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+    <person id="ridePerson3">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="bike" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+            <leg mode="bike" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+</population>

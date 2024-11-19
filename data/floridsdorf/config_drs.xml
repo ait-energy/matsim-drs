@@ -122,7 +122,20 @@
             <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
             <param name="mode" value="car" />
             <!-- DRS NOTE: should be the same as monetaryDistanceRate for drsDriver -->
-            <param name="monetaryDistanceRate" value="-0.000091"/>
+            <param name="monetaryDistanceRate" value="0"/>
+        </parameterset>
+        <parameterset type="modeParams">
+            <param name="constant" value="0.0" />
+            <!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
+                 (use drs.carAndDrsDailyMonetaryConstant instead) -->
+            <param name="dailyMonetaryConstant" value="0.0" />
+            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
+            <!-- DRS NOTE: for this example better score for DRS modes -->
+            <param name="marginalUtilityOfTraveling_util_hr" value="-3.0" />
+            <param name="mode" value="drsDriver" />
+            <!-- DRS NOTE: should be the same as monetaryDistanceRate for car -->
+            <param name="monetaryDistanceRate" value="0"/>
+            <!-- let's see if people pick up drs now.. -->
         </parameterset>
         <!-- DRS NOTE: The scoring config for drsRider applies to BOTH matched an unmatched riders.
              To avoid masses of unmatched riders we should apply costs to the that,
@@ -131,30 +144,21 @@
             <param name="constant" value="0.0" />
             <param name="dailyMonetaryConstant" value="0.0" />
             <param name="marginalUtilityOfDistance_util_m" value="0.0" />
-            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+            <!-- DRS NOTE: for this example better score for DRS modes -->
+            <param name="marginalUtilityOfTraveling_util_hr" value="-3.0" />
             <param name="mode" value="drsRider" />
             <!-- DRS NOTE: costs for using drs as rider -->
-            <param name="monetaryDistanceRate" value="-0.0002"/>
-        </parameterset>
-        <parameterset type="modeParams">
-            <param name="constant" value="0.0" />
-            <!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
-                 (use drs.carAndDrsDailyMonetaryConstant instead) -->
-            <param name="dailyMonetaryConstant" value="0.0" />
-            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
-            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-            <param name="mode" value="drsDriver" />
-            <!-- DRS NOTE: should be the same as monetaryDistanceRate for car -->
-            <param name="monetaryDistanceRate" value="-0.000091"/>
+            <param name="monetaryDistanceRate" value="0"/>
         </parameterset>
     </module>
 
     <module name="replanning">
         <param name="maxAgentPlanMemorySize" value="5" />
         <param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
+        <param name="fractionOfIterationsToDisableInnovation" value="0.8" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
-            <param name="weight" value="0.8"/>
+            <param name="weight" value="0.6"/>
         </parameterset>
         <parameterset type="strategysettings">
             <param name="strategyName" value="ReRoute"/>
@@ -163,17 +167,14 @@
         <parameterset type="strategysettings">
             <!-- DRS NOTE: for drs this strategy must be used instead of regular SubtourModeChoice -->
             <param name="strategyName" value="SubtourModeChoiceForDrs"/>
-            <param name="weight" value="0.1"/>
+            <param name="weight" value="0.3"/>
         </parameterset>
     </module>
 
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">
         <param name="cellSize" value="800" />
-        <param name="driverProfitPerKm" value="0.8" />
-        <param name="carAndDrsDailyMonetaryConstant" value="-12.34" />
-        <!-- DRS NOTE: cost per UNMATCHED rider trips (used to avoid too many riders that can not be served by the drivers)-->
-        <param name="riderMobilityGuaranteeMonetaryConstant" value="-10" />
-        <param name="pickupWaitingSeconds" value="180" />
+        <param name="driverProfitPerKm" value="1" />
+        <param name="pickupWaitingSeconds" value="300" />
     </module>
 </config>

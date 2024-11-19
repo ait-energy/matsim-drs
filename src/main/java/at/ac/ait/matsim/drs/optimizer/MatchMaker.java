@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.core.utils.misc.Time;
 
 import com.google.common.collect.Lists;
 
@@ -83,9 +84,11 @@ public class MatchMaker {
                     }
                 }
             }
-            LOGGER.debug(driverRequest.getPerson().getId() + "'s best rider match is "
-                    + bestRider.getPerson().getId() + ". Pickup point is "
-                    + bestRider.getFromLink().getId());
+            LOGGER.debug("Match: {} should pick up {} on link {} @ {}",
+                    driverRequest.getPerson().getId(),
+                    bestRider.getPerson().getId(),
+                    bestRider.getFromLink().getId(),
+                    Time.writeTime(bestRider.getDepartureTime()));
             matches.add(bestMatch);
             iterator.remove();
             requestsRegister.removeRequest(bestRider);
