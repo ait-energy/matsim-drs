@@ -2,6 +2,7 @@ package at.ac.ait.matsim.drs.util;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -135,8 +136,18 @@ public class DrsUtil {
         }
     }
 
-    public static int addDriverPlanForEligibleAgents(Population population, Config config,
+    public static int addDrsDriverPlans(Population population, Config config,
             String... excludedSubpopulations) {
+        return addDrsPlanForEligiblePlans(population, config, Drs.DRIVER_MODE, Set.of(TransportMode.car),
+                excludedSubpopulations);
+    }
+
+    /**
+     * Copy the currently selected plan, replace eligible trips with target drs
+     * mode, and set the new plan as selected.
+     */
+    public static int addDrsPlanForEligiblePlans(Population population, Config config, String targetDrsMode,
+            Set<String> modesToReplace, String... excludedSubpopulations) {
         PermissibleModesCalculatorForDrs permissible = new PermissibleModesCalculatorForDrs(config);
         int count = 0;
         Set<String> excludedSubpopulationSet = Sets.newHashSet(excludedSubpopulations);
@@ -147,24 +158,53 @@ public class DrsUtil {
             }
 
             Plan plan = person.getSelectedPlan();
-            if (permissible.getPermissibleModes(plan).contains(Drs.DRIVER_MODE)) {
+            if (permissible.getPermissibleModes(plan).contains(targetDrsMode)) {
                 Plan newPlan = PopulationUtils.createPlan();
                 PopulationUtils.copyFromTo(plan, newPlan);
 
+                // replace specific trips only
+                boolean featuresNewDrsMode = false;
                 for (Trip trip : TripStructureUtils.getTrips(newPlan)) {
-                    TripRouter.insertTrip(
-                            newPlan,
-                            trip.getOriginActivity(),
-                            Collections.singletonList(PopulationUtils.createLeg(Drs.DRIVER_MODE)),
-                            trip.getDestinationActivity());
+                    Set<String> modes = getModes(trip);
+                    boolean allModesShouldBeReplaced = Sets.difference(modes, modesToReplace).isEmpty();
+                    if (allModesShouldBeReplaced) {
+                        if (Sets.difference(getModes(trip), (modesToReplace)).isEmpty()) {
+                            featuresNewDrsMode = true;
+                            TripRouter.insertTrip(
+                                    newPlan,
+                                    trip.getOriginActivity(),
+                                    Collections.singletonList(PopulationUtils.createLeg(targetDrsMode)),
+                                    trip.getDestinationActivity());
+                        }
+                    }
                 }
 
-                newPlan.setPerson(person);
-                person.addPlan(newPlan);
-                count++;
+                if (featuresNewDrsMode) {
+                    newPlan.setPerson(person);
+                    person.addPlan(newPlan);
+                    person.setSelectedPlan(newPlan);
+                    count++;
+                }
             }
         }
         return count;
+    }
+
+    /**
+     * Get collected modes of a trip (preferring the routingMode if it is set)
+     */
+    public static Set<String> getModes(Trip trip) {
+        Set<String> modes = new HashSet<>();
+        for (Leg leg : trip.getLegsOnly()) {
+            String routingMode = TripStructureUtils.getRoutingMode(leg);
+            String mode = leg.getMode();
+            if (routingMode != null) {
+                modes.add(routingMode);
+            } else {
+                modes.add(mode);
+            }
+        }
+        return modes;
     }
 
     /**

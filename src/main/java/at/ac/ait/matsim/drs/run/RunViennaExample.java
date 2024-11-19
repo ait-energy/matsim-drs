@@ -2,15 +2,14 @@ package at.ac.ait.matsim.drs.run;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -28,18 +27,22 @@ public class RunViennaExample {
         Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml");
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
-        enforceMaxPopulationSize(scenario.getPopulation(), 10_000);
+        enforceMaxPopulationSize(scenario.getPopulation(), 1_000);
         clearSubpopulation(scenario.getPopulation());
         addDrsAffinity(scenario.getPopulation());
-        setInitialDrsLegs(scenario.getPopulation());
 
         // optional steps to prepare the scenario
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
+        // kick-start all ride agents as riders
+        int count = DrsUtil.addDrsPlanForEligiblePlans(scenario.getPopulation(), scenario.getConfig(),
+                Drs.RIDER_MODE, Set.of(TransportMode.ride));
+        LOGGER.info("added initial drs rider plan to {} agent(s)", count);
+
         // necessary to kick-start the drs driver pool
-        int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+        count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
         LOGGER.info("added initial drs driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);
@@ -77,25 +80,6 @@ public class RunViennaExample {
     public static void clearSubpopulation(Population population) {
         for (Person person : population.getPersons().values()) {
             person.getAttributes().removeAttribute("subpopulation");
-        }
-    }
-
-    public static void setInitialDrsLegs(Population population) {
-        Random random = new Random(0);
-        for (Person person : population.getPersons().values()) {
-            for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
-                if (planElement instanceof Leg) {
-                    if (((Leg) planElement).getMode().equals("ride")) {
-                        if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode(Drs.RIDER_MODE);
-                        }
-                    } else if (((Leg) planElement).getMode().equals("car")) {
-                        if (random.nextDouble() < 0.1) {
-                            ((Leg) planElement).setMode(Drs.DRIVER_MODE);
-                        }
-                    }
-                }
-            }
         }
     }
 

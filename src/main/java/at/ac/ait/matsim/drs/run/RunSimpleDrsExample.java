@@ -1,10 +1,12 @@
 package at.ac.ait.matsim.drs.run;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
@@ -25,7 +27,7 @@ public class RunSimpleDrsExample {
         new RunSimpleDrsExample().run(true, null);
     }
 
-    public void run(boolean assignDrsDrivers, Path outputDirOverride) {
+    public void run(boolean assignDrs, Path outputDirOverride) {
         Config config = ConfigUtils.loadConfig("data/floridsdorf/config_drs.xml", new DrsConfigGroup());
         adjustConfig(config);
         if (outputDirOverride != null) {
@@ -40,9 +42,14 @@ public class RunSimpleDrsExample {
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
-        if (assignDrsDrivers) {
+        if (assignDrs) {
+            // kick-start all ride agents as riders
+            int count = DrsUtil.addDrsPlanForEligiblePlans(scenario.getPopulation(), scenario.getConfig(),
+                    Drs.RIDER_MODE, Set.of(TransportMode.ride));
+            LOGGER.info("added initial drs rider plan to {} agent(s)", count);
+
             // necessary to kick-start the drs driver pool
-            int count = DrsUtil.addDriverPlanForEligibleAgents(scenario.getPopulation(), scenario.getConfig());
+            count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
             LOGGER.info("added initial drs driver plan to {} agent(s)", count);
         }
 
