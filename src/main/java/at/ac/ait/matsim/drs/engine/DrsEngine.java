@@ -84,10 +84,6 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
         waitingDrivers.removeIf(waitingDriver -> {
             boolean driverStillWaiting = handlePickup(waitingDriver, time);
-            if (!driverStillWaiting) {
-                waitingDriver.driver.endActivityAndComputeNextState(time);
-                internalInterface.arrangeNextAgentState(waitingDriver.driver);
-            }
             return !driverStillWaiting;
         });
     }
@@ -140,8 +136,9 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
     /**
      * Takes care of special handling required for drivers picking up riders.
-     * For all other activities (and also as final step for our drivers) the
-     * delegate default handler is called.
+     *
+     * @return true if the activity has been handled and should not be handled by
+     *         any other ActivityHandler
      */
     @Override
     public boolean handleActivity(MobsimAgent agent) {
@@ -174,7 +171,9 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                         if (driverStillWaiting) {
                             waitingDrivers.add(pickup);
                         }
-                        return driverStillWaiting;
+                        // return true so that the ActivityEngineDefaultImpl never schedules
+                        // our activity and we can quit it early ourselves
+                        return true;
                     default:
                         throw new IllegalArgumentException("unknown activity " + type);
                 }
@@ -288,6 +287,10 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                 new DrsPickupEvent(now, linkId, driver.getId(), rider.getId(), driver.getVehicle().getId()));
         eventsManager.processEvent(new PersonEntersVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         waitingRiders.remove(rider.getId());
+
+        // end the interaction activity early due to successful pickup
+        driver.endActivityAndComputeNextState(now);
+        internalInterface.arrangeNextAgentState(driver);
         return false;
     }
 

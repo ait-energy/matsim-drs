@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+    <attributes>
+        <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
+    </attributes>
+
+    <!-- Example for a single match (that is pre-matched, i.e. DRS modes assigned) -->
+
+    <person id="driverPerson">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOrRider</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="drsDriver" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+        </plan>
+    </person>
+    <person id="riderPerson">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" end_time="07:00:00" />
+            <leg mode="drsRider" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:05:00" end_time="17:55:00" />
+        </plan>
+    </person>
+</population>
