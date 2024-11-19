@@ -1,7 +1,6 @@
 package at.ac.ait.matsim.drs.run;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -100,12 +99,15 @@ public class IntegrationTests {
         }
     }
 
+    /**
+     * Simply check that no exception is thrown
+     * TODO replace this test.. the population.xml contains so many legacy agents
+     */
     @Test
     @Tag("IntegrationTest")
     public void testSimpleDrsExample(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
             throws Exception {
         new RunSimpleDrsExample().run(true, tempDir);
-        // TODO replace this test.. the population.xml contains so many legacy agents
 
         // CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
         // assertEquals(11, simStatsCsv.size());
@@ -122,6 +124,10 @@ public class IntegrationTests {
         new RunPredefinedDrsLegsExample().run(false, tempDir);
     }
 
+    /**
+     * Test DRS engine behavior: when picking up an agent the full pickup waiting
+     * seconds must not be waited but departure must happen asap
+     */
     @Test
     @Tag("IntegrationTest")
     public void testSinglePickupWithoutDelay(
@@ -137,6 +143,10 @@ public class IntegrationTests {
         assertEquals("00:06", trips.get(1, "trav_time").substring(0, 5));
     }
 
+    /**
+     * Test DRS engine behavior: driver must wait pickupWaitingSeconds for late
+     * riders, but leave without them if they don't show up within that time.
+     */
     @Test
     @Tag("IntegrationTest")
     public void testRidersLateForPickup(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
@@ -180,6 +190,10 @@ public class IntegrationTests {
         assertEquals(TransportMode.walk, pedestrian.get(0, "modes"));
     }
 
+    /**
+     * SubtourModeChoice + Conflict logic test: Unmatched riders shouldn't get a
+     * drsRider plan but an old non-conflicting plan
+     */
     @Test
     @Tag("IntegrationTest")
     public void testNoDriver(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
@@ -191,7 +205,19 @@ public class IntegrationTests {
         CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
         assertEquals(2, riderRequestStats.size());
         assertEquals("0", riderRequestStats.get(1, "matched"));
-        assertEquals("2", riderRequestStats.get(1, "unmatched"));
+        // no request should be unmatched (conflict logic must take care of it)
+        assertEquals("0", riderRequestStats.get(1, "unmatched"));
+
+        // check if conflict logic handled the bad plan
+        // (one plan containing both bad requests)
+        CSV conflictsCsv = readCsv(tempDir.resolve("drs_conflicts.csv"));
+        assertEquals("1", conflictsCsv.get(0, "rejected_total"));
+
+        CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
+        // in iteration 0 bike is used (see input plan)
+        assertEquals(TransportMode.bike, trips.get(0, "main_mode"));
+        // in iteration 1 bike is used as well (because of the resolved conflict)
+        assertEquals(TransportMode.bike, trips.get(1, "main_mode"));
     }
 
 }

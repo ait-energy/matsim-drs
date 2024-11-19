@@ -2,6 +2,7 @@ package at.ac.ait.matsim.drs.run;
 
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.population.algorithms.PermissibleModesCalculator;
+import org.matsim.core.replanning.conflicts.ConflictModule;
 
 import com.google.inject.Singleton;
 
@@ -13,6 +14,7 @@ import at.ac.ait.matsim.drs.planHandler.PlanModificationUndoer;
 import at.ac.ait.matsim.drs.planHandler.PlanModifier;
 import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForDrs;
+import at.ac.ait.matsim.drs.replanning.UnmatchedRiderConflictIdentifier;
 
 public final class DrsModule extends AbstractModule {
 
@@ -33,6 +35,11 @@ public final class DrsModule extends AbstractModule {
                 .toProvider(SubtourModeChoiceForDrs.Provider.class);
 
         installQSimModule(new DrsEngineQSimModule());
+
+        // bind the conflict identifier here so that
+        // WorstPlanForRemovalSelectorWithConflicts (or other removal strategies)
+        // know which plans can have conflicts
+        ConflictModule.bindResolver(binder()).toInstance(new UnmatchedRiderConflictIdentifier());
     }
 
 }

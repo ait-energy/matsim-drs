@@ -1,7 +1,9 @@
 package at.ac.ait.matsim.drs.planHandler;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,10 @@ import org.matsim.core.controler.events.IterationStartsEvent;
 import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.controler.listener.ReplanningListener;
+import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.replanning.conflicts.ConflictManager;
+import org.matsim.core.replanning.conflicts.ConflictResolver;
+import org.matsim.core.replanning.conflicts.ConflictWriter;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
@@ -29,6 +35,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import at.ac.ait.matsim.drs.optimizer.DrsOptimizer;
+import at.ac.ait.matsim.drs.replanning.UnmatchedRiderConflictResolver;
 import at.ac.ait.matsim.drs.request.DrsMatch;
 import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
@@ -48,6 +55,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     private final DrsConfigGroup drsConfig;
     private final RoutingModule driverRouter, riderRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
+    private final ConflictManager conflictManager;
 
     @Inject
     public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
@@ -59,6 +67,16 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
         riderRouter = tripRouter.getRoutingModule(Drs.RIDER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
+
+        // Create a custom ConflictManager with an actual resolver for our conflicts.
+        // Must not be bound to the "official" conflict resolver because
+        // PlansReplanningImpl
+        // runs the that directly after replanning,
+        // which is before our PlanModifier can assign riders to drivers.
+        Set<ConflictResolver> resolvers = Set.of(new UnmatchedRiderConflictResolver());
+        ConflictWriter drsConflictWriter = new ConflictWriter(new File(
+                outputDirectoryHierarchy.getOutputFilename("drs_conflicts.csv")));
+        this.conflictManager = new ConflictManager(resolvers, drsConflictWriter, MatsimRandom.getRandom());
     }
 
     /** before iteration 0 */
@@ -74,9 +92,11 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
 
     /** before iterations > 0 */
     @Override
-    public void notifyReplanning(ReplanningEvent replanningEvent) {
+    public void notifyReplanning(ReplanningEvent event) {
         DrsUtil.routeCalculations.set(0);
-        preplanDay(replanningEvent.isLastIteration());
+        conflictManager.initializeReplanning(scenario.getPopulation());
+        preplanDay(event.isLastIteration());
+        conflictManager.run(scenario.getPopulation(), event.getIteration());
         LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
     }
 
