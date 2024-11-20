@@ -67,11 +67,9 @@
             <param name="teleportedModeFreespeedFactor" value="2.0" />
         </parameterset>
 
-        <!-- DRS NOTE: The routing config for drsRider here is ONLY relevant for UNMATCHED riders,
-             since matched riders will either be picked up by the driver (or stuck).
-             The idea is that unmatched riders should not be stuck but get a mobility guarantee.
-             To avoid persons switching from fast modes (such as car) to drsRider arrive late
-             the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended. -->
+        <!-- DRS NOTE: The routing config for drsRider here is ONLY relevant for UNMATCHED riders
+             TODO: since we don't allow unmatched riders anymore
+             can we remove the requirement of adding this teleportation config? -->
         <parameterset type="teleportedModeParameters">
             <param name="beelineDistanceFactor" value="2" />
             <param name="mode" value="drsRider" />
@@ -138,8 +136,7 @@
             <!-- let's see if people pick up drs now.. -->
         </parameterset>
         <!-- DRS NOTE: The scoring config for drsRider applies to BOTH matched an unmatched riders.
-             To avoid masses of unmatched riders we should apply costs to the that,
-             but ideally not here but in drs.riderMobilityGuaranteeMonetaryConstant -->
+             (there shouldn't be unmatched riders anymore) -->
         <parameterset type="modeParams">
             <param name="constant" value="0.0" />
             <param name="dailyMonetaryConstant" value="0.0" />

@@ -131,13 +131,8 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                 waitingRiders.put(agent.getId(), linkId);
                 return true;
             }
-            eventsManager.processEvent(new PersonMoneyEvent(
-                    now,
-                    agent.getId(),
-                    cfgGroup.getRiderMobilityGuaranteeMonetaryConstant(),
-                    Drs.RIDER_MODE + " mobility guarantee",
-                    null,
-                    null));
+            LOGGER.warn("Agent {} is teleported using {}. This should not happen anymore!", agent.getId(),
+                    Drs.RIDER_MODE);
         }
         return false;
     }

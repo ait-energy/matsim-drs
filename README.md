@@ -59,11 +59,16 @@ In more detail, DRS is integrated into the MATSim loop as follows:
 
 First the slightly adjusted innovation strategy `SubtourModeChoiceForDrs` assigns the new modes `drsDriver` and `drsRider` to agents' subtours.
 This assignment can be restricted with the optional person attribute `drsAffinity`.
+
 Then requests are collected and matched based on origin, destination, departure time and detour time.
 The riders' acceptance of deviations to their desired departure time can be controlled with the DRS config parameter `riderDepartureTimeAdjustmentSeconds`.
-The agents' plans are adjusted accordingly.
+The matching algorithm ensures that all rider legs for an agent are matched (or none).
+
+Then agents' plans are adjusted.
 This entails adding pickup and dropoff activities at the riders' origins and destinations to the plans of matched drivers.
 For matched riders the departure time is adjusted if necessary.
+
+Finally, the conflict resolver switches to a valid plan for agents whose plan contains unmatched rider legs.
 
 ### Mobsim
 
@@ -71,14 +76,10 @@ Each matched driver proceeds to the specified pickup point to collect the assign
 The DRS config parameter `pickupWaitingSeconds` determines how long a driver waits for a delayed rider before proceeding.
 Subsequently, the driver transports the rider to the designated dropoff point.
 Concurrently, matched riders await the arrival of their driver for pickup and subsequently for dropoff at the predetermined locations.
-Riders that could not be matched still get a *mobility guarantee*
-and are teleported to their next activity based on `teleportedModeParameters` in the `planscalcroute` config.
 
-Note, that to successfully simulate DRS it is necessary to (1) kickstart the pool of potential drivers and (2) to assign costs to the mobility guarantee.
+Note, that to successfully simulate DRS it is necessary to kickstart the pool of potential drivers.
 Before the first iteration all agents that can potentially act as a driver are assigned a copy of their original plan with as many driver legs as possible.
 This avoids the problem of riders not finding a match.
-On the other hand the mobility guarantee must be assigned a cost with the DRS config parameter `riderMobilityGuaranteeMonetaryConstant`.
-Otherwise unmatched ride trips can make up a relevant part of the modal split when ideally they should only occur in negligible amounts.
 
 ### Before next iteration
 
