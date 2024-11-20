@@ -42,7 +42,6 @@ class PlanModifierTest {
         person.addPlan(plan);
         request = new DrsRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
                 null, null, null);
-        DrsUtil.setLinkageActivityToRiderRequest(activity1, request.getId().toString());
     }
 
     @Test

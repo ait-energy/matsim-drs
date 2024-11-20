@@ -44,9 +44,7 @@ public class RequestsCollector {
     public void collectRequests() {
         driverRequests = new ArrayList<>();
         riderRequests = new ArrayList<>();
-
-        long riderRequestId = 0;
-        long driverRequestId = 0;
+        long requestId = 0;
 
         for (Map.Entry<Id<Person>, ? extends Person> entry : population.getPersons().entrySet()) {
             Person person = entry.getValue();
@@ -61,6 +59,7 @@ public class RequestsCollector {
 
                     // FIXME what happens here? for each leg we don't take the leg start/end but
                     // trip start/end?? (ensure that trip must always consist of one leg only)
+                    // -> DrsUtil.getModes could help here
                     Activity startActivity = trip.getOriginActivity();
                     Link fromLink = network.getLinks().get(startActivity.getLinkId());
                     Activity endActivity = trip.getDestinationActivity();
@@ -82,7 +81,7 @@ public class RequestsCollector {
                         continue;
                     }
 
-                    long id = mode.equals(Drs.DRIVER_MODE) ? ++driverRequestId : ++riderRequestId;
+                    long id = ++requestId;
                     DrsRequest request = new DrsRequest(Id.create(id, Request.class),
                             person, trip, activityEndTime, mode, fromLink, toLink, leg);
                     if (Double.isInfinite(request.getNetworkRouteDistance())) {

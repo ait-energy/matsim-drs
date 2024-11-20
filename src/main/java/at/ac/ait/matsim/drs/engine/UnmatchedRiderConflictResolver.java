@@ -12,6 +12,9 @@ import org.matsim.core.router.TripStructureUtils;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
+/**
+ * Rejects plans containing one or more unmatched drs rider legs
+ */
 public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdentifier {
 
     private static final Logger LOGGER = LogManager.getLogger();

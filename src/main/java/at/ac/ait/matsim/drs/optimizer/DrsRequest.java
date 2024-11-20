@@ -18,6 +18,7 @@ public class DrsRequest implements Request {
     private final Link toLink;
     private final Leg leg;
     private Leg legWithRoute;
+    private Id<Request> matchedRequest;
 
     /**
      * Request for being either driver or rider (see mode)
@@ -103,4 +104,15 @@ public class DrsRequest implements Request {
         return Double.NEGATIVE_INFINITY;
     }
 
+    public boolean isMatched() {
+        return matchedRequest != null;
+    }
+
+    public Id<Request> getMatchedRequest() {
+        return matchedRequest;
+    }
+
+    public void setMatchedRequest(Id<Request> matchedRequest) {
+        this.matchedRequest = matchedRequest;
+    }
 }

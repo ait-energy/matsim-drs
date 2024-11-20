@@ -81,7 +81,7 @@ class RequestsCollectorTest {
         assertEquals("1540", driverRequests.get(0).getFromLink().getId().toString());
         assertEquals("688", driverRequests.get(0).getToLink().getId().toString());
 
-        assertEquals("1", riderRequests.get(0).getId().toString());
+        assertEquals("7", riderRequests.get(0).getId().toString());
         assertEquals(18600, riderRequests.get(0).getDepartureTime());
         assertEquals(Drs.RIDER_MODE, riderRequests.get(0).getMode());
         assertEquals("1541", riderRequests.get(0).getFromLink().getId().toString());

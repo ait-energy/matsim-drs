@@ -116,10 +116,12 @@ public class DrsUtil {
         }
     }
 
+    @Deprecated
     public static String getLinkageActivityToRiderRequest(Activity activity) {
         return (String) activity.getAttributes().getAttribute(Drs.ATTRIB_LINKED_REQUEST);
     }
 
+    @Deprecated
     public static void setLinkageActivityToRiderRequest(Activity activity, String riderRequestId) {
         if (riderRequestId != null) {
             activity.getAttributes().putAttribute(Drs.ATTRIB_LINKED_REQUEST, riderRequestId);

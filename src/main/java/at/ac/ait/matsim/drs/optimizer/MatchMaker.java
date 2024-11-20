@@ -1,23 +1,33 @@
 package at.ac.ait.matsim.drs.optimizer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.matsim.api.core.v01.population.Activity;
-import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.utils.misc.Time;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
-import at.ac.ait.matsim.drs.run.Drs;
-import at.ac.ait.matsim.drs.util.DrsUtil;
-
+/**
+ * Find best matches.
+ *
+ * Guarantees that there are no partial matches for a single person, i.e. either
+ * all or none of a person's rider legs are matched. This makes it easy for the
+ * conflict logic to discard invalid plans.
+ */
 public class MatchMaker {
     private static final Logger LOGGER = LogManager.getLogger();
     private final RequestsCollector requestsCollector;
@@ -63,25 +73,14 @@ public class MatchMaker {
                     driverRequest.getDepartureTime());
             List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRequests);
             DrsMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);
-
             if (bestMatch == null) {
                 continue;
             }
 
             DrsRequest bestRider = bestMatch.getRider();
-            DrsUtil.setRequestStatus(bestRider.getLeg(), Drs.REQUEST_STATUS_MATCHED);
-            for (PlanElement planElement : bestRider.getPerson().getSelectedPlan().getPlanElements()) {
-                if (planElement instanceof Activity) {
-                    if (((Activity) planElement).getEndTime().isDefined()) {
-                        if (((Activity) planElement).getEndTime().seconds() == bestRider
-                                .getDepartureTime()) {
-                            DrsUtil.setLinkageActivityToRiderRequest((Activity) planElement,
-                                    bestRider.getId().toString());
-                            break;
-                        }
-                    }
-                }
-            }
+            bestRider.setMatchedRequest(driverRequest.getId());
+            driverRequest.setMatchedRequest(bestRider.getId());
+
             LOGGER.debug("Match: {} should pick up {} on link {} @ {}",
                     driverRequest.getPerson().getId(),
                     bestRider.getPerson().getId(),
@@ -103,7 +102,44 @@ public class MatchMaker {
             }
         }
 
-        LOGGER.info(matches.size() + " matches found.");
+        LOGGER.info("Initially {} matches found.", matches.size());
+        enforceCompleteMatchForEachPerson();
+        LOGGER.info("{} matches remain after enforcing none or all rider legs matched.", matches.size());
+    }
+
+    private void enforceCompleteMatchForEachPerson() {
+        Multimap<Id<Person>, DrsRequest> person2riderRequest = requestsCollector.getRiderRequests()
+                .stream().collect(
+                        ImmutableListMultimap.toImmutableListMultimap(
+                                r -> r.getPerson().getId(), Function.identity()));
+
+        List<DrsRequest> matchedRiderRequests = matches.stream().map(m -> m.getRider()).collect(Collectors.toList());
+
+        Set<DrsRequest> undesiredMatches = new HashSet<>();
+        for (Id<Person> personId : person2riderRequest.keySet()) {
+            Collection<DrsRequest> requests = person2riderRequest.get(personId);
+            boolean allMatched = true;
+            for (DrsRequest request : requests) {
+                if (!matchedRiderRequests.contains(request)) {
+                    allMatched = false;
+                    break;
+                }
+            }
+            if (!allMatched) {
+                undesiredMatches.addAll(requests);
+            }
+        }
+
+        Map<DrsRequest, DrsMatch> riderRequest2match = matches.stream()
+                .collect(Collectors.toMap(m -> m.getRider(), Function.identity()));
+        for (DrsRequest undesired : undesiredMatches) {
+            if (riderRequest2match.containsKey(undesired)) {
+                DrsMatch undesiredMatch = riderRequest2match.get(undesired);
+                unmatchedDriverRequests.add(undesiredMatch.getDriver());
+                unmatchedRiderRequests.add(undesiredMatch.getRider());
+                matches.remove(undesiredMatch);
+            }
+        }
     }
 
     public MatchingResult getResult() {

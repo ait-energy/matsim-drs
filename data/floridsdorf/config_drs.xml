@@ -155,7 +155,7 @@
     <module name="replanning">
         <param name="maxAgentPlanMemorySize" value="5" />
         <param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
-        <param name="fractionOfIterationsToDisableInnovation" value="0.8" />
+        <param name="fractionOfIterationsToDisableInnovation" value="0.9" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
             <param name="weight" value="0.6"/>

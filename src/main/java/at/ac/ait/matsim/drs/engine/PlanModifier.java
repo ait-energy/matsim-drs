@@ -123,6 +123,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     }
 
     private void modifyPlans(DrsMatch match, PopulationFactory factory) {
+        DrsUtil.setRequestStatus(match.getRider().getLeg(), Drs.REQUEST_STATUS_MATCHED);
         double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
         addNewActivitiesToDriverPlan(match, pickupTime, factory);
         adjustRiderDepartureTime(match.getRider(), pickupTime);
@@ -155,27 +156,33 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
                 + match.getDriver().getPerson().getSelectedPlan().getPlanElements().size() + " plan elements.");
     }
 
+    /**
+     * Note: only adjusts one activity!
+     * It may happen that later activities start before the end of the adjusted
+     * activity.
+     *
+     * @param riderRequest
+     * @param pickupTime
+     */
     static void adjustRiderDepartureTime(DrsRequest riderRequest, double pickupTime) {
         if (riderRequest.getDepartureTime() > pickupTime) {
             List<PlanElement> planElements = riderRequest.getPerson().getSelectedPlan().getPlanElements();
             for (PlanElement planElement : planElements) {
                 if (planElement instanceof Activity) {
-                    if (!(DrsUtil.getLinkageActivityToRiderRequest((Activity) planElement) == null)) {
-                        if (DrsUtil.getLinkageActivityToRiderRequest((Activity) planElement).equals(riderRequest
-                                .getId().toString())) {
-                            DrsUtil.setActivityOriginalDepartureTime((Activity) planElement,
-                                    riderRequest.getDepartureTime());
-                            LOGGER.debug("Before matching " + riderRequest.getPerson().getId().toString()
-                                    + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            ((Activity) planElement).setEndTime(pickupTime);
-                            DrsUtil.setLinkageActivityToRiderRequest((Activity) planElement, null);
-                            LOGGER.debug("After matching " + riderRequest.getPerson().getId().toString()
-                                    + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
-                            break;
-                            // TODO this only adjusts one element. the following elements must be adjusted
-                            // as well otherwise the following elements may have a start time before the end
-                            // time of the adjusted element.
-                        }
+                    Activity act = (Activity) planElement;
+                    if (act.getEndTime().isUndefined()) {
+                        continue;
+                    }
+                    int endTime = (int) act.getEndTime().seconds();
+                    if (endTime == (int) riderRequest.getDepartureTime()) {
+                        DrsUtil.setActivityOriginalDepartureTime((Activity) planElement,
+                                riderRequest.getDepartureTime());
+                        LOGGER.debug("Before matching " + riderRequest.getPerson().getId().toString()
+                                + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
+                        ((Activity) planElement).setEndTime(pickupTime);
+                        LOGGER.debug("After matching " + riderRequest.getPerson().getId().toString()
+                                + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
+                        break;
                     }
                 }
             }
