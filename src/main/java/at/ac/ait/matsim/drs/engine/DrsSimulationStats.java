@@ -24,10 +24,6 @@ import org.matsim.core.utils.misc.Time;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 
-import at.ac.ait.matsim.drs.events.DrsFailedPickupEvent;
-import at.ac.ait.matsim.drs.events.DrsFailedPickupEventHandler;
-import at.ac.ait.matsim.drs.events.DrsPickupEvent;
-import at.ac.ait.matsim.drs.events.DrsPickupEventHandler;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsSimulationStats implements DrsPickupEventHandler, DrsFailedPickupEventHandler,

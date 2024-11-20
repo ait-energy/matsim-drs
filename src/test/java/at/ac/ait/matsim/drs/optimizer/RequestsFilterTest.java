@@ -29,7 +29,6 @@ import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsFilterTest {

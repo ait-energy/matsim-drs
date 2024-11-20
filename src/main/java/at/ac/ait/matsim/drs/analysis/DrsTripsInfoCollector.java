@@ -13,8 +13,8 @@ import org.matsim.core.utils.io.IOUtils;
 
 import com.google.common.base.Joiner;
 
-import at.ac.ait.matsim.drs.request.DrsMatch;
-import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsMatch;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsTripsInfoCollector {

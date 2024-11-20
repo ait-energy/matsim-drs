@@ -10,7 +10,6 @@ import org.matsim.core.router.RoutingModule;
 
 import com.google.common.base.Functions;
 
-import at.ac.ait.matsim.drs.request.DrsMatch;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 public class BestRequestFinder {

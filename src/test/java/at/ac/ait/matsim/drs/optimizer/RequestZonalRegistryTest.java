@@ -1,7 +1,6 @@
 package at.ac.ait.matsim.drs.optimizer;
 
 import at.ac.ait.matsim.drs.run.Drs;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
-package at.ac.ait.matsim.drs.planHandler;
+package at.ac.ait.matsim.drs.engine;
 
-import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 import org.junit.jupiter.api.BeforeEach;

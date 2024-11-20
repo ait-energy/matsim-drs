@@ -7,8 +7,6 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
-import at.ac.ait.matsim.drs.request.DrsMatch;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 

@@ -14,9 +14,11 @@ public class RunPerfectMatchExample extends RunSimpleDrsExample {
 
     @Override
     public void adjustConfig(Config config) {
-        config.controller().setLastIteration(100);
+        config.controller().setLastIteration(150);
         config.controller().setOutputDirectory("output-floridsdorf-perfectMatch");
         config.plans().setInputFile("population_drs_perfectMatch.xml");
+        config.qsim().setNumberOfThreads(10);
+        config.global().setNumberOfThreads(10);
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
         drs.setCellSize(500);

@@ -1,7 +1,5 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.request.DrsRequest;
-
 public class RequestsRegister {
     private final RequestZonalRegistry originZonalRegistry;
     private final RequestZonalRegistry destinationZonalRegistry;

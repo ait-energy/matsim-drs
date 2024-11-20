@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.drs.planHandler;
+package at.ac.ait.matsim.drs.engine;
 
 import java.io.File;
 import java.util.Arrays;
@@ -34,10 +34,9 @@ import org.matsim.pt2matsim.tools.NetworkTools;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
+import at.ac.ait.matsim.drs.optimizer.DrsMatch;
 import at.ac.ait.matsim.drs.optimizer.DrsOptimizer;
-import at.ac.ait.matsim.drs.replanning.UnmatchedRiderConflictResolver;
-import at.ac.ait.matsim.drs.request.DrsMatch;
-import at.ac.ait.matsim.drs.request.DrsRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;

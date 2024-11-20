@@ -13,7 +13,6 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
-import at.ac.ait.matsim.drs.request.DrsMatch;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 public class DrsOptimizer {

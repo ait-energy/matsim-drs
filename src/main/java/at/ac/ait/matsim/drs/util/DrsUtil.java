@@ -33,7 +33,7 @@ import org.matsim.facilities.Facility;
 
 import com.google.common.collect.Sets;
 
-import at.ac.ait.matsim.drs.replanning.PermissibleModesCalculatorForDrs;
+import at.ac.ait.matsim.drs.engine.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsUtil {

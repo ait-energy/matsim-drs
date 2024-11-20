@@ -6,7 +6,7 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 import org.matsim.core.utils.misc.StringUtils;
 
-import at.ac.ait.matsim.drs.replanning.SubtourModeChoiceForDrs;
+import at.ac.ait.matsim.drs.engine.SubtourModeChoiceForDrs;
 
 public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParameterSets {
 

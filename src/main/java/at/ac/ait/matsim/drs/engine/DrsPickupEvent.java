@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.drs.events;
+package at.ac.ait.matsim.drs.engine;
 
 import java.util.Map;
 
@@ -8,16 +8,16 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.vehicles.Vehicle;
 
-public class DrsFailedPickupEvent extends Event {
+public class DrsPickupEvent extends Event {
 
-    public final static String EVENT_TYPE = "drsFailedPickup";
+    public final static String EVENT_TYPE = "drsPickup";
 
     private Id<Link> linkId;
     private Id<Person> driverId;
     private Id<Person> riderId;
     private Id<Vehicle> vehicleId;
 
-    public DrsFailedPickupEvent(double time, Id<Link> linkId, Id<Person> driverId, Id<Person> riderId,
+    public DrsPickupEvent(double time, Id<Link> linkId, Id<Person> driverId, Id<Person> riderId,
             Id<Vehicle> vehicleId) {
         super(time);
         this.linkId = linkId;

@@ -19,7 +19,6 @@ import org.matsim.core.router.TripStructureUtils;
 
 import com.google.common.collect.ImmutableList;
 
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;

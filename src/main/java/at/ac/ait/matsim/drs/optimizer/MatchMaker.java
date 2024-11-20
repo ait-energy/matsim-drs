@@ -15,8 +15,6 @@ import org.matsim.core.utils.misc.Time;
 
 import com.google.common.collect.Lists;
 
-import at.ac.ait.matsim.drs.request.DrsMatch;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 

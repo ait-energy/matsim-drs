@@ -14,7 +14,6 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 

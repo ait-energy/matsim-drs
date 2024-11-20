@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.matsim.api.core.v01.network.Node;
 
-import at.ac.ait.matsim.drs.request.DrsRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 public class PotentialRequestsFinder {

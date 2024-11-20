@@ -20,8 +20,6 @@ import org.matsim.core.router.RoutingRequest;
 import org.matsim.facilities.FacilitiesUtils;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
-import at.ac.ait.matsim.drs.request.DrsMatch;
-import at.ac.ait.matsim.drs.request.DrsRequest;
 
 class BestRequestFinderTest {
         static Network network;
