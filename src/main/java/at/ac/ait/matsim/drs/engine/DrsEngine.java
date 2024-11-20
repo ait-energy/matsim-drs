@@ -124,9 +124,10 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
             // LOGGER.debug("handleDeparture {} for agent {} @ {} on link {}",
             // agent.getMode(), agent.getId(), Time.writeTime(now), linkId);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
-            if (Objects.equals(DrsUtil.getRequestStatus(currentLeg), Drs.REQUEST_STATUS_MATCHED)) {
-                LOGGER.debug("{} is waiting to be picked up on link {} @ {}.",
-                        agent.getId(), linkId, Time.writeTime(now));
+            String driverId = DrsUtil.getAssignedDriver(currentLeg);
+            if (driverId != null) {
+                LOGGER.debug("{} is waiting to be picked up by {} on link {} @ {}.",
+                        agent.getId(), driverId, linkId, Time.writeTime(now));
                 waitingRiders.put(agent.getId(), linkId);
                 return true;
             }

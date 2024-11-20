@@ -30,7 +30,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 public class RiderRequestStatsControlerListener implements AfterMobsimListener {
 
     public static final String FILENAME_REQUEST_STATS = "drs_rider_request_stats";
-    public static final String MATCHED = Drs.REQUEST_STATUS_MATCHED;
+    public static final String MATCHED = "matched";
     public static final String NOT_MATCHED = "unmatched";
     private final Population population;
     private final String requestFileName;
@@ -60,7 +60,7 @@ public class RiderRequestStatsControlerListener implements AfterMobsimListener {
             for (PlanElement planElement : person.getSelectedPlan().getPlanElements()) {
                 if (planElement instanceof Leg) {
                     if (Objects.equals(((Leg) planElement).getMode(), Drs.RIDER_MODE)) {
-                        if (Objects.equals(DrsUtil.getRequestStatus((Leg) planElement), MATCHED)) {
+                        if (DrsUtil.getAssignedDriver((Leg) planElement) != null) {
                             if (requestCount.get(MATCHED) == null) {
                                 this.requestCount.put(MATCHED, 1);
                             } else {

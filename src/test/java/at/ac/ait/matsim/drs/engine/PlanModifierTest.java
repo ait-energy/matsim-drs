@@ -1,19 +1,24 @@
 package at.ac.ait.matsim.drs.engine;
 
-import at.ac.ait.matsim.drs.optimizer.DrsRequest;
-import at.ac.ait.matsim.drs.run.Drs;
-import at.ac.ait.matsim.drs.util.DrsUtil;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.population.*;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest;
+import at.ac.ait.matsim.drs.run.Drs;
 
 class PlanModifierTest {
 

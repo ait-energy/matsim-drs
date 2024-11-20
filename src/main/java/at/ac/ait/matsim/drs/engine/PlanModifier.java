@@ -123,7 +123,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     }
 
     private void modifyPlans(DrsMatch match, PopulationFactory factory) {
-        DrsUtil.setRequestStatus(match.getRider().getLeg(), Drs.REQUEST_STATUS_MATCHED);
+        DrsUtil.setAssignedDriver(match.getRider().getLeg(), match.getDriver().getPerson().getId().toString());
         double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
         addNewActivitiesToDriverPlan(match, pickupTime, factory);
         adjustRiderDepartureTime(match.getRider(), pickupTime);

@@ -70,8 +70,8 @@ public class PlanModificationUndoer implements IterationStartsListener {
                             + ((Activity) planElement).getEndTime().seconds());
                 }
             } else if (planElement instanceof Leg) {
-                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_REQUEST_STATUS) != null) {
-                    DrsUtil.setRequestStatus((Leg) planElement, null);
+                if (planElement.getAttributes().getAttribute(Drs.ATTRIB_ASSIGNED_DRIVER) != null) {
+                    DrsUtil.setAssignedDriver((Leg) planElement, null);
                 }
                 if (planElement.getAttributes().getAttribute(Drs.ATTRIB_DRS_STATUS) != null) {
                     DrsUtil.setDrsStatus(((Leg) planElement), null);

@@ -11,15 +11,13 @@ public class Drs {
     public static final String DRIVER_INTERACTION = DRIVER_MODE + " interaction";
 
     public static final String ATTRIB_ORIGINAL_DEP_TIME = "originalDepTime";
-    public static final String ATTRIB_LINKED_REQUEST = "linkedRequest";
     public static final String ATTRIB_RIDER_ID = "riderId";
     public static final String ATTRIB_ACTIVITY_TYPE = "type";
     /**
      * status of a drs rider leg after the optimization/matching phase,
      * i.e. planned / scheduled matching of drivers to riders
      */
-    public static final String ATTRIB_REQUEST_STATUS = "drsRequestStatus";
-    public static final String REQUEST_STATUS_MATCHED = "matched";
+    public static final String ATTRIB_ASSIGNED_DRIVER = "drsAssignedDriver";
 
     /**
      * status of a drs driver leg after qsim,

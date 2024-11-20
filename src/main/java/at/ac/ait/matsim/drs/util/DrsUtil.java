@@ -116,20 +116,6 @@ public class DrsUtil {
         }
     }
 
-    @Deprecated
-    public static String getLinkageActivityToRiderRequest(Activity activity) {
-        return (String) activity.getAttributes().getAttribute(Drs.ATTRIB_LINKED_REQUEST);
-    }
-
-    @Deprecated
-    public static void setLinkageActivityToRiderRequest(Activity activity, String riderRequestId) {
-        if (riderRequestId != null) {
-            activity.getAttributes().putAttribute(Drs.ATTRIB_LINKED_REQUEST, riderRequestId);
-        } else {
-            activity.getAttributes().removeAttribute(Drs.ATTRIB_LINKED_REQUEST);
-        }
-    }
-
     public static void setRoutingModeToDriver(List<? extends PlanElement> legList) {
         for (PlanElement planElement : legList) {
             if (planElement instanceof Leg) {
@@ -248,15 +234,15 @@ public class DrsUtil {
         return legs.get(0);
     }
 
-    public static String getRequestStatus(Leg leg) {
-        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_REQUEST_STATUS);
+    public static String getAssignedDriver(Leg leg) {
+        return (String) leg.getAttributes().getAttribute(Drs.ATTRIB_ASSIGNED_DRIVER);
     }
 
-    public static void setRequestStatus(Leg leg, String status) {
-        if (status != null) {
-            leg.getAttributes().putAttribute(Drs.ATTRIB_REQUEST_STATUS, status);
+    public static void setAssignedDriver(Leg leg, String personId) {
+        if (personId != null) {
+            leg.getAttributes().putAttribute(Drs.ATTRIB_ASSIGNED_DRIVER, personId);
         } else {
-            leg.getAttributes().removeAttribute(Drs.ATTRIB_REQUEST_STATUS);
+            leg.getAttributes().removeAttribute(Drs.ATTRIB_ASSIGNED_DRIVER);
         }
     }
 

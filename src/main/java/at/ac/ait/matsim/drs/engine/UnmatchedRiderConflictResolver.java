@@ -26,8 +26,7 @@ public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdenti
             Plan plan = person.getSelectedPlan();
             for (Leg leg : TripStructureUtils.getLegs(plan)) {
                 if (leg.getMode().equals(Drs.RIDER_MODE)) {
-                    String requestStatus = DrsUtil.getRequestStatus(leg);
-                    if (requestStatus == null || !requestStatus.equals(Drs.REQUEST_STATUS_MATCHED)) {
+                    if (DrsUtil.getAssignedDriver(leg) == null) {
                         LOGGER.info(
                                 "Unmatched rider '{}': conflict module tries to select a non-conflicting plan",
                                 person.getId());
