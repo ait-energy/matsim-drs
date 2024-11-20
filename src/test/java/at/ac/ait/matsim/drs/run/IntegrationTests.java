@@ -188,6 +188,11 @@ public class IntegrationTests {
         var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
         assertEquals(1, pedestrian.size());
         assertEquals(TransportMode.walk, pedestrian.get(0, "modes"));
+
+        // all car drivers must finish their trip as well (check the distance)
+        assertEquals("3737", tripsCsv.filter("person", "carPerson1").get(0, "traveled_distance"));
+        assertEquals("3737", tripsCsv.filter("person", "carPerson2").get(0, "traveled_distance"));
+        assertEquals("3737", tripsCsv.filter("person", "carPerson3").get(0, "traveled_distance"));
     }
 
     /**

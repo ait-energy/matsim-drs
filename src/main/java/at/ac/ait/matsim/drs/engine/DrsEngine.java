@@ -95,15 +95,21 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     public void afterSim() {
         double now = this.internalInterface.getMobsim().getSimTimer().getTimeOfDay();
         if (!waitingDrivers.isEmpty()) {
-            LOGGER.warn("{} drs drivers were still waiting for their pickup and are stuck.", waitingDrivers.size());
-            waitingDrivers.forEach(d -> eventsManager.processEvent(
-                    new PersonStuckEvent(now, d.driver.getId(), d.linkId, Drs.DRIVER_MODE)));
+            LOGGER.warn("{} drs driver(s) stuck (still waiting):", waitingDrivers.size());
+            waitingDrivers.forEach(d -> {
+                LOGGER.warn("- driver {} on link {}", d.driver.getId(), d.linkId);
+                eventsManager.processEvent(
+                        new PersonStuckEvent(now, d.driver.getId(), d.linkId, Drs.DRIVER_MODE));
+            });
             waitingDrivers.clear();
         }
         if (!waitingRiders.isEmpty()) {
-            LOGGER.warn("{} drs riders were still waiting to be picked up and are stuck.", waitingRiders.size());
-            waitingRiders.keySet().forEach(d -> eventsManager.processEvent(
-                    new PersonStuckEvent(now, d, null, Drs.RIDER_MODE)));
+            LOGGER.warn("{} drs rider(s) stuck (still waiting):", waitingRiders.size());
+            waitingRiders.keySet().forEach(d -> {
+                LOGGER.warn("- rider {} on link {}", d, waitingRiders.get(d));
+                eventsManager.processEvent(
+                        new PersonStuckEvent(now, d, null, Drs.RIDER_MODE));
+            });
             waitingRiders.clear();
         }
     }
@@ -118,7 +124,7 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     public boolean handleDeparture(double now, MobsimAgent agent, Id<Link> linkId) {
         if (agent.getMode().equals(Drs.RIDER_MODE)) {
             // LOGGER.debug("handleDeparture {} for agent {} @ {} on link {}",
-            // agent.getMode(), agent.getId(), now, linkId);
+            // agent.getMode(), agent.getId(), Time.writeTime(now), linkId);
             Leg currentLeg = (Leg) ((PlanAgent) agent).getCurrentPlanElement();
             if (Objects.equals(DrsUtil.getRequestStatus(currentLeg), Drs.REQUEST_STATUS_MATCHED)) {
                 LOGGER.debug("{} is waiting to be picked up on link {} @ {}.",
@@ -276,6 +282,8 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
                         Time.writeTime(now), driver.getId(), rider.getId(), linkId, errorCode);
                 eventsManager.processEvent(new DrsFailedPickupEvent(now, linkId, driver.getId(), rider.getId(),
                         driver.getVehicle().getId()));
+                driver.endActivityAndComputeNextState(now);
+                internalInterface.arrangeNextAgentState(driver);
                 return false;
             }
             LOGGER.debug(
