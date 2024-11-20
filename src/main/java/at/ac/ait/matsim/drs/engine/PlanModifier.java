@@ -34,9 +34,11 @@ import org.matsim.pt2matsim.tools.NetworkTools;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
+import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
 import at.ac.ait.matsim.drs.optimizer.DrsMatch;
 import at.ac.ait.matsim.drs.optimizer.DrsOptimizer;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest;
+import at.ac.ait.matsim.drs.optimizer.MatchingResult;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
@@ -101,12 +103,19 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
 
     private void preplanDay(boolean isLastIteration) {
         Population population = scenario.getPopulation();
-        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, globalConfig, drsConfig, population,
-                driverRouter, isLastIteration, outputDirectoryHierarchy);
-        List<DrsMatch> matches = optimizer.optimize();
+        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, drsConfig, population, driverRouter);
+        MatchingResult result = optimizer.optimize();
+        if (isLastIteration) {
+            DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(globalConfig,
+                    outputDirectoryHierarchy);
+            infoCollector.printMatchedRequestsToCsv(result.matches());
+            infoCollector.printUnMatchedRequestsToCsv(result.unmatchedDriverRequests(),
+                    result.unmatchedRiderRequests());
+        }
+
         PopulationFactory populationFactory = population.getFactory();
         LOGGER.info("Modifying drs agents plans started.");
-        for (DrsMatch match : matches) {
+        for (DrsMatch match : result.matches()) {
             modifyPlans(match, populationFactory);
         }
         addRoutingModeAndRouteForRiders();

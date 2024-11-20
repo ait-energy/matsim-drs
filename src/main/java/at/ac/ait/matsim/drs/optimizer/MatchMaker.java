@@ -106,16 +106,10 @@ public class MatchMaker {
         LOGGER.info(matches.size() + " matches found.");
     }
 
-    public List<DrsMatch> getMatches() {
-        return Collections.unmodifiableList(matches);
-    }
-
-    public List<DrsRequest> getUnmatchedDriverRequests() {
-        return Collections.unmodifiableList(unmatchedDriverRequests);
-    }
-
-    public List<DrsRequest> getUnmatchedRiderRequests() {
-        return Collections.unmodifiableList(unmatchedRiderRequests);
+    public MatchingResult getResult() {
+        return new MatchingResult(Collections.unmodifiableList(matches),
+                Collections.unmodifiableList(unmatchedDriverRequests),
+                Collections.unmodifiableList(unmatchedRiderRequests));
     }
 
 }
