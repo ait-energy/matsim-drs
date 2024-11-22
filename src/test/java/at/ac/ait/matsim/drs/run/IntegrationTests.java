@@ -52,6 +52,11 @@ public class IntegrationTests {
             return rows.get(i);
         }
 
+        /** get value from the first row */
+        public String get(String col) {
+            return get(0, col);
+        }
+
         public String get(int row, String col) {
             return rows.get(row).get(col);
         }
@@ -113,8 +118,8 @@ public class IntegrationTests {
         // assertEquals(11, simStatsCsv.size());
         // assertEquals("2", simStatsCsv.get(8, "successfulPickups"));
         // assertEquals("0", simStatsCsv.get(8, "failedPickups"));
-        // assertEquals("0", simStatsCsv.get(0, "stuckDrsRiders"));
-        // assertEquals("0", simStatsCsv.get(0, "stuckDrsDrivers"));
+        // assertEquals("0", simStatsCsv.get("stuckDrsRiders"));
+        // assertEquals("0", simStatsCsv.get("stuckDrsDrivers"));
     }
 
     @Test
@@ -156,25 +161,25 @@ public class IntegrationTests {
         CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
         // we find a match for each rider
         assertEquals(1, riderRequestStats.size());
-        assertEquals("3", riderRequestStats.get(0, "matched"));
-        assertEquals("0", riderRequestStats.get(0, "unmatched"));
+        assertEquals("3", riderRequestStats.get("matched"));
+        assertEquals("0", riderRequestStats.get("unmatched"));
 
         // but one rider (pedestrian) will miss the ride
         CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
         assertEquals(1, simStatsCsv.size());
-        assertEquals("2", simStatsCsv.get(0, "successfulPickups"));
-        assertEquals("1", simStatsCsv.get(0, "failedPickups"));
-        assertEquals("1", simStatsCsv.get(0, "stuckDrsRiders"));
-        assertEquals("0", simStatsCsv.get(0, "stuckDrsDrivers"));
+        assertEquals("2", simStatsCsv.get("successfulPickups"));
+        assertEquals("1", simStatsCsv.get("failedPickups"));
+        assertEquals("1", simStatsCsv.get("stuckDrsRiders"));
+        assertEquals("0", simStatsCsv.get("stuckDrsDrivers"));
 
         CSV tripsCsv = readCsv(tempDir.resolve("output_trips.csv.gz"));
 
         // successful DRS trip for the punctual person
         var punctual = tripsCsv.filter("person", "ridePersonPunctual").filter("trip_number", "1");
         assertEquals(1, punctual.size());
-        assertEquals(Drs.RIDER_MODE, punctual.get(0, "modes"));
+        assertEquals(Drs.RIDER_MODE, punctual.get("modes"));
         // travel time without long delays
-        assertEquals("00:06", punctual.get(0, "trav_time").substring(0, 5));
+        assertEquals("00:06", punctual.get("trav_time").substring(0, 5));
 
         // successful bike + DRS trip for the cyclist
         var cyclist = tripsCsv.filter("person", "ridePersonWithBikeAccess");
@@ -187,12 +192,12 @@ public class IntegrationTests {
         // pedestrian misses DRS (therefore no second leg)
         var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
         assertEquals(1, pedestrian.size());
-        assertEquals(TransportMode.walk, pedestrian.get(0, "modes"));
+        assertEquals(TransportMode.walk, pedestrian.get("modes"));
 
         // all car drivers must finish their trip as well (check the distance)
-        assertEquals("3737", tripsCsv.filter("person", "carPerson1").get(0, "traveled_distance"));
-        assertEquals("3737", tripsCsv.filter("person", "carPerson2").get(0, "traveled_distance"));
-        assertEquals("3737", tripsCsv.filter("person", "carPerson3").get(0, "traveled_distance"));
+        assertEquals("3737", tripsCsv.filter("person", "carPerson1").get("traveled_distance"));
+        assertEquals("3737", tripsCsv.filter("person", "carPerson2").get("traveled_distance"));
+        assertEquals("3737", tripsCsv.filter("person", "carPerson3").get("traveled_distance"));
     }
 
     /**
@@ -216,13 +221,47 @@ public class IntegrationTests {
         // check if conflict logic handled the bad plan
         // (one plan containing both bad requests)
         CSV conflictsCsv = readCsv(tempDir.resolve("drs_conflicts.csv"));
-        assertEquals("1", conflictsCsv.get(0, "rejected_total"));
+        assertEquals("1", conflictsCsv.get("rejected_total"));
 
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
         // in iteration 0 bike is used (see input plan)
-        assertEquals(TransportMode.bike, trips.get(0, "main_mode"));
+        assertEquals(TransportMode.bike, trips.get("main_mode"));
         // in iteration 1 bike is used as well (because of the resolved conflict)
         assertEquals(TransportMode.bike, trips.get(1, "main_mode"));
+    }
+
+    /**
+     * Test DRS engine behavior: riders must be able to adjust their departure time
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testRidersDepartureTimeAdjustment(
+            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        {
+            new RunRidersDepartureTimeAdjustmentExample(15 * 60 - 1).run(false, tempDir);
+            CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+            // no match because the time window is one second too small
+            assertEquals(1, riderRequestStats.size());
+            assertEquals("0", riderRequestStats.get("matched"));
+            assertEquals("2", riderRequestStats.get("unmatched"));
+        }
+
+        {
+            new RunRidersDepartureTimeAdjustmentExample(16 * 60).run(false, tempDir);
+            CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+            // the 15 minute time window is enough to match
+            assertEquals(1, riderRequestStats.size());
+            assertEquals("1", riderRequestStats.get("matched"));
+            // for now the rider with early start is unmachted, rethink if this is OK
+            assertEquals("1", riderRequestStats.get("unmatched"));
+
+            // check that the actual departure time is as expected
+            CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
+            // assertEquals("07:00:00", trips.filter("person",
+            // "ridePersonQuarterBefore7").get("dep_time"));
+            assertEquals("07:00:00", trips.filter("person", "ridePersonQuarterPast7").get("dep_time"));
+        }
     }
 
 }

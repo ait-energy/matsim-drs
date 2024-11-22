@@ -47,10 +47,13 @@ public class RequestsFilter {
         boolean withinRiderDepartureTimeWindow = Math.abs(timeAdjustment) <= allowedTimeAdjustment;
         boolean constraintsPassed = false;
         if (withinRiderDepartureTimeWindow) {
-            double timeBetweenStartAndEndAct = riderRequest.getTrip().getDestinationActivity().getStartTime().seconds()
-                    - riderRequest.getTrip().getOriginActivity().getEndTime().seconds();
             if (timeAdjustment >= 0) {
-                constraintsPassed = timeBetweenStartAndEndAct > timeAdjustment;
+                constraintsPassed = true;
+                // TODO rework this logic. Maybe check next
+                // activities' end instead of start I would propose.
+                double duration = riderRequest.getTrip().getDestinationActivity().getStartTime().seconds() -
+                        riderRequest.getTrip().getOriginActivity().getEndTime().seconds();
+                constraintsPassed = duration > timeAdjustment;
             } else if (timeAdjustment < 0) {
                 int indexOfCurrentTrip = TripStructureUtils.getTrips(riderRequest.getPerson().getSelectedPlan())
                         .indexOf(riderRequest.getTrip());
