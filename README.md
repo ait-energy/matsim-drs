@@ -127,9 +127,6 @@ List of all parameters:
   If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant -
   otherwise it will be counted twice (typically negative)
 - `driverProfitPerKm`: The amount of money per kilometre the driver gains for a rider (typically positive)
-- `riderMobilityGuaranteeMonetaryConstant` Price per unmatched rider trip.
-  Such trips are typically teleported, imagine the rider e.g. gets provided a taxi.
-  Use to avoid unmatched rider trips to get an attractive mode on their own. (typically negative)
 - Note, that for the **drsRider's costs** there is no parameter,
   because this should be set in `planCalcScore.modeParams.monetaryDistanceRate` (typically negative)
 
