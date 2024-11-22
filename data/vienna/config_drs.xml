@@ -191,8 +191,6 @@
 	<module name="drs">
 		<param name="driverProfitPerKm" value="0.8" />
 		<param name="carAndDrsDailyMonetaryConstant" value="-12.34" />
-		<!-- DRS NOTE: cost per UNMATCHED rider trips (used to avoid too many riders that can not be served by the drivers)-->
-		<param name="riderMobilityGuaranteeMonetaryConstant" value="-10" />
 		<param name="pickupWaitingSeconds" value="180" />
 	</module>
 </config>

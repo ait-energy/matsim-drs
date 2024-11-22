@@ -11,10 +11,10 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.events.IterationStartsEvent;
@@ -22,13 +22,12 @@ import org.matsim.core.controler.events.ReplanningEvent;
 import org.matsim.core.controler.listener.IterationStartsListener;
 import org.matsim.core.controler.listener.ReplanningListener;
 import org.matsim.core.gbl.MatsimRandom;
+import org.matsim.core.population.routes.GenericRouteImpl;
 import org.matsim.core.replanning.conflicts.ConflictManager;
-import org.matsim.core.replanning.conflicts.ConflictResolver;
 import org.matsim.core.replanning.conflicts.ConflictWriter;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
-import org.matsim.facilities.FacilitiesUtils;
 import org.matsim.pt2matsim.tools.NetworkTools;
 
 import com.google.common.collect.ImmutableSet;
@@ -54,9 +53,10 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     private final Network drsNetwork;
     private final GlobalConfigGroup globalConfig;
     private final DrsConfigGroup drsConfig;
-    private final RoutingModule driverRouter, riderRouter;
+    private final RoutingModule driverRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
     private final ConflictManager conflictManager;
+    private final UnmatchedRiderConflictResolver unmatchedRiderConflictResolver;
 
     @Inject
     public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
@@ -66,7 +66,6 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         this.globalConfig = scenario.getConfig().global();
         this.drsConfig = Drs.addOrGetConfigGroup(scenario);
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
-        riderRouter = tripRouter.getRoutingModule(Drs.RIDER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
 
         // Create a custom ConflictManager with an actual resolver for our conflicts.
@@ -74,10 +73,13 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         // PlansReplanningImpl
         // runs the that directly after replanning,
         // which is before our PlanModifier can assign riders to drivers.
-        Set<ConflictResolver> resolvers = Set.of(new UnmatchedRiderConflictResolver());
+        this.unmatchedRiderConflictResolver = new UnmatchedRiderConflictResolver();
         ConflictWriter drsConflictWriter = new ConflictWriter(new File(
                 outputDirectoryHierarchy.getOutputFilename("drs_conflicts.csv")));
-        this.conflictManager = new ConflictManager(resolvers, drsConflictWriter, MatsimRandom.getRandom());
+        this.conflictManager = new ConflictManager(
+                Set.of(unmatchedRiderConflictResolver),
+                drsConflictWriter,
+                MatsimRandom.getRandom());
     }
 
     /** before iteration 0 */
@@ -98,6 +100,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         conflictManager.initializeReplanning(scenario.getPopulation());
         preplanDay(event.isLastIteration());
         conflictManager.run(scenario.getPopulation(), event.getIteration());
+        unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
         LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
     }
 
@@ -118,7 +121,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         for (DrsMatch match : result.matches()) {
             modifyPlans(match, populationFactory);
         }
-        addRoutingModeAndRouteForRiders();
+        // addRoutingModeAndRouteForRiders();
         LOGGER.info("Modifying drs agents plans finished.");
     }
 
@@ -126,6 +129,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         DrsUtil.setAssignedDriver(match.getRider().getLeg(), match.getDriver().getPerson().getId().toString());
         double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
         addNewActivitiesToDriverPlan(match, pickupTime, factory);
+        addRiderRoute(match.getRider());
         adjustRiderDepartureTime(match.getRider(), pickupTime);
     }
 
@@ -157,6 +161,22 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     }
 
     /**
+     * For rider legs it is important to set the routing mode and a generic route
+     * so that PersonPrepareForSim does not reroute our legs (and thereby discards
+     * our leg attributes where we store if the person found a match or not)
+     */
+    private void addRiderRoute(DrsRequest riderRequest) {
+        Route genericRoute = new GenericRouteImpl(riderRequest.getFromLink().getId(),
+                riderRequest.getToLink().getId());
+        genericRoute.setDistance(riderRequest.getNetworkRouteDistance());
+        genericRoute.setTravelTime(riderRequest.getNetworkRouteTravelTime().seconds());
+
+        Leg leg = riderRequest.getLeg();
+        leg.setRoute(genericRoute);
+        TripStructureUtils.setRoutingMode(leg, Drs.RIDER_MODE);
+    }
+
+    /**
      * Note: only adjusts one activity!
      * It may happen that later activities start before the end of the adjusted
      * activity.
@@ -184,38 +204,6 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
                                 + "'s departure is at " + ((Activity) planElement).getEndTime().seconds());
                         break;
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO this should be integrated into the optimizer/matchmaker process
-     *
-     * for all rider legs: add a routing mode and a generic route (that is provided
-     * through the drs rider mode configured as teleporting mode)
-     * so that PersonPrepareForSim does not reroute our legs (and thereby discards
-     * our leg attributes where we store if the person found a match or not)
-     */
-    private void addRoutingModeAndRouteForRiders() {
-        for (Person person : scenario.getPopulation().getPersons().values()) {
-            List<PlanElement> planElements = person.getSelectedPlan().getPlanElements();
-            for (int i = 0; i < planElements.size(); i++) {
-                if (planElements.get(i) instanceof Leg) {
-                    Leg leg = (Leg) planElements.get(i);
-                    if (!leg.getMode().equals(Drs.RIDER_MODE)) {
-                        continue;
-                    }
-                    TripStructureUtils.setRoutingMode(leg, Drs.RIDER_MODE);
-
-                    Activity prevActivity = (Activity) planElements.get(i - 1);
-                    Activity nextActivity = (Activity) planElements.get(i + 1);
-                    Leg calculatedLeg = DrsUtil.calculateLeg(riderRouter,
-                            FacilitiesUtils.wrapActivity(prevActivity),
-                            FacilitiesUtils.wrapActivity(nextActivity),
-                            leg.getDepartureTime().orElse(0),
-                            person);
-                    leg.setRoute(calculatedLeg.getRoute());
                 }
             }
         }

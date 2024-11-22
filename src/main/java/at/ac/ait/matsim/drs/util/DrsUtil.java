@@ -18,10 +18,12 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.ControllerConfigGroup;
 import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.population.routes.GenericRouteImpl;
 import org.matsim.core.router.DefaultRoutingRequest;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.RoutingRequest;
@@ -268,6 +270,34 @@ public class DrsUtil {
     public static boolean writeGraph(AfterMobsimEvent event, ControllerConfigGroup controllerConfigGroup) {
         int createGraphsInterval = controllerConfigGroup.getCreateGraphsInterval();
         return createGraphsInterval > 0 && event.getIteration() % createGraphsInterval == 0;
+    }
+
+    /**
+     * Warning: only use this for testing purposes. This can be useful for hardcoded
+     * drsRider legs in an initial population. Since we usually don't want to have a
+     * teleporting routing config we simply set a fake route so that
+     * PersonPrepareForSim does not try to create a route for these legs (because it
+     * will fail due to no avilable router).
+     */
+    public static void addFakeGenericRouteToDrsDriverLegs(Population population) {
+        for (Person person : population.getPersons().values()) {
+            for (Plan plan : person.getPlans()) {
+                for (Leg leg : TripStructureUtils.getLegs(plan.getPlanElements())) {
+                    if (leg.getMode().equals(Drs.RIDER_MODE)) {
+                        if (leg.getRoute() == null) {
+                            int idx = plan.getPlanElements().indexOf(leg);
+                            Activity fromActivity = (Activity) plan.getPlanElements().get(idx - 1);
+                            Activity toActivity = (Activity) plan.getPlanElements().get(idx + 1);
+                            TripStructureUtils.setRoutingMode(leg, Drs.RIDER_MODE);
+                            Route fake = new GenericRouteImpl(fromActivity.getLinkId(), toActivity.getLinkId());
+                            fake.setDistance(1);
+                            fake.setTravelTime(1);
+                            leg.setRoute(fake);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

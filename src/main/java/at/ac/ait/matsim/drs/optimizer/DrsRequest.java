@@ -7,6 +7,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.router.TripStructureUtils.Trip;
+import org.matsim.core.utils.misc.OptionalTime;
 
 /**
  * Request for DRS trip. The given trip must be part of the person's selected
@@ -127,6 +128,15 @@ public class DrsRequest implements Request {
             }
         }
         return Double.NEGATIVE_INFINITY;
+    }
+
+    public OptionalTime getNetworkRouteTravelTime() {
+        if (legWithRoute != null) {
+            if (legWithRoute.getRoute() instanceof NetworkRoute) {
+                return legWithRoute.getRoute().getTravelTime();
+            }
+        }
+        return OptionalTime.undefined();
     }
 
     public boolean isMatched() {

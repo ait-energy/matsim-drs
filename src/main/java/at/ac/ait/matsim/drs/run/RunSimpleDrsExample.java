@@ -41,6 +41,7 @@ public class RunSimpleDrsExample {
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
+        DrsUtil.addFakeGenericRouteToDrsDriverLegs(scenario.getPopulation());
 
         if (assignDrs) {
             // kick-start all ride agents as riders

@@ -33,48 +33,13 @@
         <param name="mainMode" value="car,drsDriver" />
     </module>
 
-    <!-- DRS-NOTE: drsRider must be added as teleported mode.
-         Since adding one or more modes clears predefined modes
-         we must re-add all default teleported modes -->
     <module name="routing">
         <!-- DRS NOTE: drsDriver mode must be added as a networkMode -->
         <param name="networkModes" value="car,drsDriver" />
-        <param name="clearDefaultTeleportedModeParams" value="true" />
-
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="1.3" />
-            <param name="mode" value="bike" />
-            <param name="teleportedModeSpeed" value="4.166666666666667" />
-        </parameterset>
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="1.3" />
-            <param name="mode" value="walk" />
-            <param name="teleportedModeSpeed" value="0.8333333333333333" />
-        </parameterset>
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="1.3" />
-            <param name="mode" value="non_network_walk" />
-            <param name="teleportedModeSpeed" value="0.8333333333333333" />
-        </parameterset>
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="1.3" />
-            <param name="mode" value="ride" />
-            <param name="teleportedModeFreespeedFactor" value="1.0" />
-        </parameterset>
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="1.3" />
-            <param name="mode" value="pt" />
-            <param name="teleportedModeFreespeedFactor" value="2.0" />
-        </parameterset>
-
-        <!-- DRS NOTE: The routing config for drsRider here is ONLY relevant for UNMATCHED riders
-             TODO: since we don't allow unmatched riders anymore
-             can we remove the requirement of adding this teleportation config? -->
-        <parameterset type="teleportedModeParameters">
-            <param name="beelineDistanceFactor" value="2" />
-            <param name="mode" value="drsRider" />
-            <param name="teleportedModeSpeed" value="8.3" />
-        </parameterset>
+        <!-- DRS NOTE: drsRider mode does not need a routing configuration.
+             Internally drsDriver mode is used to calculate routes,
+             and omitting a teleportation configuration helps with quickly identifying
+             cases where drsRiders would be teleported (which should never happen) -->
     </module>
 
     <module name="scoring">

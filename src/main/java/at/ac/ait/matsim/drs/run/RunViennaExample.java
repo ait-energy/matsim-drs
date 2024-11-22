@@ -36,13 +36,8 @@ public class RunViennaExample {
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
 
-        // kick-start all ride agents as riders
-        int count = DrsUtil.addDrsPlanForEligiblePlans(scenario.getPopulation(), scenario.getConfig(),
-                Drs.RIDER_MODE, Set.of(TransportMode.ride));
-        LOGGER.info("added initial drs rider plan to {} agent(s)", count);
-
         // necessary to kick-start the drs driver pool
-        count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
+        int count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
         LOGGER.info("added initial drs driver plan to {} agent(s)", count);
 
         Controler controller = new Controler(scenario);

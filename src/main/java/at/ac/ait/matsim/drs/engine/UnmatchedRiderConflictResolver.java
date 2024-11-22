@@ -1,7 +1,12 @@
 package at.ac.ait.matsim.drs.engine;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.IdSet;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -19,6 +24,8 @@ public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdenti
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private Map<Id<Person>, Plan> invalidPlans = new HashMap<>();
+
     @Override
     public IdSet<Person> resolve(Population population, int iteration) {
         IdSet<Person> conflictingPersonIds = new IdSet<>(Person.class);
@@ -31,12 +38,24 @@ public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdenti
                                 "Unmatched rider '{}': conflict module tries to select a non-conflicting plan",
                                 person.getId());
                         conflictingPersonIds.add(person.getId());
+                        invalidPlans.put(person.getId(), plan);
                         break;
                     }
                 }
             }
         }
         return conflictingPersonIds;
+    }
+
+    /**
+     * ConflictManager does not delete invalid plans as of MATSim 2024.0, so let's
+     * take care of that ourselves
+     */
+    public void deleteInvalidPlans(Population population) {
+        for (Entry<Id<Person>, Plan> e : invalidPlans.entrySet()) {
+            Person person = population.getPersons().get(e.getKey());
+            person.removePlan(e.getValue());
+        }
     }
 
 }
