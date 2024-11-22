@@ -3,6 +3,7 @@ package at.ac.ait.matsim.drs.optimizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,11 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
+/**
+ * Collects all DRS trips (requests) from the selected plans of the population.
+ * These trips are expected to only consist of a single leg, since matched
+ * requests from a previous iteration must be reset via PlanModificationUndoer.
+ */
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -50,61 +56,70 @@ public class RequestsCollector {
             Person person = entry.getValue();
             List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
             for (TripStructureUtils.Trip trip : trips) {
-                List<Leg> legs = trip.getLegsOnly();
-                for (Leg leg : legs) {
-                    String mode = leg.getMode();
-                    if (!mode.equals(Drs.DRIVER_MODE) && !mode.equals(Drs.RIDER_MODE)) {
-                        continue;
+                Set<String> tripModes = DrsUtil.getModes(trip);
+                if (!tripModes.contains(Drs.DRIVER_MODE) && !tripModes.contains(Drs.RIDER_MODE)) {
+                    continue;
+                }
+                if (trip.getLegsOnly().size() > 1) {
+                    System.err.println("hmmm");
+                }
+                if (tripModes.size() > 1) {
+                    // safeguard - should not happen
+                    LOGGER.warn("Drs trip for person {} contains multiple modes ({}), ignoring trip.",
+                            person.getId(),
+                            tripModes);
+                }
+
+                Activity startActivity = trip.getOriginActivity();
+                Link fromLink = network.getLinks().get(startActivity.getLinkId());
+                Activity endActivity = trip.getDestinationActivity();
+                Link toLink = network.getLinks().get(endActivity.getLinkId());
+                String tripMode = tripModes.iterator().next();
+
+                String msg = "Link {} ({}) not found in drs network for person {}.";
+                if (fromLink == null) {
+                    LOGGER.warn(msg, startActivity.getLinkId(), DrsUtil.toWktPoint(startActivity),
+                            person.getId());
+                    continue;
+                } else if (toLink == null) {
+                    LOGGER.warn(msg, endActivity.getLinkId(), DrsUtil.toWktPoint(endActivity),
+                            person.getId());
+                    continue;
+                }
+
+                if (fromLink == toLink) {
+                    LOGGER.debug("Ignoring drs request with equal from/to link ({}) for person {}", fromLink.getId(),
+                            person.getId());
+                    continue;
+                }
+
+                long id = ++requestId;
+                DrsRequest request = new DrsRequest(Id.create(id, Request.class),
+                        person, trip, tripMode, fromLink, toLink);
+                if (Double.isInfinite(request.getNetworkRouteDistance())) {
+                    // for most driver trips the leg already has a route
+                    // (due to prepareForMobsim and PlanModificationUndoer)
+                    // but rider trips won't have a distance, so let's calculate a network route
+                    Leg driverLeg = DrsUtil.calculateLeg(driverRouter,
+                            request.getFromLink(),
+                            request.getToLink(),
+                            request.getDepartureTime(),
+                            request.getPerson());
+                    request.setLegWithNetworkRoute(driverLeg);
+                }
+
+                double distance = request.getNetworkRouteDistance();
+                if (tripMode.equals(Drs.DRIVER_MODE)) {
+                    if (cfgGroup.getMinDriverLegMeters() <= 0 || cfgGroup.getMinDriverLegMeters() <= distance) {
+                        driverRequests.add(request);
+                    } else {
+                        LOGGER.debug("Ignoring {} request below min distance for person {}", tripMode, person.getId());
                     }
-
-                    // FIXME what happens here? for each leg we don't take the leg start/end but
-                    // trip start/end?? (ensure that trip must always consist of one leg only)
-                    // -> DrsUtil.getModes could help here
-                    Activity startActivity = trip.getOriginActivity();
-                    Link fromLink = network.getLinks().get(startActivity.getLinkId());
-                    Activity endActivity = trip.getDestinationActivity();
-                    Link toLink = network.getLinks().get(endActivity.getLinkId());
-                    double activityEndTime = startActivity.getEndTime().seconds();
-
-                    String msg = "link {} ({}) not found in drs network for person {}.";
-                    if (fromLink == null) {
-                        LOGGER.warn(msg, startActivity.getLinkId(), DrsUtil.toWktPoint(startActivity),
-                                person.getId());
-                        continue;
-                    } else if (toLink == null) {
-                        LOGGER.warn(msg, endActivity.getLinkId(), DrsUtil.toWktPoint(endActivity),
-                                person.getId());
-                        continue;
-                    }
-
-                    if (fromLink == toLink) {
-                        continue;
-                    }
-
-                    long id = ++requestId;
-                    DrsRequest request = new DrsRequest(Id.create(id, Request.class),
-                            person, trip, activityEndTime, mode, fromLink, toLink, leg);
-                    if (Double.isInfinite(request.getNetworkRouteDistance())) {
-                        // for most driver trips the leg already has a route
-                        // (due to prepareForMobsim and PlanModificationUndoer)
-                        // but rider trips won't have a distance, so let's calculate a route
-                        Leg driverLeg = DrsUtil.calculateLeg(driverRouter,
-                                fromLink,
-                                toLink,
-                                activityEndTime,
-                                person);
-                        request.setLegWithRoute(driverLeg);
-                    }
-
-                    double distance = request.getNetworkRouteDistance();
-                    if (mode.equals(Drs.DRIVER_MODE)) {
-                        if (cfgGroup.getMinDriverLegMeters() <= 0 || cfgGroup.getMinDriverLegMeters() <= distance) {
-                            driverRequests.add(request);
-                        }
-                    } else if (mode.equals(Drs.RIDER_MODE)) {
-                        if (cfgGroup.getMinRiderLegMeters() <= 0 || cfgGroup.getMinRiderLegMeters() <= distance) {
-                            riderRequests.add(request);
-                        }
+                } else if (tripMode.equals(Drs.RIDER_MODE)) {
+                    if (cfgGroup.getMinRiderLegMeters() <= 0 || cfgGroup.getMinRiderLegMeters() <= distance) {
+                        riderRequests.add(request);
+                    } else {
+                        LOGGER.debug("Ignoring {} request below min distance for person {}", tripMode, person.getId());
                     }
                 }
             }

@@ -10,7 +10,7 @@ import org.matsim.core.router.TripStructureUtils;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-// FIXME rename? actually creates potential matches and filters them. does not filter requests per se
+// TODO rename? actually creates potential matches and filters them. does not filter requests per se
 public class RequestsFilter {
     private final DrsConfigGroup cfgGroup;
     private final RoutingModule router;

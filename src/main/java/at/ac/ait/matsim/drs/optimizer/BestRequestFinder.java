@@ -33,13 +33,14 @@ public class BestRequestFinder {
 
     DrsMatch calculateDetailsForMatch(DrsMatch match) {
         // Should already be calculated (in the request collection phase)
-        Leg originalDriverLeg = match.getDriver().getLegWithRoute();
+        Leg originalDriverLeg = match.getDriver().getLegWithNetworkRoute();
         if (originalDriverLeg == null) {
             originalDriverLeg = DrsUtil.calculateLeg(router,
                     match.getDriver().getFromLink(),
                     match.getDriver().getToLink(),
                     match.getDriver().getDepartureTime(),
                     match.getDriver().getPerson());
+            match.getDriver().setLegWithNetworkRoute(originalDriverLeg);
         }
         double originalRouteTravelTime = originalDriverLeg.getTravelTime().seconds();
 
@@ -59,7 +60,7 @@ public class BestRequestFinder {
         // if not calculate it now
         // NOTE: when using the cached leg the travelTimeToCustomer is not respected,
         // but that should be OK
-        Leg withCustomer = match.getRider().getLegWithRoute();
+        Leg withCustomer = match.getRider().getLegWithNetworkRoute();
         if (withCustomer == null) {
             withCustomer = DrsUtil.calculateLeg(router,
                     match.getRider().getFromLink(),

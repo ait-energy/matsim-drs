@@ -6,37 +6,62 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.population.routes.NetworkRoute;
-import org.matsim.core.router.TripStructureUtils;
+import org.matsim.core.router.TripStructureUtils.Trip;
 
+/**
+ * Request for DRS trip. The given trip must be part of the person's selected
+ * plan and only consist of a single leg. The from and to links must match the
+ * given trip.
+ */
 public class DrsRequest implements Request {
     private final Id<Request> id;
     private final Person person;
-    private final TripStructureUtils.Trip trip;
-    private final double departureTime;
+    private final Trip trip;
     private final String mode;
     private final Link fromLink;
     private final Link toLink;
-    private final Leg leg;
     private Leg legWithRoute;
     private Id<Request> matchedRequest;
+
+    // only for unit tests, get rid of it in the future?
+    private Double mockDepartureTime;
+    private Leg mockLeg;
 
     /**
      * Request for being either driver or rider (see mode)
      */
-    public DrsRequest(Id<Request> id, Person person, TripStructureUtils.Trip trip, double departureTime,
-            String mode, Link fromLink, Link toLink, Leg leg) {
-        this.leg = leg;
+    public DrsRequest(Id<Request> id, Person person, Trip trip, String mode, Link fromLink, Link toLink) {
         this.id = id;
         this.person = person;
         this.trip = trip;
-        this.departureTime = departureTime;
+        this.mode = mode;
+        this.fromLink = fromLink;
+        this.toLink = toLink;
+        if (trip.getLegsOnly().size() > 1) {
+            throw new IllegalArgumentException("trip contains more than one legs");
+        }
+    }
+
+    /**
+     * Request for being either driver or rider (see mode) - only use in unit tests!
+     */
+    public DrsRequest(Id<Request> id, Person person, Trip trip, double departureTime,
+            String mode, Link fromLink, Link toLink, Leg leg) {
+        this.mockLeg = leg;
+        this.id = id;
+        this.person = person;
+        this.trip = trip;
+        this.mockDepartureTime = departureTime;
         this.mode = mode;
         this.fromLink = fromLink;
         this.toLink = toLink;
     }
 
     public double getDepartureTime() {
-        return departureTime;
+        if (mockDepartureTime != null) {
+            return mockDepartureTime;
+        }
+        return trip.getOriginActivity().getEndTime().seconds();
     }
 
     public String getMode() {
@@ -47,7 +72,7 @@ public class DrsRequest implements Request {
         return person;
     }
 
-    public TripStructureUtils.Trip getTrip() {
+    public Trip getTrip() {
         return trip;
     }
 
@@ -70,26 +95,29 @@ public class DrsRequest implements Request {
     }
 
     /**
-     * original leg (from the plans file)
+     * actual leg of the underlying plan
      */
     public Leg getLeg() {
-        return leg;
+        if (mockLeg != null) {
+            return mockLeg;
+        }
+        return trip.getLegsOnly().get(0);
     }
 
     /**
      * optional: pre-calculated leg with route (to avoid duplicate calculations).
      * can be null
      */
-    public Leg getLegWithRoute() {
+    public Leg getLegWithNetworkRoute() {
         return legWithRoute;
     }
 
-    public void setLegWithRoute(Leg leg) {
+    public void setLegWithNetworkRoute(Leg leg) {
         this.legWithRoute = leg;
     }
 
     /**
-     * Get the travel time on the street network or negative infinity if the request
+     * Get the distance on the street network or negative infinity if the request
      * does not have a street-network based leg
      */
     public double getNetworkRouteDistance() {
@@ -97,9 +125,6 @@ public class DrsRequest implements Request {
             if (legWithRoute.getRoute() instanceof NetworkRoute) {
                 return legWithRoute.getRoute().getDistance();
             }
-        }
-        if (leg.getRoute() instanceof NetworkRoute) {
-            return leg.getRoute().getDistance();
         }
         return Double.NEGATIVE_INFINITY;
     }
