@@ -1,35 +1,35 @@
 package at.ac.ait.matsim.drs.optimizer;
 
 public class RequestsRegister {
-    private final RequestZonalRegistry originZonalRegistry;
-    private final RequestZonalRegistry destinationZonalRegistry;
+    private final RequestZoneRegistry originZonRegistry;
+    private final RequestZoneRegistry destinationZoneRegistry;
     private final RequestTimeSegmentRegistry timeSegmentRegistry;
 
-    public RequestsRegister(RequestZonalRegistry originZonalRegistry, RequestZonalRegistry destinationZonalRegistry,
+    public RequestsRegister(RequestZoneRegistry originZoneRegistry, RequestZoneRegistry destinationZoneRegistry,
             RequestTimeSegmentRegistry timeSegmentRegistry) {
-        this.originZonalRegistry = originZonalRegistry;
-        this.destinationZonalRegistry = destinationZonalRegistry;
+        this.originZonRegistry = originZoneRegistry;
+        this.destinationZoneRegistry = destinationZoneRegistry;
         this.timeSegmentRegistry = timeSegmentRegistry;
     }
 
     public void addRequest(DrsRequest riderRequest) {
-        originZonalRegistry.addRequest(riderRequest);
-        destinationZonalRegistry.addRequest(riderRequest);
+        originZonRegistry.addRequest(riderRequest);
+        destinationZoneRegistry.addRequest(riderRequest);
         timeSegmentRegistry.addRequest(riderRequest);
     }
 
     public void removeRequest(DrsRequest riderRequest) {
-        originZonalRegistry.removeRequest(riderRequest);
-        destinationZonalRegistry.removeRequest(riderRequest);
+        originZonRegistry.removeRequest(riderRequest);
+        destinationZoneRegistry.removeRequest(riderRequest);
         timeSegmentRegistry.removeRequest(riderRequest);
     }
 
-    public RequestZonalRegistry getOriginZonalRegistry() {
-        return originZonalRegistry;
+    public RequestZoneRegistry getOriginZoneRegistry() {
+        return originZonRegistry;
     }
 
-    public RequestZonalRegistry getDestinationZonalRegistry() {
-        return destinationZonalRegistry;
+    public RequestZoneRegistry getDestinationZoneRegistry() {
+        return destinationZoneRegistry;
     }
 
     public RequestTimeSegmentRegistry getTimeSegmentRegistry() {

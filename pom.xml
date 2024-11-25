@@ -4,24 +4,24 @@
 
     <groupId>at.ac.ait.matsim</groupId>
     <artifactId>matsim-drs</artifactId>
-    <version>2024.1-SNAPSHOT</version>
+    <version>2025.0-SNAPSHOT</version>
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
-        <matsim.version>2024.0</matsim.version>
+        <matsim.version>2025.0-PR3578</matsim.version>
 
         <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <commonslogging.version>1.2</commonslogging.version>
-        <geotools.version>29.5</geotools.version>
+        <geotools.version>31.3</geotools.version>
         <guice.version>7.0.0</guice.version>
-        <guava.version>33.1.0-jre</guava.version>
-        <jackson.version>2.16.2</jackson.version>
-        <jts.version>1.19.0</jts.version>
-        <log4j.version>2.23.1</log4j.version>
+        <guava.version>33.3.0-jre</guava.version>
+        <jackson.version>2.17.2</jackson.version>
+        <jts.version>1.20.0</jts.version>
+        <log4j.version>2.24.0</log4j.version>
     </properties>
 
     <distributionManagement>
@@ -61,6 +61,12 @@
             <groupId>org.matsim</groupId>
             <artifactId>pt2matsim</artifactId>
             <version>24.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
 
         <!-- logging dependencies below this line (same as in MATSim) -->

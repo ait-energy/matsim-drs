@@ -132,7 +132,7 @@ List of all parameters:
 
 **Matching Algorithm**
 
-- `cellSize`: The side length of square zones in meters used in zonal registers of riders requests.
+- `cellSize`: The side length of square zones in meters used in zone registers of riders requests.
   The default value is good for urban areas. For large areas with sparsely distributed population and low drs share,
   you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better.
 - `maxPossibleCandidates`: Limits the number of possible riders requests considered for a driver during the matching process.

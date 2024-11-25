@@ -19,17 +19,17 @@ public class PotentialRequestsFinder {
     }
 
     public List<DrsRequest> findRegistryIntersections(Node origin, Node destination, double departureTime) {
-        return getIntersection(cfgGroup, requestsRegister.getOriginZonalRegistry().findNearestRequests(origin),
-                requestsRegister.getDestinationZonalRegistry().findNearestRequests(destination),
+        return getIntersection(cfgGroup, requestsRegister.getOriginZoneRegistry().findNearestRequests(origin),
+                requestsRegister.getDestinationZoneRegistry().findNearestRequests(destination),
                 requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
     }
 
     static List<DrsRequest> getIntersection(DrsConfigGroup cfgGroup,
             Stream<DrsRequest> originNearRequests, Stream<DrsRequest> destinationNearRequests,
             Stream<DrsRequest> temporalNearRequests) {
-        Stream<DrsRequest> zonalRegistryIntersection = originNearRequests
+        Stream<DrsRequest> zoneRegistryIntersection = originNearRequests
                 .filter(destinationNearRequests.collect(Collectors.toList())::contains);
-        return zonalRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
+        return zoneRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
                 .limit(cfgGroup.getMaxPossibleCandidates()).collect(Collectors.toCollection(ArrayList::new));
     }
 }
