@@ -3,7 +3,7 @@ package at.ac.ait.matsim.drs.run;
 import java.util.Map;
 
 import org.matsim.api.core.v01.TransportMode;
-import org.matsim.contrib.util.ReflectiveConfigGroupWithConfigurableParameterSets;
+import org.matsim.contrib.common.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 import org.matsim.core.utils.misc.StringUtils;
 
 import at.ac.ait.matsim.drs.engine.SubtourModeChoiceForDrs;
@@ -55,7 +55,7 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
     public Map<String, String> getComments() {
         Map<String, String> map = super.getComments();
         map.put(CELL_SIZE,
-                "The side length of square zones in meters used in zonal registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low drs share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
+                "The side length of square zones in meters used in zone registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low drs share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
         map.put(MAX_POSSIBLE_CANDIDATES,
                 "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
         map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS,

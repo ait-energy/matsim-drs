@@ -4,8 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.contrib.zone.SquareGridSystem;
-import org.matsim.contrib.zone.ZonalSystem;
+import org.matsim.contrib.common.zones.ZoneSystem;
+import org.matsim.contrib.common.zones.systems.grid.square.SquareGridZoneSystem;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
@@ -29,16 +29,16 @@ public class DrsOptimizer {
 
         public MatchingResult optimize() {
                 LOGGER.info("Matching process started!");
-                ZonalSystem zonalSystem = new SquareGridSystem(network.getNodes().values(), drsConfig.getCellSize());
-                RequestZonalRegistry originZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(zonalSystem,
+                ZoneSystem zoneSystem = new SquareGridZoneSystem(network, drsConfig.getCellSize());
+                RequestZoneRegistry originZoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(zoneSystem,
                                 true);
-                RequestZonalRegistry destinationZonalRegistry = RequestZonalRegistry.createRequestZonalRegistry(
-                                zonalSystem,
+                RequestZoneRegistry destinationZoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(
+                                zoneSystem,
                                 false);
                 RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(drsConfig);
                 RequestsCollector requestsCollector = new RequestsCollector(drsConfig, population, network,
                                 driverRouter);
-                RequestsRegister requestsRegister = new RequestsRegister(originZonalRegistry, destinationZonalRegistry,
+                RequestsRegister requestsRegister = new RequestsRegister(originZoneRegistry, destinationZoneRegistry,
                                 timeSegmentRegistry);
                 PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(drsConfig,
                                 requestsRegister);
