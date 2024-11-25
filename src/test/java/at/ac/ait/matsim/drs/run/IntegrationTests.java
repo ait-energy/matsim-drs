@@ -21,13 +21,21 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.io.TempDirFactory;
+import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.population.Plan;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.Route;
+import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.TripStructureUtils;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
 
 public class IntegrationTests {
+
+    public static final double DELTA = 0.01;
 
     public static class TDFactory implements TempDirFactory {
         @Override
@@ -228,6 +236,57 @@ public class IntegrationTests {
         assertEquals(TransportMode.bike, trips.get("main_mode"));
         // in iteration 1 bike is used as well (because of the resolved conflict)
         assertEquals(TransportMode.bike, trips.get(1, "main_mode"));
+    }
+
+    /**
+     * SubtourModeChoice + matching logic test: test that a trival match works
+     * (rider + driver with same locations and times)
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testTrivialMatch(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunTrivialMatchExample().run(false, tempDir);
+
+        // In iteration 1 (after replanning)
+
+        // driver and rider are matched
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        assertEquals(2, riderRequestStats.size());
+        assertEquals("2", riderRequestStats.get(1, "matched"));
+        assertEquals("0", riderRequestStats.get(1, "unmatched"));
+
+        // driver and rider must use drs mode
+        CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
+        assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").get(1, "main_mode"));
+        assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").get(1, "main_mode"));
+    }
+
+    /**
+     * Test that rider plans get distance and travel time from a network route (like
+     * the drivers).. and no teleported estimation.
+     *
+     * NOTE: precondition is that testTrivialMatch works.
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testRiderPlansGetNetworkRoute(
+            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunTrivialMatchExample().run(false, tempDir);
+
+        Population outputPlans = PopulationUtils
+                .readPopulation(tempDir.resolve("output_plans.xml.gz").toFile().toString());
+        Plan driverPlan = outputPlans.getPersons().get(Id.createPersonId("carPerson")).getSelectedPlan();
+        Plan riderPlan = outputPlans.getPersons().get(Id.createPersonId("ridePerson")).getSelectedPlan();
+        Route driverRoute = TripStructureUtils.getLegs(driverPlan).get(1).getRoute();
+        Route riderRoute = TripStructureUtils.getLegs(riderPlan).get(0).getRoute();
+        assertEquals("112", driverRoute.getStartLinkId().toString());
+        assertEquals("152", driverRoute.getEndLinkId().toString());
+        assertEquals(3737.22, driverRoute.getDistance(), DELTA);
+        assertEquals(3737.22, riderRoute.getDistance(), DELTA);
+        assertEquals(333, driverRoute.getTravelTime().seconds(), DELTA);
+        assertEquals(333, riderRoute.getTravelTime().seconds(), DELTA);
     }
 
     /**

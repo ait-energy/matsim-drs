@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+    <attributes>
+        <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
+    </attributes>
+
+    <!-- Exactly one driver and one rider that should match -->
+    <!-- full subtour starting and ending at home so that SubtourModeChoice works properly -->
+    <person id="carPerson">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">always</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">driverOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">yes</attribute>
+        </attributes>
+        <plan selected="yes">
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="07:20:00" end_time="07:20:00" />
+            <leg mode="bike" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
+            <leg mode="bike" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+    <person id="ridePerson">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <!-- full subtour starting and ending at home so that SubtourModeChoice works properly -->
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="07:20:00" end_time="07:20:00" />
+            <leg mode="bike" />
+            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
+            <leg mode="bike" />
+            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+        </plan>
+    </person>
+
+</population>
