@@ -59,9 +59,9 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
     @Inject
     public DrsEngine(Scenario scenario, EventsManager eventsManager) {
-        LOGGER.info("Constructing new DrsEngine");
         this.cfgGroup = Drs.addOrGetConfigGroup(scenario);
         this.eventsManager = eventsManager;
+        LOGGER.info("Constructed new DrsEngine.");
     }
 
     @Override

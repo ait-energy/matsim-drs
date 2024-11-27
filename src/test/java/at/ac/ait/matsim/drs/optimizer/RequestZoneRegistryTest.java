@@ -13,9 +13,9 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.common.zones.Zone;
 import org.matsim.contrib.common.zones.ZoneSystem;
 import org.matsim.contrib.common.zones.systems.grid.square.SquareGridZoneSystem;
-import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.network.NetworkUtils;
 
+import at.ac.ait.matsim.drs.DrsTestUtil;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
@@ -34,12 +34,12 @@ class RequestZoneRegistryTest {
         DrsConfigGroup cfg = new DrsConfigGroup();
         cfg.setCellSize(800);
         zoneSystem = new SquareGridZoneSystem(network, cfg.getCellSize());
-        request1 = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1540)), null, null);
-        request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1037)), null, null);
-        request3 = new DrsRequest(Id.create(3, Request.class), null, null, 8 * 60 * 60, null,
-                network.getLinks().get(Id.createLinkId(1674)), null, null);
+        request1 = DrsTestUtil.mockRiderRequest(1, 8 * 60 * 60,
+                network.getLinks().get(Id.createLinkId(1540)), null);
+        request2 = DrsTestUtil.mockRiderRequest(2, 8 * 60 * 60,
+                network.getLinks().get(Id.createLinkId(1037)), null);
+        request3 = DrsTestUtil.mockRiderRequest(3, 8 * 60 * 60,
+                network.getLinks().get(Id.createLinkId(1674)), null);
     }
 
     @BeforeEach

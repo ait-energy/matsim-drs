@@ -126,7 +126,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     }
 
     private void modifyPlans(DrsMatch match, PopulationFactory factory) {
-        DrsUtil.setAssignedDriver(match.getRider().getLeg(), match.getDriver().getPerson().getId().toString());
+        DrsUtil.setAssignedDriver(match.getRider().getDrsLeg(), match.getDriver().getPerson().getId().toString());
         double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
         addNewActivitiesToDriverPlan(match, pickupTime, factory);
         addRiderRoute(match.getRider());
@@ -171,7 +171,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         genericRoute.setDistance(riderRequest.getNetworkRouteDistance());
         genericRoute.setTravelTime(riderRequest.getNetworkRouteTravelTime().seconds());
 
-        Leg leg = riderRequest.getLeg();
+        Leg leg = riderRequest.getDrsLeg();
         leg.setRoute(genericRoute);
         TripStructureUtils.setRoutingMode(leg, Drs.RIDER_MODE);
     }

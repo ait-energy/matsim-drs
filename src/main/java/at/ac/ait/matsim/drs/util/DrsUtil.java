@@ -181,7 +181,9 @@ public class DrsUtil {
     }
 
     /**
-     * Get collected modes of a trip (preferring the routingMode if it is set)
+     * Get collected modes of a trip (preferring the routingMode if it is set).
+     * This is especially important since MATSim 2025, where all routers add access
+     * egress legs.
      */
     public static Set<String> getModes(Trip trip) {
         Set<String> modes = new HashSet<>();

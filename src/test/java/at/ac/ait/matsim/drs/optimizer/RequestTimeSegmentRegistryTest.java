@@ -1,21 +1,20 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.run.DrsConfigGroup;
-import org.junit.jupiter.api.Test;
-import org.matsim.api.core.v01.Id;
-import org.matsim.contrib.dvrp.optimizer.Request;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import at.ac.ait.matsim.drs.DrsTestUtil;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestTimeSegmentRegistryTest {
     RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(
             new DrsConfigGroup());
-    DrsRequest request1 = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60, null, null,
-            null, null);
-    DrsRequest request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null, null,
-            null, null);
-    DrsRequest request3 = new DrsRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
-            null, null, null);
+    DrsRequest request1 = DrsTestUtil.mockRiderRequest(1, 8 * 60 * 60);
+    DrsRequest request2 = DrsTestUtil.mockRiderRequest(2, 8 * 60 * 60);
+    DrsRequest request3 = DrsTestUtil.mockRiderRequest(3, 11 * 60 * 60);
 
     @Test
     void testDepartureTimeEdges() {

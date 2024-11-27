@@ -21,21 +21,21 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
+import at.ac.ait.matsim.drs.DrsTestUtil;
 import at.ac.ait.matsim.drs.RoutingForTests;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsFilterTest {
-        static Network network;
-        static RequestsFilter requestsFilter;
-        static DrsRequest driverRequest, request2, request3, request4, request5, request6;
-        List<DrsRequest> passengersRequests = new ArrayList<>();
+        private static Network network;
+        private static RequestsFilter requestsFilter;
+        private static DrsRequest driverRequest, request2, request3, request4, request5, request6;
+        private List<DrsRequest> passengersRequests = new ArrayList<>();
 
         @BeforeAll
         static void setup() {
@@ -46,18 +46,18 @@ class RequestsFilterTest {
                 DrsConfigGroup cfg = new DrsConfigGroup();
                 cfg.setRiderDepartureTimeAdjustmentSeconds(180);
                 requestsFilter = new RequestsFilter(cfg, driverRouter);
-                driverRequest = new DrsRequest(Id.create(1, Request.class), null, null, 8 * 60 * 60,
-                                null, network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request2 = new DrsRequest(Id.create(2, Request.class), null, null, 8 * 60 * 60, null,
-                                network.getLinks().get(Id.createLinkId(1674)), null, null);
-                request3 = new DrsRequest(Id.create(3, Request.class), null, null, 11 * 60 * 60, null,
-                                network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request4 = new DrsRequest(Id.create(4, Request.class), null, null, 7 * 60 * 60, null,
-                                network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request5 = new DrsRequest(Id.create(5, Request.class), null, null, 8 * 60 * 60, null,
-                                network.getLinks().get(Id.createLinkId(1540)), null, null);
-                request6 = new DrsRequest(Id.create(6, Request.class), null, null, 8 * 60 * 60, null,
-                                network.getLinks().get(Id.createLinkId(1037)), null, null);
+                driverRequest = DrsTestUtil.mockDriverRequest(1, 8 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1540)), null);
+                request2 = DrsTestUtil.mockRiderRequest(2, 8 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1674)), null);
+                request3 = DrsTestUtil.mockRiderRequest(3, 11 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1540)), null);
+                request4 = DrsTestUtil.mockRiderRequest(4, 7 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1540)), null);
+                request5 = DrsTestUtil.mockRiderRequest(5, 8 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1540)), null);
+                request6 = DrsTestUtil.mockRiderRequest(6, 8 * 60 * 60,
+                                network.getLinks().get(Id.createLinkId(1037)), null);
         }
 
         @BeforeEach
@@ -120,9 +120,8 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                DrsRequest riderRequest = new DrsRequest(Id.create(1, Request.class), personA, trip,
-                                trip.getOriginActivity().getEndTime().seconds(),
-                                null, null, null, null);
+                DrsRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
+                                trip.getOriginActivity().getEndTime().seconds(), trip, null);
                 assertTrue(RequestsFilter.checkRiderTimeConstraints(riderRequest,
                                 trip.getOriginActivity().getEndTime().seconds() + 20 * 60, 25 * 60));
                 assertTrue(RequestsFilter.checkRiderTimeConstraints(riderRequest,
@@ -167,9 +166,8 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                DrsRequest riderRequest = new DrsRequest(Id.create(1, Request.class), personA, trip,
-                                trip.getOriginActivity().getEndTime().seconds(),
-                                null, null, null, null);
+                DrsRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
+                                trip.getOriginActivity().getEndTime().seconds(), trip, null);
                 assertFalse(RequestsFilter.checkRiderTimeConstraints(riderRequest,
                                 trip.getOriginActivity().getEndTime().seconds() + 20 * 60, 25 * 60));
                 assertFalse(RequestsFilter.checkRiderTimeConstraints(riderRequest,

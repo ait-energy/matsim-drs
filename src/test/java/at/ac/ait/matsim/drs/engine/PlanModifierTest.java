@@ -12,11 +12,11 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 
+import at.ac.ait.matsim.drs.DrsTestUtil;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 
@@ -45,8 +45,7 @@ class PlanModifierTest {
         plan.addActivity(activity2);
 
         person.addPlan(plan);
-        request = new DrsRequest(Id.create(1, Request.class), person, null, 8 * 60 * 60, null,
-                null, null, null);
+        request = DrsTestUtil.mockRiderRequest(1, person, 8 * 60 * 60, null, leg);
     }
 
     @Test

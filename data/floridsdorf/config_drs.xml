@@ -34,6 +34,7 @@
     </module>
 
     <module name="routing">
+        <!-- <param name="accessEgressType" value="accessEgressModeToLink" /> -->
         <!-- DRS NOTE: drsDriver mode must be added as a networkMode -->
         <param name="networkModes" value="car,drsDriver" />
         <!-- DRS NOTE: drsRider mode does not need a routing configuration.
