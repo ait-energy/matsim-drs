@@ -1,8 +1,7 @@
 package at.ac.ait.matsim.drs.optimizer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -37,40 +36,39 @@ class RequestZoneRegistryTest {
     @BeforeEach
     public void beforeEach() {
         zoneSystem = new SquareGridZoneSystem(network, 800);
-        zoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(zoneSystem, true);
+        zoneRegistry = RequestZoneRegistry.forOrigins(zoneSystem);
         request1 = req(1, 1540);
         request2 = req(2, 1037);
         request3 = req(3, 1674);
     }
 
-    @Test
-    public void testAllRequestsWithinDistance() {
-
-    }
+    // @Test
+    // public void testAllRequestsWithinDistance() {
+    // List<DrsRiderRequest> requests = List.of(req(1084), req(1085), req(1086),
+    // req(1159), req(1160), req(1161));
+    // }
 
     @Test
     void testGetZoneIdForNeighboringRequests() {
-        assertSame(RequestZoneRegistry.getZoneId(request1, true, zoneSystem),
-                RequestZoneRegistry.getZoneId(request2, true, zoneSystem));
+        assertEquals(zoneRegistry.getZoneId(request1), zoneRegistry.getZoneId(request2));
     }
 
     @Test
     void testGetZoneIdForNotNeighboringRequests() {
-        assertNotSame(RequestZoneRegistry.getZoneId(request1, true, zoneSystem),
-                RequestZoneRegistry.getZoneId(request3, true, zoneSystem));
+        assertNotEquals(zoneRegistry.getZoneId(request1), zoneRegistry.getZoneId(request3));
     }
 
     @Test
     void testAddRequestsToZones() {
         zoneRegistry.addRequest(request1);
         assertEquals(1, zoneRegistry.getRequestsInZones()
-                .get(RequestZoneRegistry.getZoneId(request1, true, zoneSystem)).size());
+                .get(zoneRegistry.getZoneId(request1)).size());
         zoneRegistry.addRequest(request2);
         assertEquals(2, zoneRegistry.getRequestsInZones()
-                .get(RequestZoneRegistry.getZoneId(request1, true, zoneSystem)).size());
+                .get(zoneRegistry.getZoneId(request1)).size());
         zoneRegistry.addRequest(request3);
         assertEquals(2, zoneRegistry.getRequestsInZones()
-                .get(RequestZoneRegistry.getZoneId(request1, true, zoneSystem)).size());
+                .get(zoneRegistry.getZoneId(request1)).size());
     }
 
     @Test
@@ -85,7 +83,7 @@ class RequestZoneRegistryTest {
     void testRemoveRequestInRegistry() {
         zoneRegistry.addRequest(request1);
         zoneRegistry.addRequest(request2);
-        Id<Zone> zoneId = RequestZoneRegistry.getZoneId(request1, true, zoneSystem);
+        Id<Zone> zoneId = zoneRegistry.getZoneId(request1);
         assertEquals(2, zoneRegistry.getRequestsInZones().get(zoneId).size());
         zoneRegistry.removeRequest(request1);
         assertEquals(1, zoneRegistry.getRequestsInZones().get(zoneId).size());

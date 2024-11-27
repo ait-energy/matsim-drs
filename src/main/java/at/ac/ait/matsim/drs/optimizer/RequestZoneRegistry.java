@@ -30,39 +30,42 @@ public class RequestZoneRegistry {
         }
     }
 
-    public static RequestZoneRegistry createRequestZoneRegistry(ZoneSystem zoneSystem,
-            boolean isOriginZoneRegistry) {
-        return new RequestZoneRegistry(zoneSystem, isOriginZoneRegistry);
+    public static RequestZoneRegistry forOrigins(ZoneSystem zoneSystem) {
+        return new RequestZoneRegistry(zoneSystem, true);
+    }
+
+    public static RequestZoneRegistry forDestinations(ZoneSystem zoneSystem) {
+        return new RequestZoneRegistry(zoneSystem, false);
     }
 
     public void addRequest(DrsRequest request) {
-        Id<Zone> zoneId = getZoneId(request, isOriginZoneRegistry, zoneSystem);
+        Id<Zone> zoneId = getZoneId(request);
         if (requestsInZones.get(zoneId).put(request.getId(), request) != null) {
             throw new IllegalStateException(request + " is already in the registry");
         }
     }
 
     public void removeRequest(DrsRequest request) {
-        Id<Zone> zoneId = getZoneId(request, isOriginZoneRegistry, zoneSystem);
+        Id<Zone> zoneId = getZoneId(request);
         if (requestsInZones.get(zoneId).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
     }
 
     public Stream<DrsRequest> findNearestRequests(Node node) {
-        return requestsInZones.get(getZoneId(node, zoneSystem)).values().stream();
+        return requestsInZones.get(getZoneId(node)).values().stream();
     }
 
     public Map<Id<Zone>, Map<Id<Request>, DrsRequest>> getRequestsInZones() {
         return requestsInZones;
     }
 
-    static Id<Zone> getZoneId(DrsRequest request, boolean isOriginZoneRegistry, ZoneSystem zoneSystem) {
+    public Id<Zone> getZoneId(DrsRequest request) {
         Node node = isOriginZoneRegistry ? request.getFromLink().getFromNode() : request.getToLink().getToNode();
-        return getZoneId(node, zoneSystem);
+        return getZoneId(node);
     }
 
-    private static Id<Zone> getZoneId(Node node, ZoneSystem zoneSystem) {
+    public Id<Zone> getZoneId(Node node) {
         Optional<Zone> zone = zoneSystem.getZoneForNodeId(node.getId());
         if (!zone.isPresent()) {
             throw new IllegalArgumentException("no zone found for node " + node.getId());

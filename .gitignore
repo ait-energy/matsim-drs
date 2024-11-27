@@ -2,9 +2,10 @@
 .idea
 
 /TODO
-/output*
-/target
+/data/floridsdorf/network.geojsonl
 /data/vienna
 
 dependency-reduced-pom.xml
+/target
+/output*
 /test/output
