@@ -25,8 +25,11 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 
 /**
  * Collects all DRS trips (requests) from the selected plans of the population.
- * These trips are expected to only consist of a single leg, since matched
- * requests from a previous iteration must be reset via PlanModificationUndoer.
+ *
+ * These trips are expected to be freshly routed / unmatched since
+ * we reset results from the previous iteration in PlanModificationUndoer.
+ * Trips should consist of one drs leg and optional access egress legs
+ * (depending on routing.accessEgressType).
  */
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();

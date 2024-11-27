@@ -16,7 +16,6 @@ import org.matsim.contrib.dvrp.optimizer.Request;
  * Heavily inspired by
  * org.matsim.contrib.taxi.optimizer.rules.UnplannedRequestZonalRegistry
  */
-
 public class RequestZoneRegistry {
     private final ZoneSystem zoneSystem;
     private final boolean isOriginZoneRegistry;

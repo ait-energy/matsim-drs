@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.common.zones.Zone;
 import org.matsim.contrib.common.zones.ZoneSystem;
@@ -16,8 +17,8 @@ import org.matsim.contrib.common.zones.systems.grid.square.SquareGridZoneSystem;
 import org.matsim.core.network.NetworkUtils;
 
 import at.ac.ait.matsim.drs.DrsTestUtil;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.run.Drs;
-import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 class RequestZoneRegistryTest {
@@ -31,20 +32,15 @@ class RequestZoneRegistryTest {
     public static void setup() {
         network = NetworkUtils.readNetwork("data/floridsdorf/network.xml");
         DrsUtil.addNewAllowedModeToCarLinks(network, Drs.DRIVER_MODE);
-        DrsConfigGroup cfg = new DrsConfigGroup();
-        cfg.setCellSize(800);
-        zoneSystem = new SquareGridZoneSystem(network, cfg.getCellSize());
-        request1 = DrsTestUtil.mockRiderRequest(1, 8 * 60 * 60,
-                network.getLinks().get(Id.createLinkId(1540)), null);
-        request2 = DrsTestUtil.mockRiderRequest(2, 8 * 60 * 60,
-                network.getLinks().get(Id.createLinkId(1037)), null);
-        request3 = DrsTestUtil.mockRiderRequest(3, 8 * 60 * 60,
-                network.getLinks().get(Id.createLinkId(1674)), null);
     }
 
     @BeforeEach
     public void beforeEach() {
+        zoneSystem = new SquareGridZoneSystem(network, 800);
         zoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(zoneSystem, true);
+        request1 = req(1, 1540);
+        request2 = req(2, 1037);
+        request3 = req(3, 1674);
     }
 
     @Test
@@ -105,11 +101,18 @@ class RequestZoneRegistryTest {
         zoneRegistry.addRequest(request2);
         zoneRegistry.addRequest(request3);
         assertEquals(0,
-                zoneRegistry.findNearestRequests(network.getLinks().get(Id.createLinkId(857)).getFromNode()).count());
+                zoneRegistry.findNearestRequests(link(857).getFromNode()).count());
         assertEquals(1,
-                zoneRegistry.findNearestRequests(network.getLinks().get(Id.createLinkId(1674)).getFromNode()).count());
+                zoneRegistry.findNearestRequests(link(1674).getFromNode()).count());
         assertEquals(2,
-                zoneRegistry.findNearestRequests(network.getLinks().get(Id.createLinkId(1541)).getFromNode()).count());
+                zoneRegistry.findNearestRequests(link(1541).getFromNode()).count());
     }
 
+    public DrsRiderRequest req(int id, int linkId) {
+        return DrsTestUtil.mockRiderRequest(id, 8 * 60 * 60, link(linkId), null);
+    }
+
+    public Link link(int linkId) {
+        return network.getLinks().get(Id.createLinkId(linkId));
+    }
 }

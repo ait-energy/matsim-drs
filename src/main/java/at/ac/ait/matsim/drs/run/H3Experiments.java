@@ -44,7 +44,6 @@ public class H3Experiments {
             System.out.println(directedEdge);
             System.out.println(h3core.getHexagonEdgeLengthAvg(res, LengthUnit.m) + "m avg vs. "
                     + h3core.edgeLength(directedEdge, LengthUnit.m) + "m actually");
-
         }
     }
 
