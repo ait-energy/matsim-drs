@@ -2,26 +2,24 @@ package at.ac.ait.matsim.drs.optimizer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.contrib.common.zones.ZoneSystem;
-import org.matsim.contrib.common.zones.systems.grid.square.SquareGridZoneSystem;
 import org.matsim.core.router.RoutingModule;
 
+import at.ac.ait.matsim.drs.engine.DrsData;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 public class DrsOptimizer {
         private static final Logger LOGGER = LogManager.getLogger();
-        private final Network network;
+        private final DrsData drsData;
         private final DrsConfigGroup drsConfig;
         private final Population population;
         private final RoutingModule driverRouter;
 
-        public DrsOptimizer(Network network,
+        public DrsOptimizer(DrsData drsData,
                         DrsConfigGroup drsConfig,
                         Population population,
                         RoutingModule driverRouter) {
-                this.network = network;
+                this.drsData = drsData;
                 this.drsConfig = drsConfig;
                 this.population = population;
                 this.driverRouter = driverRouter;
@@ -29,15 +27,13 @@ public class DrsOptimizer {
 
         public MatchingResult optimize() {
                 LOGGER.info("Matching process started!");
-                ZoneSystem zoneSystem = new SquareGridZoneSystem(network, drsConfig.getCellSize());
-                RequestZoneRegistry originZoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(zoneSystem,
-                                true);
+                RequestZoneRegistry originZoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(
+                                drsData.getZoneSystem(), true);
                 RequestZoneRegistry destinationZoneRegistry = RequestZoneRegistry.createRequestZoneRegistry(
-                                zoneSystem,
-                                false);
+                                drsData.getZoneSystem(), false);
                 RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(drsConfig);
-                RequestsCollector requestsCollector = new RequestsCollector(drsConfig, population, network,
-                                driverRouter);
+                RequestsCollector requestsCollector = new RequestsCollector(drsConfig, population,
+                                drsData.getDrsNetwork(), driverRouter);
                 RequestsRegister requestsRegister = new RequestsRegister(originZoneRegistry, destinationZoneRegistry,
                                 timeSegmentRegistry);
                 PotentialRequestsFinder potentialRequestsFinder = new PotentialRequestsFinder(drsConfig,

@@ -12,11 +12,11 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 
 // TODO rename? actually creates potential matches and filters them. does not filter requests per se
 public class RequestsFilter {
-    private final DrsConfigGroup cfgGroup;
+    private final DrsConfigGroup drsConfig;
     private final RoutingModule router;
 
-    public RequestsFilter(DrsConfigGroup cfgGroup, RoutingModule router) {
-        this.cfgGroup = cfgGroup;
+    public RequestsFilter(DrsConfigGroup drsConfig, RoutingModule router) {
+        this.drsConfig = drsConfig;
         this.router = router;
     }
 
@@ -34,7 +34,7 @@ public class RequestsFilter {
                     driverRequest.getPerson());
             double expectedPickupTime = driverRequest.getDepartureTime() + toPickup.getTravelTime().seconds();
             if (checkRiderTimeConstraints(riderRequest, expectedPickupTime,
-                    cfgGroup.getRiderDepartureTimeAdjustmentSeconds())) {
+                    drsConfig.getRiderDepartureTimeAdjustmentSeconds())) {
                 filteredRiderRequests.add(DrsMatch.createMinimal(driverRequest, riderRequest, toPickup));
             }
         }

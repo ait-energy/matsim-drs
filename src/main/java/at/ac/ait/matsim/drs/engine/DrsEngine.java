@@ -9,7 +9,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.events.PersonEntersVehicleEvent;
 import org.matsim.api.core.v01.events.PersonLeavesVehicleEvent;
 import org.matsim.api.core.v01.events.PersonMoneyEvent;
@@ -47,7 +46,7 @@ import jakarta.inject.Inject;
 public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandler {
     public static final String COMPONENT_NAME = "drsEngine";
     private static final Logger LOGGER = LogManager.getLogger();
-    private final DrsConfigGroup cfgGroup;
+    private final DrsConfigGroup drsConfig;
     private InternalInterface internalInterface;
     private final EventsManager eventsManager;
     private final Map<Id<Person>, Id<Link>> waitingRiders = new ConcurrentHashMap<>();
@@ -58,8 +57,8 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
     };
 
     @Inject
-    public DrsEngine(Scenario scenario, EventsManager eventsManager) {
-        this.cfgGroup = Drs.addOrGetConfigGroup(scenario);
+    public DrsEngine(DrsConfigGroup drsConfig, EventsManager eventsManager) {
+        this.drsConfig = drsConfig;
         this.eventsManager = eventsManager;
         LOGGER.info("Constructed new DrsEngine.");
     }
@@ -230,11 +229,11 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
         DrsUtil.setDrsStatus(leg, Drs.VALUE_STATUS_DRS);
         double distance = legWithRider.getRoute().getDistance();
 
-        if (cfgGroup.getDriverProfitPerKm() != 0) {
+        if (drsConfig.getDriverProfitPerKm() != 0) {
             eventsManager.processEvent(new PersonMoneyEvent(
                     now,
                     driver.getId(),
-                    cfgGroup.getDriverProfitPerKm() * distance / 1000d,
+                    drsConfig.getDriverProfitPerKm() * distance / 1000d,
                     Drs.DRIVER_MODE + " profit",
                     rider.getId().toString(),
                     null));

@@ -31,18 +31,18 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 public class RequestsCollector {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final DrsConfigGroup cfgGroup;
+    private final DrsConfigGroup drsConfig;
     private final Population population;
-    private final Network network;
+    private final Network drsNetwork;
     private final RoutingModule driverRouter;
     private List<DrsRequest> driverRequests;
     private List<DrsRequest> riderRequests;
 
-    public RequestsCollector(DrsConfigGroup cfgGroup, Population population, Network network,
+    public RequestsCollector(DrsConfigGroup drsConfig, Population population, Network drsNetwork,
             RoutingModule driverRouter) {
-        this.cfgGroup = cfgGroup;
+        this.drsConfig = drsConfig;
         this.population = population;
-        this.network = network;
+        this.drsNetwork = drsNetwork;
         this.driverRouter = driverRouter;
     }
 
@@ -61,18 +61,18 @@ public class RequestsCollector {
                 }
 
                 Id<Request> id = Id.create(++requestId, Request.class);
-                DrsRequest request = DrsRequest.create(id, driverRouter, network, person, trip);
+                DrsRequest request = DrsRequest.create(id, driverRouter, drsNetwork, person, trip);
 
                 double distance = request.getNetworkRouteDistance();
                 if (request instanceof DrsDriverRequest) {
-                    if (cfgGroup.getMinDriverLegMeters() <= 0 || cfgGroup.getMinDriverLegMeters() <= distance) {
+                    if (drsConfig.getMinDriverLegMeters() <= 0 || drsConfig.getMinDriverLegMeters() <= distance) {
                         driverRequests.add(request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),
                                 person.getId());
                     }
                 } else if (request instanceof DrsRiderRequest) {
-                    if (cfgGroup.getMinRiderLegMeters() <= 0 || cfgGroup.getMinRiderLegMeters() <= distance) {
+                    if (drsConfig.getMinRiderLegMeters() <= 0 || drsConfig.getMinRiderLegMeters() <= distance) {
                         riderRequests.add(request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),

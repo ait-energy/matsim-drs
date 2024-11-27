@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.PlanElement;
@@ -28,9 +27,7 @@ import org.matsim.core.replanning.conflicts.ConflictWriter;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
-import org.matsim.pt2matsim.tools.NetworkTools;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
@@ -50,7 +47,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 public class PlanModifier implements ReplanningListener, IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Scenario scenario;
-    private final Network drsNetwork;
+    private final DrsData drsData;
     private final GlobalConfigGroup globalConfig;
     private final DrsConfigGroup drsConfig;
     private final RoutingModule driverRouter;
@@ -59,12 +56,12 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
     private final UnmatchedRiderConflictResolver unmatchedRiderConflictResolver;
 
     @Inject
-    public PlanModifier(Scenario scenario, TripRouter tripRouter, OutputDirectoryHierarchy outputDirectoryHierarchy) {
+    public PlanModifier(Scenario scenario, DrsConfigGroup drsConfig, DrsData drsData, TripRouter tripRouter,
+            OutputDirectoryHierarchy outputDirectoryHierarchy) {
         this.scenario = scenario;
-        this.drsNetwork = NetworkTools.createFilteredNetworkByLinkMode(scenario.getNetwork(),
-                ImmutableSet.of(Drs.DRIVER_MODE));
+        this.drsData = drsData;
         this.globalConfig = scenario.getConfig().global();
-        this.drsConfig = Drs.addOrGetConfigGroup(scenario);
+        this.drsConfig = drsConfig;
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
 
@@ -106,7 +103,7 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
 
     private void preplanDay(boolean isLastIteration) {
         Population population = scenario.getPopulation();
-        DrsOptimizer optimizer = new DrsOptimizer(drsNetwork, drsConfig, population, driverRouter);
+        DrsOptimizer optimizer = new DrsOptimizer(drsData, drsConfig, population, driverRouter);
         MatchingResult result = optimizer.optimize();
         if (isLastIteration) {
             DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(globalConfig,

@@ -36,6 +36,9 @@ public class Drs {
         pickup, dropoff
     }
 
+    /**
+     * Alternative to injecting the config group
+     */
     public static DrsConfigGroup addOrGetConfigGroup(Scenario scenario) {
         return ConfigUtils.addOrGetModule(scenario.getConfig(), DrsConfigGroup.GROUP_NAME,
                 DrsConfigGroup.class);

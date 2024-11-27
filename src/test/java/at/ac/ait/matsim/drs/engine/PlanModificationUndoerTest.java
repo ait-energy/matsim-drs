@@ -1,18 +1,24 @@
 package at.ac.ait.matsim.drs.engine;
 
-import at.ac.ait.matsim.drs.run.Drs;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.matsim.api.core.v01.population.*;
-import org.matsim.core.population.PopulationUtils;
-import org.matsim.core.router.TripRouter;
-import org.matsim.core.router.TripStructureUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.matsim.api.core.v01.population.Activity;
+import org.matsim.api.core.v01.population.Leg;
+import org.matsim.api.core.v01.population.Person;
+import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Population;
+import org.matsim.api.core.v01.population.PopulationFactory;
+import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
+
+import at.ac.ait.matsim.drs.run.Drs;
 
 class PlanModificationUndoerTest {
     static Population population;

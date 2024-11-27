@@ -1,10 +1,13 @@
 package at.ac.ait.matsim.drs.optimizer;
 
-import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.matsim.api.core.v01.Id;
 import org.matsim.contrib.dvrp.optimizer.Request;
-import java.util.*;
-import java.util.stream.Stream;
+
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 /**
  * Heavily inspired by
@@ -13,15 +16,15 @@ import java.util.stream.Stream;
 
 public class RequestTimeSegmentRegistry {
     private final Map<Integer, Map<Id<Request>, DrsRequest>> requestsInTimeSegments;
-    private final DrsConfigGroup cfgGroup;
+    private final DrsConfigGroup drsConfig;
 
-    public RequestTimeSegmentRegistry(DrsConfigGroup cfgGroup) {
-        this.cfgGroup = cfgGroup;
+    public RequestTimeSegmentRegistry(DrsConfigGroup drsConfig) {
+        this.drsConfig = drsConfig;
         this.requestsInTimeSegments = new HashMap<>();
     }
 
     public void addRequest(DrsRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.getTimeSegmentLengthSeconds());
         Map<Id<Request>, DrsRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
         if (requestsInTimeSegment != null) {
             if (requestsInTimeSegments.get(timeSegment).get(request.getId()) != null) {
@@ -37,14 +40,14 @@ public class RequestTimeSegmentRegistry {
     }
 
     public void removeRequest(DrsRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), cfgGroup.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.getTimeSegmentLengthSeconds());
         if (requestsInTimeSegments.get(timeSegment).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
     }
 
     public Stream<DrsRequest> findNearestRequests(double departureTime) {
-        int timeSegment = getTimeSegment(departureTime, cfgGroup.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(departureTime, drsConfig.getTimeSegmentLengthSeconds());
         Stream<DrsRequest> requestsInPreviousSegment = Stream.empty();
         Stream<DrsRequest> requestsInCurrentSegment = Stream.empty();
         Stream<DrsRequest> requestsInNextSegment = Stream.empty();

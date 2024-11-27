@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import at.ac.ait.matsim.drs.analysis.RiderRequestStatsControlerListener;
 import at.ac.ait.matsim.drs.analysis.VktStatsControlerListener;
 import at.ac.ait.matsim.drs.engine.DailyMonetaryConstantListener;
+import at.ac.ait.matsim.drs.engine.DrsData;
 import at.ac.ait.matsim.drs.engine.DrsSimulationStats;
 import at.ac.ait.matsim.drs.engine.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.engine.PlanModificationUndoer;
@@ -29,6 +30,8 @@ public final class DrsModule extends AbstractModule {
         bind(DrsSimulationStats.class).in(Singleton.class);
         addControlerListenerBinding().to(DrsSimulationStats.class);
         addEventHandlerBinding().to(DrsSimulationStats.class);
+
+        bind(DrsData.class).asEagerSingleton();
 
         bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForDrs.class);
         addPlanStrategyBinding(SubtourModeChoiceForDrs.STRATEGY_NAME)
