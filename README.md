@@ -116,6 +116,10 @@ The DRS module's major version (e.g. 14) corresponds to the MATSim version it is
 
 ### Config Parameters
 
+> [!note]
+> `network.xml` is assumed to use a meter-based coordinate reference system.
+> If this is not the case take *meter* and *kilometre* in the parameter names (and output such as pkm) with a grain of salt.
+
 [config_drs.xml](data/floridsdorf/config_drs.xml) serves as a complete example on how to configure a DRS scenario.
 Note, that other modules must be configured in a specific way as well, e.g. `qsim`.
 
@@ -180,7 +184,7 @@ and can also be configured via the relevant parameters in the `drs` config group
 The following output files are additionally created in the MATSim output directory:
 
 - `drs_rider_request_stats.csv/png`: evolution of number of matched and unmatched rider requests
-- `drs_vkt_stats.csv/png`: evolution of distribution of vehicle kilometers traveled by motorized individual transport between
+- `drs_vkt_stats.csv/png`: evolution of distribution of vehicle kilometres traveled by motorized individual transport between
   - DRS travel, i.e. parts of a DRS driver's trip with an actual rider
   - before and after DRS, i.e. parts of a DRS driver's trip to the pickup point / after dropping off the rider
   - individual travel, i.e. regular non-DRS car trips or unmatched DRS driver trips

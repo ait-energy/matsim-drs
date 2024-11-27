@@ -107,9 +107,9 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);
-            StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometers Traveled Statistics",
+            StackedBarChart chart = new StackedBarChart("Motorized Private Vehicles Kilometres Traveled Statistics",
                     "iteration",
-                    "Kilometer", categories);
+                    "Kilometre", categories);
 
             double[] drsValues = iterationHistories.values().stream()
                     .mapToDouble(map -> map.getOrDefault(DRS_TRAVEL, 0.0))

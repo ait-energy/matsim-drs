@@ -44,6 +44,11 @@ class RequestZoneRegistryTest {
     }
 
     @Test
+    public void testAllRequestsWithinDistance() {
+
+    }
+
+    @Test
     void testGetZoneIdForNeighboringRequests() {
         assertSame(RequestZoneRegistry.getZoneId(request1, true, zoneSystem),
                 RequestZoneRegistry.getZoneId(request2, true, zoneSystem));
@@ -106,6 +111,10 @@ class RequestZoneRegistryTest {
                 zoneRegistry.findNearestRequests(link(1674).getFromNode()).count());
         assertEquals(2,
                 zoneRegistry.findNearestRequests(link(1541).getFromNode()).count());
+    }
+
+    public DrsRiderRequest req(int linkId) {
+        return DrsTestUtil.mockRiderRequest(linkId, 8 * 60 * 60, link(linkId), null);
     }
 
     public DrsRiderRequest req(int id, int linkId) {
