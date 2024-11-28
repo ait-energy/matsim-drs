@@ -21,7 +21,7 @@ public class RunPerfectMatchExample extends RunSimpleDrsExample {
         config.global().setNumberOfThreads(10);
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setCellSize(500);
+        drs.setMaxMatchingDistanceMeters(500);
     }
 
 }

@@ -19,8 +19,11 @@ public class PotentialRequestsFinder {
     }
 
     public List<DrsRequest> findRegistryIntersections(Node origin, Node destination, double departureTime) {
-        return getIntersection(drsConfig, requestsRegister.getOriginZoneRegistry().findNearestRequests(origin),
-                requestsRegister.getDestinationZoneRegistry().findNearestRequests(destination),
+        return getIntersection(drsConfig,
+                requestsRegister.getOriginZoneRegistry().findRequestsWithinDistance(origin,
+                        drsConfig.getMaxMatchingDistanceMeters()),
+                requestsRegister.getDestinationZoneRegistry().findRequestsWithinDistance(destination,
+                        drsConfig.getMaxMatchingDistanceMeters()),
                 requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
     }
 
@@ -30,6 +33,7 @@ public class PotentialRequestsFinder {
         Stream<DrsRequest> zoneRegistryIntersection = originNearRequests
                 .filter(destinationNearRequests.collect(Collectors.toList())::contains);
         return zoneRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
-                .limit(drsConfig.getMaxPossibleCandidates()).collect(Collectors.toCollection(ArrayList::new));
+                .limit(drsConfig.getMaxPossibleCandidates())
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

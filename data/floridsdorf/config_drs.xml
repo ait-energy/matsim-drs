@@ -136,7 +136,7 @@
 
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">
-        <param name="cellSize" value="800" />
+        <param name="maxMatchingDistanceMeters" value="500" />
         <param name="driverProfitPerKm" value="1" />
         <param name="pickupWaitingSeconds" value="300" />
     </module>

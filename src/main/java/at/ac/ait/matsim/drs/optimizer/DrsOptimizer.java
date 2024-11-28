@@ -27,9 +27,9 @@ public class DrsOptimizer {
 
         public MatchingResult optimize() {
                 LOGGER.info("Matching process started!");
-                RequestZoneRegistry originZoneRegistry = RequestZoneRegistry.forOrigins(drsData.getZoneSystem());
+                RequestZoneRegistry originZoneRegistry = RequestZoneRegistry.forOrigins(drsData.getH3ZoneSystem());
                 RequestZoneRegistry destinationZoneRegistry = RequestZoneRegistry
-                                .forDestinations(drsData.getZoneSystem());
+                                .forDestinations(drsData.getH3ZoneSystem());
                 RequestTimeSegmentRegistry timeSegmentRegistry = new RequestTimeSegmentRegistry(drsConfig);
                 RequestsCollector requestsCollector = new RequestsCollector(drsConfig, population,
                                 drsData.getDrsNetwork(), driverRouter);

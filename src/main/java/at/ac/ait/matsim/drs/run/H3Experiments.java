@@ -24,7 +24,7 @@ import com.uber.h3core.LengthUnit;
 public class H3Experiments {
     public static void main(String[] args) {
         playground();
-        // writeCellsForTestNetwork();
+        writeCellsForTestNetwork();
     }
 
     public static void playground() {
@@ -59,10 +59,11 @@ public class H3Experiments {
             Collection<SimpleFeature> features = new ArrayList<>();
 
             for (Entry<Id<Zone>, Zone> entry : h3.getZones().entrySet()) {
-                String id = entry.getKey().toString();
+                long id = Long.parseLong(entry.getKey().toString());
+                String address = Long.toHexString(id);
                 features.add(
                         factory.createPolygon(entry.getValue().getPreparedGeometry().getGeometry().getCoordinates(),
-                                new Object[] { id }, id));
+                                new Object[] { address }, address));
             }
             GeoFileWriter.writeGeometries(features, "/tmp/floridsdorf-h3grid.gpkg");
         }

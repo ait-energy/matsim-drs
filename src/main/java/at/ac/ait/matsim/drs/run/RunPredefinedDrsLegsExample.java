@@ -18,7 +18,7 @@ public class RunPredefinedDrsLegsExample extends RunSimpleDrsExample {
         config.plans().setInputFile("population_drs.xml");
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setCellSize(500);
+        drs.setMaxMatchingDistanceMeters(500);
     }
 
 }

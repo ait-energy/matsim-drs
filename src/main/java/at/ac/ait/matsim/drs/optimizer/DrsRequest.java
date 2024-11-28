@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
@@ -169,6 +170,14 @@ public abstract class DrsRequest implements Request {
 
     public Link getToLink() {
         return toLink;
+    }
+
+    public Node getFromNode() {
+        return fromLink.getFromNode();
+    }
+
+    public Node getToNode() {
+        return toLink.getToNode();
     }
 
     @Override

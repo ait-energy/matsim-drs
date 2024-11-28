@@ -69,7 +69,7 @@ public class MatchMaker {
         for (Iterator<DrsRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
             DrsRequest driverRequest = iterator.next();
             List<DrsRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
-                    driverRequest.getFromLink().getFromNode(), driverRequest.getToLink().getFromNode(),
+                    driverRequest.getFromNode(), driverRequest.getToNode(),
                     driverRequest.getDepartureTime());
             List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRequests);
             DrsMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);

@@ -12,8 +12,8 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
 
     public static final String GROUP_NAME = "drs";
 
-    public static final String CELL_SIZE = "cellSize";
-    private int cellSize = 4000;
+    public static final String MAX_MATCHING_DISTANCE_METERS = "maxMatchingDistanceMeters";
+    private int maxMatchingDistanceMeters = 2000;
 
     public static final String TIME_SEGMENT_LENGTH_SECONDS = "timeSegmentLengthSeconds";
     private int timeSegmentLengthSeconds = 2 * 60 * 60;
@@ -54,20 +54,32 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
     @Override
     public Map<String, String> getComments() {
         Map<String, String> map = super.getComments();
-        map.put(CELL_SIZE,
-                "The side length of square zones in meters used in zone registers of riders requests. The default value is good for urban areas. For large areas with sparsely distributed population and low drs share, you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better. (inspired by taxi contrib)");
+        map.put(MAX_MATCHING_DISTANCE_METERS,
+                "Maximum euclidean distance between requests to be considered by the matching algorithm, "
+                        + "i.e. if both the distance between two requests' origin and destination location are closer than the given value they are potential matches. "
+                        + "The default value is good for urban areas. "
+                        + "For large areas with sparsely distributed population and low drs share, you may consider using a larger value.");
         map.put(MAX_POSSIBLE_CANDIDATES,
-                "Limits the number of possible riders requests considered for a driver during the matching process. Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
+                "Limits the number of possible riders requests considered for a driver during the matching process. "
+                        + "Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results. "
+                        + "To turn off this feature specify a sufficiently big number (not recommended). (inspired by taxi contrib)");
         map.put(RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS,
-                "The amount of time the riders are willing to adjust their departure times. During the matching process, the arrival of driver to pick-up point is checked whether it is within the rider departure time +- the riderDepartureTimeAdjustment.");
+                "The amount of time the riders are willing to adjust their departure times. "
+                        + "During the matching process, the arrival of driver to pick-up point is checked whether it is within "
+                        + "the rider departure time +- the riderDepartureTimeAdjustment.");
         map.put(TIME_SEGMENT_LENGTH_SECONDS,
-                "The duration of the time segments used in time segment registers of riders requests. To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary candidate requests are token not only from the current segment but also from the one before and after.");
+                "The duration of the time segments used in time segment registers of riders requests. Must be larger than "
+                        + RIDER_DEPARTURE_TIME_ADJUSTMENT_SECONDS
+                        + ". To avoid scenarios where a driver and a rider departure time are close, but cross a segment boundary, "
+                        + "candidate requests are taken not only from the current segment but also from the one before and after.");
         map.put(PICKUP_WAITING_SECONDS,
                 "The amount of time the driver is expected to wait until the rider enters the vehicle.");
         map.put(DRIVER_PROFIT_PER_KM,
                 "The amount of money per kilometre the driver gains for a rider (typically positive)");
         map.put(CAR_AND_DRS_DAILY_MONETARY_CONSTANT,
-                "Daily price for car usage including when using the private car as drsDriver. If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - otherwise it will be counted twice (typically negative)");
+                "Daily price for car usage including when using the private car as drsDriver. "
+                        + "If specified here do not additionaly specify it in planCalcScore.scoringParameters.modeParams.dailyMonetaryConstant - "
+                        + "otherwise it will be counted twice (typically negative)");
         map.put(SUBTOUR_MODE_CHOICE_MODES,
                 "Defines all modes available for the '" + SubtourModeChoiceForDrs.STRATEGY_NAME
                         + "' strategy, including chain-based modes, separated by commas");
@@ -81,14 +93,14 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
         return map;
     }
 
-    @StringGetter(CELL_SIZE)
-    public int getCellSize() {
-        return cellSize;
+    @StringGetter(MAX_MATCHING_DISTANCE_METERS)
+    public int getMaxMatchingDistanceMeters() {
+        return maxMatchingDistanceMeters;
     }
 
-    @StringSetter(CELL_SIZE)
-    public void setCellSize(int cellSize) {
-        this.cellSize = cellSize;
+    @StringSetter(MAX_MATCHING_DISTANCE_METERS)
+    public void setMaxMatchingDistanceMeters(int maxMatchingDistanceMeters) {
+        this.maxMatchingDistanceMeters = maxMatchingDistanceMeters;
     }
 
     @StringGetter(MAX_POSSIBLE_CANDIDATES)

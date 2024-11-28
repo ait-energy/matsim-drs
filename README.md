@@ -136,17 +136,18 @@ List of all parameters:
 
 **Matching Algorithm**
 
-- `cellSize`: The side length of square zones in meters used in zone registers of riders requests.
-  The default value is good for urban areas. For large areas with sparsely distributed population and low drs share,
-  you may consider using a bigger cell size. On the other hand, if neighbourhoodSize is very low, a smaller cell size may work better.
+- `maxMatchingDistanceMeters`: Maximum euclidean distance between requests to be considered by the matching algorithm,
+  i.e. if both the distance between two requests' origin and destination location are closer than the given value they are potential matches.
+  The default value is good for urban areas.
+  For large areas with sparsely distributed population and low drs share, you may consider using a larger value.
 - `maxPossibleCandidates`: Limits the number of possible riders requests considered for a driver during the matching process.
   Used to speed up computations, values 20 to 40 make a good trade-off between computational speed and quality of results.
   To turn off this feature specify a sufficiently big number (not recommended).
 - `minDriverLegMeters`: minimum length of legs (routed with the drsDriver mode) to be considered for the drs driver mode. 0 means no minimum.
 - `minRiderLegMeters` minimum length of legs (routed with the drsDriver mode) to be considered for the drs ride mode. 0 means no minimum.
 - `timeSegmentLengthSeconds`: The duration of the time segments used in time segment registers of riders requests.
-  To avoid scenarios where a driver and a rider departure time are close but cross a segment boundary
-  candidate requests are token not only from the current segment but also from the one before and after.
+  To avoid scenarios where a driver and a rider departure time are close, but cross a segment boundary,
+  candidate requests are taken not only from the current segment but also from the one before and after.
 
 **Simulation / Plan Adjustment**
 
