@@ -19,8 +19,9 @@ public class RunNoDriverExample extends RunSimpleDrsExample {
         config.controller().setOutputDirectory("output-floridsdorf-noDriver");
         config.plans().setInputFile("population_drs_noDriver.xml");
 
-        // force replanning to always try drs
-        // (so that we can demonstrate the unmachted rider problem)
+        // configure replanning so that in iteration 1 SubtourModeChoice will be used,
+        // and drsRider mode is tried out
+        // (so that we can demonstrate the unmatched rider problem)
         config.replanning().clearStrategySettings();
         config.replanning()
                 .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(1));
