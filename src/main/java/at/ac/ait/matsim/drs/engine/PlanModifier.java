@@ -79,6 +79,11 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
                 MatsimRandom.getRandom());
     }
 
+    @Override
+    public double priority() {
+        return 10;
+    }
+
     /** before iteration 0 */
     @Override
     public void notifyIterationStarts(IterationStartsEvent event) {

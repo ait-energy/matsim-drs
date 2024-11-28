@@ -1,7 +1,6 @@
 package at.ac.ait.matsim.drs.optimizer;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +16,7 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.contrib.dvrp.optimizer.Request;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.router.RoutingModule;
+import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
 import org.matsim.core.utils.misc.OptionalTime;
 
@@ -48,13 +48,8 @@ public abstract class DrsRequest implements Request {
      */
     public static DrsRequest create(Id<Request> id, RoutingModule driverRouter, Network drsNetwork, Person person,
             Trip trip) {
-        Set<String> tripModes = DrsUtil.getModes(trip);
-        if (tripModes.size() > 1) {
-            LOGGER.warn("DRS trip for person {} contains more than one (routing)modes: {}", person.getId(), tripModes);
-            return null;
-        }
-        String tripMode = tripModes.iterator().next();
-        if (!tripMode.equals(Drs.DRIVER_MODE) && !tripMode.equals(Drs.RIDER_MODE)) {
+        String tripMode = TripStructureUtils.identifyMainMode(trip.getTripElements());
+        if (!DrsUtil.isDrsMode(tripMode)) {
             return null;
         }
 

@@ -27,6 +27,14 @@ import com.google.inject.Inject;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
+/**
+ * Resets drs trips:
+ * - restores the original departure time for riders
+ * - removes detailed legs for both riders and drivers
+ *
+ * Note, that this means that all but the currently selected plan
+ * in the output_plans.xml are cleaned.
+ */
 public class PlanModificationUndoer implements IterationStartsListener {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -38,6 +46,11 @@ public class PlanModificationUndoer implements IterationStartsListener {
     }
 
     @Override
+    public double priority() {
+        return 10;
+    }
+
+    @Override
     public void notifyIterationStarts(IterationStartsEvent iterationStartsEvent) {
         if (iterationStartsEvent.getIteration() > 0) {
             undoPlans(iterationStartsEvent);
@@ -45,7 +58,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
     }
 
     private void undoPlans(IterationStartsEvent event) {
-        LOGGER.info("undoing drs plans at the beginning of the iteration before replan happens");
+        LOGGER.info("Undoing drs plans at the beginning of the iteration (before replanning)");
         Scenario eventScenario = event.getServices().getScenario();
         Population population = eventScenario.getPopulation();
 
@@ -54,7 +67,7 @@ public class PlanModificationUndoer implements IterationStartsListener {
             undoDriverPlan(person);
             undoRiderPlan(person);
         }
-        LOGGER.info("undoing drs plans finished");
+        LOGGER.info("Undoing drs plans finished");
     }
 
     static void undoRiderPlan(Person person) {
@@ -86,18 +99,10 @@ public class PlanModificationUndoer implements IterationStartsListener {
 
         List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(selectedPlan);
         for (TripStructureUtils.Trip trip : trips) {
-            boolean isDriverTrip = false;
-            for (Leg leg : trip.getLegsOnly()) {
-                if (leg.getMode().equals(Drs.DRIVER_MODE)) {
-                    isDriverTrip = true;
-                }
-            }
-            if (!isDriverTrip) {
+            String tripMode = TripStructureUtils.identifyMainMode(trip.getTripElements());
+            if (!tripMode.equals(Drs.DRIVER_MODE)) {
                 continue;
             }
-
-            // TODO performance improvement: skip rerouting if the trip consists of a single
-            // leg with a route (maybe even further narrow it down to networkroutes?)
 
             Activity from = trip.getOriginActivity();
             Activity to = trip.getDestinationActivity();
@@ -115,4 +120,5 @@ public class PlanModificationUndoer implements IterationStartsListener {
                     + selectedPlan.getPlanElements().size() + " plan elements.");
         }
     }
+
 }

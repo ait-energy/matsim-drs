@@ -3,7 +3,6 @@ package at.ac.ait.matsim.drs.optimizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +18,6 @@ import com.google.common.collect.ImmutableList;
 
 import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
-import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
@@ -58,8 +56,8 @@ public class RequestsCollector {
             Person person = entry.getValue();
             List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
             for (TripStructureUtils.Trip trip : trips) {
-                Set<String> tripModes = DrsUtil.getModes(trip);
-                if (!tripModes.contains(Drs.DRIVER_MODE) && !tripModes.contains(Drs.RIDER_MODE)) {
+                String tripMode = TripStructureUtils.identifyMainMode(trip.getTripElements());
+                if (!DrsUtil.isDrsMode(tripMode)) {
                     continue;
                 }
 

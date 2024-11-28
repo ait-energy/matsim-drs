@@ -2,7 +2,6 @@ package at.ac.ait.matsim.drs.util;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +38,10 @@ import at.ac.ait.matsim.drs.engine.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsUtil {
+
+    public static boolean isDrsMode(String mode) {
+        return mode.equals(Drs.DRIVER_MODE) || mode.equals(Drs.RIDER_MODE);
+    }
 
     public static void addNewAllowedModeToCarLinks(Network network, String newMode) {
         network.getLinks().values().forEach(l -> {
@@ -155,17 +158,14 @@ public class DrsUtil {
                 // replace specific trips only
                 boolean featuresNewDrsMode = false;
                 for (Trip trip : TripStructureUtils.getTrips(newPlan)) {
-                    Set<String> modes = getModes(trip);
-                    boolean allModesShouldBeReplaced = Sets.difference(modes, modesToReplace).isEmpty();
-                    if (allModesShouldBeReplaced) {
-                        if (Sets.difference(getModes(trip), (modesToReplace)).isEmpty()) {
-                            featuresNewDrsMode = true;
-                            TripRouter.insertTrip(
-                                    newPlan,
-                                    trip.getOriginActivity(),
-                                    Collections.singletonList(PopulationUtils.createLeg(targetDrsMode)),
-                                    trip.getDestinationActivity());
-                        }
+                    String tripMode = TripStructureUtils.identifyMainMode(trip.getTripElements());
+                    if (modesToReplace.contains(tripMode)) {
+                        featuresNewDrsMode = true;
+                        TripRouter.insertTrip(
+                                newPlan,
+                                trip.getOriginActivity(),
+                                Collections.singletonList(PopulationUtils.createLeg(targetDrsMode)),
+                                trip.getDestinationActivity());
                     }
                 }
 
@@ -178,25 +178,6 @@ public class DrsUtil {
             }
         }
         return count;
-    }
-
-    /**
-     * Get collected modes of a trip (preferring the routingMode if it is set).
-     * This is especially important since MATSim 2025, where all routers add access
-     * egress legs.
-     */
-    public static Set<String> getModes(Trip trip) {
-        Set<String> modes = new HashSet<>();
-        for (Leg leg : trip.getLegsOnly()) {
-            String routingMode = TripStructureUtils.getRoutingMode(leg);
-            String mode = leg.getMode();
-            if (routingMode != null) {
-                modes.add(routingMode);
-            } else {
-                modes.add(mode);
-            }
-        }
-        return modes;
     }
 
     /**
