@@ -12,17 +12,17 @@ import com.google.common.base.Functions;
 
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-public class BestRequestFinder {
+public class BestMatchFinder {
     private final RoutingModule router;
 
-    public BestRequestFinder(RoutingModule router) {
+    public BestMatchFinder(RoutingModule router) {
         this.router = router;
     }
 
     /**
      * @return null if no match was found
      */
-    public DrsMatch findBestRequest(List<DrsMatch> matches) {
+    public DrsMatch findBestMatch(List<DrsMatch> matches) {
         if (matches.isEmpty()) {
             return null;
         }

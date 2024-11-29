@@ -22,7 +22,7 @@ import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 /**
- * Collects all DRS trips (requests) from the selected plans of the population.
+ * Collects all drs trips (requests) from the selected plans of the population.
  *
  * These trips are expected to be freshly routed / unmatched since
  * we reset results from the previous iteration in PlanModificationUndoer.

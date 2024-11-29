@@ -23,14 +23,14 @@ import org.matsim.core.router.TripRouter;
 import com.google.inject.Inject;
 
 import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
-import at.ac.ait.matsim.drs.optimizer.BestRequestFinder;
+import at.ac.ait.matsim.drs.optimizer.BestMatchFinder;
 import at.ac.ait.matsim.drs.optimizer.DrsMatch;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.optimizer.MatchMaker;
 import at.ac.ait.matsim.drs.optimizer.MatchingResult;
 import at.ac.ait.matsim.drs.optimizer.RequestsCollector;
-import at.ac.ait.matsim.drs.optimizer.RequestsFilter;
+import at.ac.ait.matsim.drs.optimizer.PotentialMatchFinder;
 import at.ac.ait.matsim.drs.optimizer.RequestsRegister;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
@@ -119,10 +119,10 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
                 riderRequests.size(), Drs.RIDER_MODE);
 
         RequestsRegister requestsRegister = new RequestsRegister(drsConfig, drsData.getH3ZoneSystem());
-        RequestsFilter requestsFilter = new RequestsFilter(drsConfig, driverRouter);
-        BestRequestFinder bestRequestFinder = new BestRequestFinder(driverRouter);
+        PotentialMatchFinder potentialMatchFinder = new PotentialMatchFinder(drsConfig, driverRouter);
+        BestMatchFinder bestMatchFinder = new BestMatchFinder(driverRouter);
         MatchMaker matchMaker = new MatchMaker(drsConfig, driverRequests, riderRequests, requestsRegister,
-                requestsFilter, bestRequestFinder);
+                potentialMatchFinder, bestMatchFinder);
         MatchingResult result = matchMaker.match();
         LOGGER.info("Found {} drs matches.", result.matches().size());
 

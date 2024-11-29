@@ -4,7 +4,7 @@ import org.matsim.core.config.Config;
 
 /**
  * Main Example starting with regular plans (no drs modes yet).
- * DRS gets introduced via replanning.
+ * Drs gets introduced via replanning.
  */
 public class RunPerfectMatchExample extends RunSimpleDrsExample {
 

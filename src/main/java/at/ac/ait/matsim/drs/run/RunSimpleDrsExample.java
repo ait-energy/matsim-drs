@@ -18,7 +18,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 
 /**
  * Main Example starting with regular plans (no drs modes yet).
- * DRS gets introduced via replanning.
+ * Drs gets introduced via replanning.
  */
 public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();

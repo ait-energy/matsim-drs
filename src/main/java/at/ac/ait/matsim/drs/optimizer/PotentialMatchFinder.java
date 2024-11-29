@@ -12,12 +12,11 @@ import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-// TODO rename? actually creates potential matches and filters them. does not filter requests per se
-public class RequestsFilter {
+public class PotentialMatchFinder {
     private final DrsConfigGroup drsConfig;
     private final RoutingModule router;
 
-    public RequestsFilter(DrsConfigGroup drsConfig, RoutingModule router) {
+    public PotentialMatchFinder(DrsConfigGroup drsConfig, RoutingModule router) {
         this.drsConfig = drsConfig;
         this.router = router;
     }

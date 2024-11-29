@@ -42,18 +42,19 @@ public class MatchMaker {
     private final List<DrsRiderRequest> originalRiderRequests;
     private final List<DrsRiderRequest> riderRequests;
     private final RequestsRegister requestsRegister;
-    private final BestRequestFinder bestRequestFinder;
-    private final RequestsFilter requestsFilter;
+    private final BestMatchFinder bestMatchFinder;
+    private final PotentialMatchFinder potentialMatchFinder;
 
     private List<DrsMatch> matches;
     private List<DrsDriverRequest> unmatchedDriverRequests;
     private List<DrsRiderRequest> unmatchedRiderRequests;
 
-    public MatchMaker(DrsConfigGroup drsConfig, List<DrsDriverRequest> driverRequests,
+    public MatchMaker(DrsConfigGroup drsConfig,
+            List<DrsDriverRequest> driverRequests,
             List<DrsRiderRequest> riderRequests,
             RequestsRegister requestsRegister,
-            RequestsFilter requestsFilter,
-            BestRequestFinder bestRequestFinder) {
+            PotentialMatchFinder potentialMatchFinder,
+            BestMatchFinder bestMatchFinder) {
         this.drsConfig = drsConfig;
         // mutable copies of the requests
         this.driverRequests = Lists.newArrayList(driverRequests);
@@ -63,8 +64,8 @@ public class MatchMaker {
         this.originalRiderRequests = List.copyOf(riderRequests);
 
         this.requestsRegister = requestsRegister;
-        this.requestsFilter = requestsFilter;
-        this.bestRequestFinder = bestRequestFinder;
+        this.potentialMatchFinder = potentialMatchFinder;
+        this.bestMatchFinder = bestMatchFinder;
     }
 
     public MatchingResult match() {
@@ -83,8 +84,8 @@ public class MatchMaker {
                     driverRequest.getFromNode(), driverRequest.getToNode(),
                     driverRequest.getDepartureTime());
 
-            List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRiders);
-            DrsMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);
+            List<DrsMatch> filteredMatches = potentialMatchFinder.filterRequests(driverRequest, potentialRiders);
+            DrsMatch bestMatch = bestMatchFinder.findBestMatch(filteredMatches);
             if (bestMatch == null) {
                 continue;
             }
@@ -132,8 +133,9 @@ public class MatchMaker {
     }
 
     static List<DrsRiderRequest> findPotentialRiders(DrsConfigGroup drsConfig,
-            Stream<DrsRequest> originNearRequests, Stream<DrsRequest> destinationNearRequests,
-            Stream<DrsRequest> temporalNearRequests) {
+            Stream<? extends DrsRequest> originNearRequests,
+            Stream<? extends DrsRequest> destinationNearRequests,
+            Stream<? extends DrsRequest> temporalNearRequests) {
         Stream<DrsRiderRequest> zoneRegistryIntersection = originNearRequests
                 .filter(destinationNearRequests.collect(Collectors.toList())::contains)
                 .filter(DrsRiderRequest.class::isInstance)

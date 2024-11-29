@@ -138,7 +138,7 @@ public class IntegrationTests {
     }
 
     /**
-     * Test DRS engine behavior: when picking up an agent the full pickup waiting
+     * Test drs engine behavior: when picking up an agent the full pickup waiting
      * seconds must not be waited but departure must happen asap
      */
     @Test
@@ -157,7 +157,7 @@ public class IntegrationTests {
     }
 
     /**
-     * Test DRS engine behavior: driver must wait pickupWaitingSeconds for late
+     * Test drs engine behavior: driver must wait pickupWaitingSeconds for late
      * riders, but leave without them if they don't show up within that time.
      */
     @Test
@@ -182,14 +182,14 @@ public class IntegrationTests {
 
         CSV tripsCsv = readCsv(tempDir.resolve("output_trips.csv.gz"));
 
-        // successful DRS trip for the punctual person
+        // successful drs trip for the punctual person
         var punctual = tripsCsv.filter("person", "ridePersonPunctual").filter("trip_number", "1");
         assertEquals(1, punctual.size());
         assertEquals(Drs.RIDER_MODE, punctual.get("modes"));
         // travel time without long delays
         assertEquals("00:06", punctual.get("trav_time").substring(0, 5));
 
-        // successful bike + DRS trip for the cyclist
+        // successful bike + drs trip for the cyclist
         var cyclist = tripsCsv.filter("person", "ridePersonWithBikeAccess");
         assertEquals(2, cyclist.size());
         assertEquals(TransportMode.bike, cyclist.get(0, "modes"));
@@ -197,7 +197,7 @@ public class IntegrationTests {
         // travel time without long delays
         assertEquals("00:06", cyclist.get(1, "trav_time").substring(0, 5));
 
-        // pedestrian misses DRS (therefore no second leg)
+        // pedestrian misses drs (therefore no second leg)
         var pedestrian = tripsCsv.filter("person", "ridePersonWithWalkAccess");
         assertEquals(1, pedestrian.size());
         assertEquals(TransportMode.walk, pedestrian.get("modes"));
@@ -219,7 +219,7 @@ public class IntegrationTests {
         new RunNoDriverExample().run(false, tempDir);
 
         // In iteration 1 (after replanning)
-        // the agent wants to use DRS but there is no driver
+        // the agent wants to use drs but there is no driver
         CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
         assertEquals(2, riderRequestStats.size());
         assertEquals("0", riderRequestStats.get(1, "matched"));
@@ -316,7 +316,7 @@ public class IntegrationTests {
     }
 
     /**
-     * Test DRS engine behavior: riders must be able to adjust their departure time
+     * Test dRS engine behavior: riders must be able to adjust their departure time
      */
     @Test
     @Tag("IntegrationTest")
