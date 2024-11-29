@@ -6,7 +6,8 @@ import org.matsim.core.config.groups.ReplanningConfigGroup.StrategySettings;
 
 /**
  * Example demonstrating that the ReRoute strategy does not crash and does not
- * lead to bad scores for drsRider plans
+ * lead to bad scores for drsRider plans (This is more of a test for our example
+ * config than the drs logic itself)
  */
 public class RunTrivialMatchWithReRouteExample extends RunSimpleDrsExample {
 
@@ -20,10 +21,12 @@ public class RunTrivialMatchWithReRouteExample extends RunSimpleDrsExample {
         config.controller().setOutputDirectory("output-floridsdorf-trivialMatchWithReRoute");
         config.plans().setInputFile("population_drs_trivialMatch.xml");
 
-        // configure replanning so ReRoute and SubtourModeChoice are used randomly
+        // Configure replanning so that both ReRoute and SubtourModeChoice are used
         config.replanning().clearStrategySettings();
         config.replanning()
-                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(0.5));
+                .addStrategySettings(new StrategySettings().setStrategyName("BestScore").setWeight(0.1));
+        config.replanning()
+                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(0.4));
         config.replanning()
                 .addStrategySettings(new StrategySettings().setStrategyName("ReRoute").setWeight(0.5));
 
