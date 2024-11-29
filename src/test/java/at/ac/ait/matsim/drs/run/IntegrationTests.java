@@ -166,7 +166,7 @@ public class IntegrationTests {
             throws Exception {
         new RunRidersLateForPickupExample().run(false, tempDir);
 
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
         // we find a match for each rider
         assertEquals(1, riderRequestStats.size());
         assertEquals("3", riderRequestStats.get("matched"));
@@ -220,7 +220,7 @@ public class IntegrationTests {
 
         // In iteration 1 (after replanning)
         // the agent wants to use DRS but there is no driver
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
         assertEquals(2, riderRequestStats.size());
         assertEquals("0", riderRequestStats.get(1, "matched"));
         // no request should be unmatched (conflict logic must take care of it)
@@ -251,15 +251,41 @@ public class IntegrationTests {
         // In iteration 1 (after replanning)
 
         // driver and rider are matched
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
         assertEquals(2, riderRequestStats.size());
         assertEquals("2", riderRequestStats.get(1, "matched"));
         assertEquals("0", riderRequestStats.get(1, "unmatched"));
 
         // driver and rider must use drs mode
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
-        assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").get(1, "main_mode"));
-        assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").get(1, "main_mode"));
+        assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").filter("trip_number", "1").get("main_mode"));
+        assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").filter("trip_number", "1").get("main_mode"));
+    }
+
+    /**
+     * SubtourModeChoice + matching logic test: test that a trival match works -
+     * even if the ReRoute strategy runs a few times
+     * (rider + driver with same locations and times)
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testTrivialMatchWithReRoute(
+            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunTrivialMatchWithReRouteExample().run(false, tempDir);
+
+        // In iteration 10 (last iteration)
+
+        // driver and rider are matched
+        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
+        assertEquals(11, riderRequestStats.size());
+        assertEquals("2", riderRequestStats.get(10, "matched"));
+        assertEquals("0", riderRequestStats.get(10, "unmatched"));
+
+        // driver and rider must use drs mode
+        CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
+        assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").filter("trip_number", "1").get("main_mode"));
+        assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").filter("trip_number", "1").get("main_mode"));
     }
 
     /**
@@ -299,7 +325,7 @@ public class IntegrationTests {
             throws Exception {
         {
             new RunRidersDepartureTimeAdjustmentExample(15 * 60 - 1).run(false, tempDir);
-            CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+            CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
             // no match because the time window is one second too small
             assertEquals(1, riderRequestStats.size());
             assertEquals("0", riderRequestStats.get("matched"));
@@ -308,7 +334,7 @@ public class IntegrationTests {
 
         {
             new RunRidersDepartureTimeAdjustmentExample(16 * 60).run(false, tempDir);
-            CSV riderRequestStats = readCsv(tempDir.resolve("drs_rider_request_stats.csv"));
+            CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
             // the 15 minute time window is enough to match
             assertEquals(1, riderRequestStats.size());
             assertEquals("1", riderRequestStats.get("matched"));

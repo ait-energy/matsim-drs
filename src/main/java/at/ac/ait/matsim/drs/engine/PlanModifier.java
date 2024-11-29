@@ -102,7 +102,9 @@ public class PlanModifier implements ReplanningListener, IterationStartsListener
         conflictManager.initializeReplanning(scenario.getPopulation());
         preplanDay(event.isLastIteration());
         conflictManager.run(scenario.getPopulation(), event.getIteration());
-        unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
+        // TODO rethink this. deleting the plans here could hinder
+        // reaching equilibrium (as seen with PerfectMatchExample)
+        // unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
         LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
     }
 

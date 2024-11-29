@@ -84,6 +84,7 @@
     </module>
 
     <module name="scoring">
+        <param name="writeExperiencedPlans" value="true" />
         <parameterset type="activityParams">
             <param name="activityType" value="education" />
             <param name="typicalDuration" value="06:00:00" />
@@ -161,6 +162,7 @@
         <param name="fractionOfIterationsToDisableInnovation" value="0.9" />
         <parameterset type="strategysettings">
             <param name="strategyName" value="SelectExpBeta"/>
+            <!-- <param name="strategyName" value="BestScore"/> -->
             <param name="weight" value="0.6"/>
         </parameterset>
         <parameterset type="strategysettings">

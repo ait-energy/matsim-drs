@@ -184,7 +184,7 @@ and can also be configured via the relevant parameters in the `drs` config group
 
 The following output files are additionally created in the MATSim output directory:
 
-- `drs_rider_request_stats.csv/png`: evolution of number of matched and unmatched rider requests
+- `drs_request_stats.csv/png`: evolution of number of matched and unmatched drs requests
 - `drs_vkt_stats.csv/png`: evolution of distribution of vehicle kilometres traveled by motorized individual transport between
   - DRS travel, i.e. parts of a DRS driver's trip with an actual rider
   - before and after DRS, i.e. parts of a DRS driver's trip to the pickup point / after dropping off the rider
