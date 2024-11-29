@@ -2,13 +2,17 @@ package at.ac.ait.matsim.drs.optimizer;
 
 import org.matsim.api.core.v01.population.Leg;
 
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
+
 public class DrsMatch {
 
-    private final DrsRequest driver, rider;
+    private final DrsDriverRequest driver;
+    private final DrsRiderRequest rider;
     private final Leg toPickup, withCustomer, afterDropoff;
     private final Double detourFactor;
 
-    private DrsMatch(DrsRequest driver, DrsRequest rider, Leg toPickup, Leg withCustomer,
+    private DrsMatch(DrsDriverRequest driver, DrsRiderRequest rider, Leg toPickup, Leg withCustomer,
             Leg afterDropoff, Double detourFactor) {
         this.driver = driver;
         this.rider = rider;
@@ -18,20 +22,20 @@ public class DrsMatch {
         this.detourFactor = detourFactor;
     }
 
-    public static DrsMatch createMinimal(DrsRequest driver, DrsRequest rider, Leg toPickup) {
+    public static DrsMatch createMinimal(DrsDriverRequest driver, DrsRiderRequest rider, Leg toPickup) {
         return new DrsMatch(driver, rider, toPickup, null, null, null);
     }
 
-    public static DrsMatch create(DrsRequest driver, DrsRequest rider, Leg toPickup,
+    public static DrsMatch create(DrsDriverRequest driver, DrsRiderRequest rider, Leg toPickup,
             Leg withCustomer, Leg afterDropoff, Double detourFactor) {
         return new DrsMatch(driver, rider, toPickup, withCustomer, afterDropoff, detourFactor);
     }
 
-    public DrsRequest getDriver() {
+    public DrsDriverRequest getDriver() {
         return driver;
     }
 
-    public DrsRequest getRider() {
+    public DrsRiderRequest getRider() {
         return rider;
     }
 

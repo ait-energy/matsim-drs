@@ -7,6 +7,8 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripStructureUtils;
 
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
@@ -23,10 +25,10 @@ public class RequestsFilter {
     /**
      * @return matches for rider requests that meet the filter criteria
      */
-    public List<DrsMatch> filterRequests(DrsRequest driverRequest,
-            List<DrsRequest> ridersRequests) {
+    public List<DrsMatch> filterRequests(DrsDriverRequest driverRequest,
+            List<DrsRiderRequest> ridersRequests) {
         List<DrsMatch> filteredRiderRequests = new ArrayList<>();
-        for (DrsRequest riderRequest : ridersRequests) {
+        for (DrsRiderRequest riderRequest : ridersRequests) {
             Leg toPickup = DrsUtil.calculateLeg(router,
                     driverRequest.getFromLink(),
                     riderRequest.getFromLink(),
@@ -41,7 +43,7 @@ public class RequestsFilter {
         return filteredRiderRequests;
     }
 
-    static boolean checkRiderTimeConstraints(DrsRequest riderRequest, double expectedPickupTime,
+    static boolean checkRiderTimeConstraints(DrsRiderRequest riderRequest, double expectedPickupTime,
             double allowedTimeAdjustment) {
         double timeAdjustment = expectedPickupTime - riderRequest.getDepartureTime();
         boolean withinRiderDepartureTimeWindow = Math.abs(timeAdjustment) <= allowedTimeAdjustment;

@@ -1,27 +1,30 @@
 package at.ac.ait.matsim.drs.optimizer;
 
+import org.matsim.contrib.common.zones.systems.grid.h3.H3ZoneSystem;
+
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
+
 public class RequestsRegister {
     private final RequestZoneRegistry originZonRegistry;
     private final RequestZoneRegistry destinationZoneRegistry;
     private final RequestTimeSegmentRegistry timeSegmentRegistry;
 
-    public RequestsRegister(RequestZoneRegistry originZoneRegistry, RequestZoneRegistry destinationZoneRegistry,
-            RequestTimeSegmentRegistry timeSegmentRegistry) {
-        this.originZonRegistry = originZoneRegistry;
-        this.destinationZoneRegistry = destinationZoneRegistry;
-        this.timeSegmentRegistry = timeSegmentRegistry;
+    public RequestsRegister(DrsConfigGroup drsConfig, H3ZoneSystem h3Zones) {
+        this.originZonRegistry = RequestZoneRegistry.forOrigins(h3Zones);
+        this.destinationZoneRegistry = RequestZoneRegistry.forDestinations(h3Zones);
+        this.timeSegmentRegistry = new RequestTimeSegmentRegistry(drsConfig);
     }
 
-    public void addRequest(DrsRequest riderRequest) {
-        originZonRegistry.addRequest(riderRequest);
-        destinationZoneRegistry.addRequest(riderRequest);
-        timeSegmentRegistry.addRequest(riderRequest);
+    public void addRequest(DrsRequest request) {
+        originZonRegistry.addRequest(request);
+        destinationZoneRegistry.addRequest(request);
+        timeSegmentRegistry.addRequest(request);
     }
 
-    public void removeRequest(DrsRequest riderRequest) {
-        originZonRegistry.removeRequest(riderRequest);
-        destinationZoneRegistry.removeRequest(riderRequest);
-        timeSegmentRegistry.removeRequest(riderRequest);
+    public void removeRequest(DrsRequest request) {
+        originZonRegistry.removeRequest(request);
+        destinationZoneRegistry.removeRequest(request);
+        timeSegmentRegistry.removeRequest(request);
     }
 
     public RequestZoneRegistry getOriginZoneRegistry() {

@@ -1,151 +1,52 @@
 package at.ac.ait.matsim.drs.engine;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.api.core.v01.population.Route;
-import org.matsim.core.config.groups.GlobalConfigGroup;
-import org.matsim.core.controler.OutputDirectoryHierarchy;
-import org.matsim.core.controler.events.IterationStartsEvent;
-import org.matsim.core.controler.events.ReplanningEvent;
-import org.matsim.core.controler.listener.IterationStartsListener;
-import org.matsim.core.controler.listener.ReplanningListener;
-import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.population.routes.GenericRouteImpl;
-import org.matsim.core.replanning.conflicts.ConflictManager;
-import org.matsim.core.replanning.conflicts.ConflictWriter;
-import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 
-import com.google.inject.Inject;
-
-import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
 import at.ac.ait.matsim.drs.optimizer.DrsMatch;
-import at.ac.ait.matsim.drs.optimizer.DrsOptimizer;
 import at.ac.ait.matsim.drs.optimizer.DrsRequest;
-import at.ac.ait.matsim.drs.optimizer.MatchingResult;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
-/**
- * Note: PlanModifier should be called after PersonPrepareForSim is
- * finished, otherwise the leg attributes (where we store machting info) can be
- * cleared due to rerouting
- */
-public class PlanModifier implements ReplanningListener, IterationStartsListener {
+public class PlanModifier {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Scenario scenario;
-    private final DrsData drsData;
-    private final GlobalConfigGroup globalConfig;
     private final DrsConfigGroup drsConfig;
-    private final RoutingModule driverRouter;
-    private final OutputDirectoryHierarchy outputDirectoryHierarchy;
-    private final ConflictManager conflictManager;
-    private final UnmatchedRiderConflictResolver unmatchedRiderConflictResolver;
+    private final PopulationFactory populationFactory;
 
-    @Inject
-    public PlanModifier(Scenario scenario, DrsConfigGroup drsConfig, DrsData drsData, TripRouter tripRouter,
-            OutputDirectoryHierarchy outputDirectoryHierarchy) {
-        this.scenario = scenario;
-        this.drsData = drsData;
-        this.globalConfig = scenario.getConfig().global();
+    public PlanModifier(DrsConfigGroup drsConfig, PopulationFactory populationFactory) {
         this.drsConfig = drsConfig;
-        driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
-        this.outputDirectoryHierarchy = outputDirectoryHierarchy;
-
-        // Create a custom ConflictManager with an actual resolver for our conflicts.
-        // Must not be bound to the "official" conflict resolver because
-        // PlansReplanningImpl
-        // runs the that directly after replanning,
-        // which is before our PlanModifier can assign riders to drivers.
-        this.unmatchedRiderConflictResolver = new UnmatchedRiderConflictResolver();
-        ConflictWriter drsConflictWriter = new ConflictWriter(new File(
-                outputDirectoryHierarchy.getOutputFilename("drs_conflicts.csv")));
-        this.conflictManager = new ConflictManager(
-                Set.of(unmatchedRiderConflictResolver),
-                drsConflictWriter,
-                MatsimRandom.getRandom());
+        this.populationFactory = populationFactory;
     }
 
-    @Override
-    public double priority() {
-        return 10;
-    }
-
-    /** before iteration 0 */
-    @Override
-    public void notifyIterationStarts(IterationStartsEvent event) {
-        if (event.getIteration() != 0) {
-            return;
-        }
-        DrsUtil.routeCalculations.set(0);
-        preplanDay(event.isLastIteration());
-        LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
-    }
-
-    /** before iterations > 0 */
-    @Override
-    public void notifyReplanning(ReplanningEvent event) {
-        DrsUtil.routeCalculations.set(0);
-        conflictManager.initializeReplanning(scenario.getPopulation());
-        preplanDay(event.isLastIteration());
-        conflictManager.run(scenario.getPopulation(), event.getIteration());
-        // TODO rethink this. deleting the plans here could hinder
-        // reaching equilibrium (as seen with PerfectMatchExample)
-        // unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
-        LOGGER.info("plan modifier used {} route calculations.", DrsUtil.routeCalculations.get());
-    }
-
-    private void preplanDay(boolean isLastIteration) {
-        Population population = scenario.getPopulation();
-        DrsOptimizer optimizer = new DrsOptimizer(drsData, drsConfig, population, driverRouter);
-        MatchingResult result = optimizer.optimize();
-        if (isLastIteration) {
-            DrsTripsInfoCollector infoCollector = new DrsTripsInfoCollector(globalConfig,
-                    outputDirectoryHierarchy);
-            infoCollector.printMatchedRequestsToCsv(result.matches());
-            infoCollector.printUnMatchedRequestsToCsv(result.unmatchedDriverRequests(),
-                    result.unmatchedRiderRequests());
-        }
-
-        PopulationFactory populationFactory = population.getFactory();
-        LOGGER.info("Modifying drs agents plans started.");
-        for (DrsMatch match : result.matches()) {
-            modifyPlans(match, populationFactory);
-        }
-        // addRoutingModeAndRouteForRiders();
-        LOGGER.info("Modifying drs agents plans finished.");
-    }
-
-    private void modifyPlans(DrsMatch match, PopulationFactory factory) {
+    public void modifyPlans(DrsMatch match) {
         DrsUtil.setAssignedDriver(match.getRider().getDrsLeg(), match.getDriver().getPerson().getId().toString());
         double pickupTime = match.getDriver().getDepartureTime() + match.getToPickup().getTravelTime().seconds();
-        addNewActivitiesToDriverPlan(match, pickupTime, factory);
+        addNewActivitiesToDriverPlan(match, pickupTime);
         addRiderRoute(match.getRider());
         adjustRiderDepartureTime(match.getRider(), pickupTime);
     }
 
-    private void addNewActivitiesToDriverPlan(DrsMatch match, double pickupTime, PopulationFactory factory) {
-        Activity pickup = factory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
+    private void addNewActivitiesToDriverPlan(DrsMatch match, double pickupTime) {
+        Activity pickup = populationFactory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
                 match.getRider().getFromLink().getId());
         pickup.setEndTime(pickupTime + drsConfig.getPickupWaitingSeconds());
         DrsUtil.setActivityType(pickup, Drs.ActivityType.pickup);
         DrsUtil.setRiderId(pickup, match.getRider().getPerson().getId());
 
         double dropoffTime = pickupTime + match.getWithCustomer().getTravelTime().seconds();
-        Activity dropoff = factory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
+        Activity dropoff = populationFactory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
                 match.getRider().getToLink().getId());
         dropoff.setEndTime(dropoffTime);
         DrsUtil.setActivityType(dropoff, Drs.ActivityType.dropoff);

@@ -36,8 +36,8 @@ public class RequestsCollector {
     private final Population population;
     private final Network drsNetwork;
     private final RoutingModule driverRouter;
-    private List<DrsRequest> driverRequests;
-    private List<DrsRequest> riderRequests;
+    private List<DrsDriverRequest> driverRequests;
+    private List<DrsRiderRequest> riderRequests;
 
     public RequestsCollector(DrsConfigGroup drsConfig, Population population, Network drsNetwork,
             RoutingModule driverRouter) {
@@ -67,14 +67,14 @@ public class RequestsCollector {
                 double distance = request.getNetworkRouteDistance();
                 if (request instanceof DrsDriverRequest) {
                     if (drsConfig.getMinDriverLegMeters() <= 0 || drsConfig.getMinDriverLegMeters() <= distance) {
-                        driverRequests.add(request);
+                        driverRequests.add((DrsDriverRequest) request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),
                                 person.getId());
                     }
                 } else if (request instanceof DrsRiderRequest) {
                     if (drsConfig.getMinRiderLegMeters() <= 0 || drsConfig.getMinRiderLegMeters() <= distance) {
-                        riderRequests.add(request);
+                        riderRequests.add((DrsRiderRequest) request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),
                                 person.getId());
@@ -82,15 +82,13 @@ public class RequestsCollector {
                 }
             }
         }
-        LOGGER.info("Collected {} driver and {} rider requests", driverRequests.size(), riderRequests.size());
-
     }
 
-    public List<DrsRequest> getDriverRequests() {
+    public List<DrsDriverRequest> getDriverRequests() {
         return ImmutableList.copyOf(driverRequests);
     }
 
-    public List<DrsRequest> getRiderRequests() {
+    public List<DrsRiderRequest> getRiderRequests() {
         return ImmutableList.copyOf(riderRequests);
     }
 }

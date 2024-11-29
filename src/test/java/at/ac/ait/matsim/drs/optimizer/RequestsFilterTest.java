@@ -29,13 +29,16 @@ import org.matsim.core.router.TripStructureUtils;
 
 import at.ac.ait.matsim.drs.DrsTestUtil;
 import at.ac.ait.matsim.drs.RoutingForTests;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 class RequestsFilterTest {
         private static Network network;
         private static RequestsFilter requestsFilter;
-        private static DrsRequest driverRequest, request2, request3, request4, request5, request6;
-        private List<DrsRequest> passengersRequests = new ArrayList<>();
+        private static DrsDriverRequest driverRequest;
+        private static DrsRiderRequest request2, request3, request4, request5, request6;
+        private List<DrsRiderRequest> riderRequests = new ArrayList<>();
 
         @BeforeAll
         static void setup() {
@@ -62,33 +65,33 @@ class RequestsFilterTest {
 
         @BeforeEach
         public void beforeEach() {
-                passengersRequests = new ArrayList<>();
+                riderRequests = new ArrayList<>();
         }
 
         @Test
         void testDriverArrivesTooLateToPassengerDueToDistance() {
-                passengersRequests.add(request2);
-                assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
+                riderRequests.add(request2);
+                assertEquals(0, requestsFilter.filterRequests(driverRequest, riderRequests).size());
         }
 
         @Test
         void testDriverArrivesTooLateToPassengerDueToTime() {
-                passengersRequests.add(request3);
-                assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
+                riderRequests.add(request3);
+                assertEquals(0, requestsFilter.filterRequests(driverRequest, riderRequests).size());
         }
 
         @Test
         void testDriverArrivesTooEarlyToPassengerDueToTime() {
-                passengersRequests.add(request4);
-                assertEquals(0, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
+                riderRequests.add(request4);
+                assertEquals(0, requestsFilter.filterRequests(driverRequest, riderRequests).size());
         }
 
         @Disabled // FIXME this test fails now
         @Test
         void testDriverArrivesOnTime() {
-                passengersRequests.add(request5);
-                passengersRequests.add(request6);
-                assertEquals(2, requestsFilter.filterRequests(driverRequest, passengersRequests).size());
+                riderRequests.add(request5);
+                riderRequests.add(request6);
+                assertEquals(2, requestsFilter.filterRequests(driverRequest, riderRequests).size());
         }
 
         @Test
@@ -120,7 +123,7 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                DrsRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
+                DrsRiderRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
                                 trip.getOriginActivity().getEndTime().seconds(), trip, null);
                 assertTrue(RequestsFilter.checkRiderTimeConstraints(riderRequest,
                                 trip.getOriginActivity().getEndTime().seconds() + 20 * 60, 25 * 60));
@@ -166,7 +169,7 @@ class RequestsFilterTest {
                 TripStructureUtils.Trip trip = TripStructureUtils.getTrips(personA.getSelectedPlan().getPlanElements())
                                 .get(1);
 
-                DrsRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
+                DrsRiderRequest riderRequest = DrsTestUtil.mockRiderRequest(1, personA,
                                 trip.getOriginActivity().getEndTime().seconds(), trip, null);
                 assertFalse(RequestsFilter.checkRiderTimeConstraints(riderRequest,
                                 trip.getOriginActivity().getEndTime().seconds() + 20 * 60, 25 * 60));

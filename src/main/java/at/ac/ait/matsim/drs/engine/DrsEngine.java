@@ -37,6 +37,8 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
 import jakarta.inject.Inject;
 
 /**
+ * Engine to handle drs agents during QSIM.
+ *
  * Heavily inspired by ActivityEngineDefaultImpl and
  * org.matsim.contrib.dvrp.passenger.InternalPassengerHandling
  *

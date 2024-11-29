@@ -14,6 +14,8 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 
 import at.ac.ait.matsim.drs.RoutingForTests;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
@@ -72,8 +74,8 @@ class RequestsCollectorTest {
         RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(), population, network,
                 driverRouter);
         collector.collectRequests();
-        List<DrsRequest> driverRequests = collector.getDriverRequests();
-        List<DrsRequest> riderRequests = collector.getRiderRequests();
+        List<DrsDriverRequest> driverRequests = collector.getDriverRequests();
+        List<DrsRiderRequest> riderRequests = collector.getRiderRequests();
 
         assertEquals("1", driverRequests.get(0).getId().toString());
         assertEquals(5 * 60 * 60, driverRequests.get(0).getDepartureTime());
@@ -93,8 +95,8 @@ class RequestsCollectorTest {
         RequestsCollector collector = new RequestsCollector(new DrsConfigGroup(),
                 populationWithZeroDrsDrivers, NetworkUtils.createNetwork(), driverRouter);
         collector.collectRequests();
-        List<DrsRequest> driverRequests = collector.getDriverRequests();
-        List<DrsRequest> riderRequests = collector.getRiderRequests();
+        List<DrsDriverRequest> driverRequests = collector.getDriverRequests();
+        List<DrsRiderRequest> riderRequests = collector.getRiderRequests();
         assertTrue(driverRequests.isEmpty());
         assertTrue(riderRequests.isEmpty());
     }

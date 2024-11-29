@@ -10,16 +10,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.utils.misc.Time;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsDriverRequest;
+import at.ac.ait.matsim.drs.optimizer.DrsRequest.DrsRiderRequest;
+import at.ac.ait.matsim.drs.run.DrsConfigGroup;
 
 /**
  * Find best matches.
@@ -30,54 +36,60 @@ import com.google.common.collect.Multimap;
  */
 public class MatchMaker {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final RequestsCollector requestsCollector;
+
+    private final DrsConfigGroup drsConfig;
+    private final List<DrsDriverRequest> driverRequests;
+    private final List<DrsRiderRequest> originalRiderRequests;
+    private final List<DrsRiderRequest> riderRequests;
     private final RequestsRegister requestsRegister;
-    private final PotentialRequestsFinder potentialRequestsFinder;
     private final BestRequestFinder bestRequestFinder;
     private final RequestsFilter requestsFilter;
 
     private List<DrsMatch> matches;
-    private List<DrsRequest> unmatchedDriverRequests;
-    private List<DrsRequest> unmatchedRiderRequests;
+    private List<DrsDriverRequest> unmatchedDriverRequests;
+    private List<DrsRiderRequest> unmatchedRiderRequests;
 
-    public MatchMaker(RequestsCollector requestsCollector, RequestsRegister requestsRegister,
-            PotentialRequestsFinder potentialRequestsFinder, RequestsFilter requestsFilter,
+    public MatchMaker(DrsConfigGroup drsConfig, List<DrsDriverRequest> driverRequests,
+            List<DrsRiderRequest> riderRequests,
+            RequestsRegister requestsRegister,
+            RequestsFilter requestsFilter,
             BestRequestFinder bestRequestFinder) {
-        this.requestsCollector = requestsCollector;
+        this.drsConfig = drsConfig;
+        // mutable copies of the requests
+        this.driverRequests = Lists.newArrayList(driverRequests);
+        Collections.shuffle(this.driverRequests);
+        this.riderRequests = Lists.newArrayList(riderRequests);
+        Collections.shuffle(this.riderRequests);
+        this.originalRiderRequests = List.copyOf(riderRequests);
+
         this.requestsRegister = requestsRegister;
-        this.potentialRequestsFinder = potentialRequestsFinder;
         this.requestsFilter = requestsFilter;
         this.bestRequestFinder = bestRequestFinder;
     }
 
-    public void match() {
+    public MatchingResult match() {
         if (matches != null) {
-            throw new RuntimeException("can only match once");
+            throw new RuntimeException("Can only match once");
         }
 
-        requestsCollector.collectRequests();
-        List<DrsRequest> driverRequests = Lists.newArrayList(requestsCollector.getDriverRequests());
-        Collections.shuffle(driverRequests);
-        List<DrsRequest> riderRequests = Lists.newArrayList(requestsCollector.getRiderRequests());
-        Collections.shuffle(riderRequests);
-
-        for (DrsRequest ridersRequest : riderRequests) {
+        for (DrsRiderRequest ridersRequest : riderRequests) {
             requestsRegister.addRequest(ridersRequest);
         }
 
         matches = new ArrayList<>();
-        for (Iterator<DrsRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
-            DrsRequest driverRequest = iterator.next();
-            List<DrsRequest> potentialRequests = potentialRequestsFinder.findRegistryIntersections(
+        for (Iterator<DrsDriverRequest> iterator = driverRequests.iterator(); iterator.hasNext();) {
+            DrsDriverRequest driverRequest = iterator.next();
+            List<DrsRiderRequest> potentialRiders = findPotentialRiders(
                     driverRequest.getFromNode(), driverRequest.getToNode(),
                     driverRequest.getDepartureTime());
-            List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRequests);
+
+            List<DrsMatch> filteredMatches = requestsFilter.filterRequests(driverRequest, potentialRiders);
             DrsMatch bestMatch = bestRequestFinder.findBestRequest(filteredMatches);
             if (bestMatch == null) {
                 continue;
             }
 
-            DrsRequest bestRider = bestMatch.getRider();
+            DrsRiderRequest bestRider = bestMatch.getRider();
             bestRider.setMatchedRequest(driverRequest.getId());
             driverRequest.setMatchedRequest(bestRider.getId());
 
@@ -93,31 +105,54 @@ public class MatchMaker {
 
         unmatchedDriverRequests = driverRequests;
 
-        Set<DrsRequest> matchedRiders = matches.stream().map(DrsMatch::getRider)
+        Set<DrsRiderRequest> matchedRiders = matches.stream().map(DrsMatch::getRider)
                 .collect(Collectors.toSet());
         unmatchedRiderRequests = new ArrayList<>();
-        for (DrsRequest request : riderRequests) {
+        for (DrsRiderRequest request : riderRequests) {
             if (!matchedRiders.contains(request)) {
                 unmatchedRiderRequests.add(request);
             }
         }
 
-        LOGGER.info("Initially {} matches found.", matches.size());
+        LOGGER.debug("Initially {} matches found.", matches.size());
         enforceCompleteMatchForEachPerson();
-        LOGGER.info("{} matches remain after enforcing none or all rider legs matched.", matches.size());
+        LOGGER.debug("{} matches remain after enforcing none or all rider legs matched.", matches.size());
+        return new MatchingResult(Collections.unmodifiableList(matches),
+                Collections.unmodifiableList(unmatchedDriverRequests),
+                Collections.unmodifiableList(unmatchedRiderRequests));
+    }
+
+    public List<DrsRiderRequest> findPotentialRiders(Node origin, Node destination, double departureTime) {
+        return findPotentialRiders(drsConfig,
+                requestsRegister.getOriginZoneRegistry().findRequestsWithinDistance(origin,
+                        drsConfig.getMaxMatchingDistanceMeters()),
+                requestsRegister.getDestinationZoneRegistry().findRequestsWithinDistance(destination,
+                        drsConfig.getMaxMatchingDistanceMeters()),
+                requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
+    }
+
+    static List<DrsRiderRequest> findPotentialRiders(DrsConfigGroup drsConfig,
+            Stream<DrsRequest> originNearRequests, Stream<DrsRequest> destinationNearRequests,
+            Stream<DrsRequest> temporalNearRequests) {
+        Stream<DrsRiderRequest> zoneRegistryIntersection = originNearRequests
+                .filter(destinationNearRequests.collect(Collectors.toList())::contains)
+                .filter(DrsRiderRequest.class::isInstance)
+                .map(DrsRiderRequest.class::cast);
+        return zoneRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
+                .limit(drsConfig.getMaxPossibleCandidates())
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private void enforceCompleteMatchForEachPerson() {
-        Multimap<Id<Person>, DrsRequest> person2riderRequest = requestsCollector.getRiderRequests()
-                .stream().collect(
-                        ImmutableListMultimap.toImmutableListMultimap(
-                                r -> r.getPerson().getId(), Function.identity()));
+        Multimap<Id<Person>, DrsRiderRequest> person2riderRequest = originalRiderRequests.stream()
+                .collect(
+                        ImmutableListMultimap.toImmutableListMultimap(r -> r.getPerson().getId(), Function.identity()));
 
         List<DrsRequest> matchedRiderRequests = matches.stream().map(m -> m.getRider()).collect(Collectors.toList());
 
         Set<DrsRequest> undesiredMatches = new HashSet<>();
         for (Id<Person> personId : person2riderRequest.keySet()) {
-            Collection<DrsRequest> requests = person2riderRequest.get(personId);
+            Collection<DrsRiderRequest> requests = person2riderRequest.get(personId);
             boolean allMatched = true;
             for (DrsRequest request : requests) {
                 if (!matchedRiderRequests.contains(request)) {
@@ -140,12 +175,6 @@ public class MatchMaker {
                 matches.remove(undesiredMatch);
             }
         }
-    }
-
-    public MatchingResult getResult() {
-        return new MatchingResult(Collections.unmodifiableList(matches),
-                Collections.unmodifiableList(unmatchedDriverRequests),
-                Collections.unmodifiableList(unmatchedRiderRequests));
     }
 
 }

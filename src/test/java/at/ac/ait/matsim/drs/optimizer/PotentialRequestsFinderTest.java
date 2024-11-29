@@ -21,7 +21,7 @@ class PotentialRequestsFinderTest {
         @Test
         void testEmptyStreamsIntersection() {
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
+                                MatchMaker.findPotentialRiders(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -33,7 +33,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
+                                MatchMaker.findPotentialRiders(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -46,7 +46,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(0,
-                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
+                                MatchMaker.findPotentialRiders(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
@@ -60,7 +60,7 @@ class PotentialRequestsFinderTest {
                 destinationNearRequests.add(request2);
                 temporalNearRequests.add(request3);
                 assertEquals(1,
-                                PotentialRequestsFinder.getIntersection(new DrsConfigGroup(),
+                                MatchMaker.findPotentialRiders(new DrsConfigGroup(),
                                                 originNearRequests.stream(), destinationNearRequests.stream(),
                                                 temporalNearRequests.stream())
                                                 .size());
