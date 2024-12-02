@@ -250,9 +250,9 @@ public class DrsUtil {
         return String.format("POINT(%.1f %.1f)", activity.getCoord().getX(), activity.getCoord().getY());
     }
 
-    public static boolean writeGraph(AfterMobsimEvent event, ControllerConfigGroup controllerConfigGroup) {
+    public static boolean writeGraph(int iteration, ControllerConfigGroup controllerConfigGroup) {
         int createGraphsInterval = controllerConfigGroup.getCreateGraphsInterval();
-        return createGraphsInterval > 0 && event.getIteration() % createGraphsInterval == 0;
+        return createGraphsInterval > 0 && iteration % createGraphsInterval == 0;
     }
 
     /**

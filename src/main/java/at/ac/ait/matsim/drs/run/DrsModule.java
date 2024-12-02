@@ -6,12 +6,12 @@ import org.matsim.core.replanning.conflicts.ConflictModule;
 
 import com.google.inject.Singleton;
 
-import at.ac.ait.matsim.drs.analysis.RiderRequestStatsControlerListener;
+import at.ac.ait.matsim.drs.analysis.DrsReplanningStats;
+import at.ac.ait.matsim.drs.analysis.DrsSimStats;
 import at.ac.ait.matsim.drs.analysis.VktStatsControlerListener;
 import at.ac.ait.matsim.drs.engine.DailyMonetaryConstantListener;
 import at.ac.ait.matsim.drs.engine.DrsData;
 import at.ac.ait.matsim.drs.engine.DrsReplanningListener;
-import at.ac.ait.matsim.drs.engine.DrsSimulationStats;
 import at.ac.ait.matsim.drs.engine.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.engine.PlanModificationUndoer;
 import at.ac.ait.matsim.drs.engine.SubtourModeChoiceForDrs;
@@ -24,12 +24,12 @@ public final class DrsModule extends AbstractModule {
         addControlerListenerBinding().to(DailyMonetaryConstantListener.class);
         addControlerListenerBinding().to(DrsReplanningListener.class);
         addControlerListenerBinding().to(PlanModificationUndoer.class);
-        addControlerListenerBinding().to(RiderRequestStatsControlerListener.class);
         addControlerListenerBinding().to(VktStatsControlerListener.class);
 
-        bind(DrsSimulationStats.class).in(Singleton.class);
-        addControlerListenerBinding().to(DrsSimulationStats.class);
-        addEventHandlerBinding().to(DrsSimulationStats.class);
+        bind(DrsReplanningStats.class).in(Singleton.class);
+        bind(DrsSimStats.class).in(Singleton.class);
+        addControlerListenerBinding().to(DrsSimStats.class);
+        addEventHandlerBinding().to(DrsSimStats.class);
 
         bind(DrsData.class).asEagerSingleton();
 

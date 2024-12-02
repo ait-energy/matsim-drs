@@ -33,6 +33,9 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
 
+import at.ac.ait.matsim.drs.analysis.DrsReplanningStats;
+import at.ac.ait.matsim.drs.analysis.DrsReplanningStats.CsvField;
+
 public class IntegrationTests {
 
     public static final double DELTA = 0.01;
@@ -65,8 +68,17 @@ public class IntegrationTests {
             return get(0, col);
         }
 
+        /** get value from the first row */
+        public String get(Object col) {
+            return get(0, col.toString());
+        }
+
         public String get(int row, String col) {
             return rows.get(row).get(col);
+        }
+
+        public String get(int row, Object col) {
+            return rows.get(row).get(col.toString());
         }
 
         public int size() {
@@ -166,11 +178,11 @@ public class IntegrationTests {
             throws Exception {
         new RunRidersLateForPickupExample().run(false, tempDir);
 
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
         // we find a match for each rider
-        assertEquals(1, riderRequestStats.size());
-        assertEquals("3", riderRequestStats.get("matched"));
-        assertEquals("0", riderRequestStats.get("unmatched"));
+        assertEquals(1, replanningStats.size());
+        assertEquals("3", replanningStats.get(CsvField.matchedRiders));
+        assertEquals("0", replanningStats.get(CsvField.unmatchedRiders));
 
         // but one rider (pedestrian) will miss the ride
         CSV simStatsCsv = readCsv(tempDir.resolve("drs_sim_stats.csv"));
@@ -220,11 +232,10 @@ public class IntegrationTests {
 
         // In iteration 1 (after replanning)
         // the agent wants to use drs but there is no driver
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
-        assertEquals(2, riderRequestStats.size());
-        assertEquals("0", riderRequestStats.get(1, "matched"));
-        // no request should be unmatched (conflict logic must take care of it)
-        assertEquals("0", riderRequestStats.get(1, "unmatched"));
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
+        assertEquals(2, replanningStats.size());
+        assertEquals("0", replanningStats.get(1, CsvField.matchedRiders));
+        assertEquals("2", replanningStats.get(1, CsvField.unmatchedRiders));
 
         // check if conflict logic handled the bad plan
         // (one plan containing both bad requests)
@@ -251,10 +262,10 @@ public class IntegrationTests {
         // In iteration 1 (after replanning)
 
         // driver and rider are matched
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
-        assertEquals(2, riderRequestStats.size());
-        assertEquals("2", riderRequestStats.get(1, "matched"));
-        assertEquals("0", riderRequestStats.get(1, "unmatched"));
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
+        assertEquals(2, replanningStats.size());
+        assertEquals("2", replanningStats.get(1, CsvField.matchedRiders));
+        assertEquals("0", replanningStats.get(1, CsvField.unmatchedRiders));
 
         // driver and rider must use drs mode
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
@@ -277,10 +288,10 @@ public class IntegrationTests {
         // In iteration 10 (last iteration)
 
         // driver and rider are matched
-        CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
-        assertEquals(11, riderRequestStats.size());
-        assertEquals("2", riderRequestStats.get(10, "matched"));
-        assertEquals("0", riderRequestStats.get(10, "unmatched"));
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
+        assertEquals(11, replanningStats.size());
+        assertEquals("2", replanningStats.get(10, CsvField.matchedRiders));
+        assertEquals("0", replanningStats.get(10, CsvField.unmatchedRiders));
 
         // driver and rider must use drs mode
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
@@ -325,21 +336,21 @@ public class IntegrationTests {
             throws Exception {
         {
             new RunRidersDepartureTimeAdjustmentExample(15 * 60 - 1).run(false, tempDir);
-            CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
+            CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
             // no match because the time window is one second too small
-            assertEquals(1, riderRequestStats.size());
-            assertEquals("0", riderRequestStats.get("matched"));
-            assertEquals("2", riderRequestStats.get("unmatched"));
+            assertEquals(1, replanningStats.size());
+            assertEquals("0", replanningStats.get(CsvField.matchedRiders));
+            assertEquals("2", replanningStats.get(CsvField.unmatchedRiders));
         }
 
         {
             new RunRidersDepartureTimeAdjustmentExample(16 * 60).run(false, tempDir);
-            CSV riderRequestStats = readCsv(tempDir.resolve("drs_request_stats.csv"));
+            CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
             // the 15 minute time window is enough to match
-            assertEquals(1, riderRequestStats.size());
-            assertEquals("1", riderRequestStats.get("matched"));
+            assertEquals(1, replanningStats.size());
+            assertEquals("1", replanningStats.get(CsvField.matchedRiders));
             // for now the rider with early start is unmachted, rethink if this is OK
-            assertEquals("1", riderRequestStats.get("unmatched"));
+            assertEquals("1", replanningStats.get(CsvField.unmatchedRiders));
 
             // check that the actual departure time is as expected
             CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));

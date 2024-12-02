@@ -103,7 +103,7 @@ public class VktStatsControlerListener implements AfterMobsimListener {
             throw new UncheckedIOException(e);
         }
 
-        if (DrsUtil.writeGraph(event, controllerConfigGroup)) {
+        if (DrsUtil.writeGraph(event.getIteration(), controllerConfigGroup)) {
             String[] categories = iterationHistories.keySet().stream()
                     .map(Object::toString)
                     .toArray(String[]::new);

@@ -1,4 +1,4 @@
-package at.ac.ait.matsim.drs.engine;
+package at.ac.ait.matsim.drs.analysis;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -24,13 +24,20 @@ import org.matsim.core.utils.misc.Time;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 
+import at.ac.ait.matsim.drs.engine.DrsFailedPickupEvent;
+import at.ac.ait.matsim.drs.engine.DrsFailedPickupEventHandler;
+import at.ac.ait.matsim.drs.engine.DrsPickupEvent;
+import at.ac.ait.matsim.drs.engine.DrsPickupEventHandler;
 import at.ac.ait.matsim.drs.run.Drs;
 
-public class DrsSimulationStats implements DrsPickupEventHandler, DrsFailedPickupEventHandler,
+/**
+ * Drs stats of the actual simulation of the replanned plans
+ */
+public class DrsSimStats implements DrsPickupEventHandler, DrsFailedPickupEventHandler,
         VehicleAbortsEventHandler, PersonStuckEventHandler,
         StartupListener, AfterMobsimListener {
     private static final boolean DEBUG = false;
-    private static final String FILENAME_SIM_STATS = "drs_sim_stats";
+    private static final String FILENAME = "drs_sim_stats";
     private static final String FILENAME_DEBUG_EVENTS = "drs_debug_events.txt";
     private final String simStatsFileName;
     private final String delimiter;
@@ -40,8 +47,8 @@ public class DrsSimulationStats implements DrsPickupEventHandler, DrsFailedPicku
     private BufferedWriter debugWriter;
 
     @Inject
-    public DrsSimulationStats(GlobalConfigGroup globalConfig, OutputDirectoryHierarchy outputHierarchy) {
-        this.simStatsFileName = outputHierarchy.getOutputFilename(FILENAME_SIM_STATS);
+    public DrsSimStats(GlobalConfigGroup globalConfig, OutputDirectoryHierarchy outputHierarchy) {
+        this.simStatsFileName = outputHierarchy.getOutputFilename(FILENAME);
         this.delimiter = globalConfig.getDefaultDelimiter();
         this.outputHierarchy = outputHierarchy;
     }

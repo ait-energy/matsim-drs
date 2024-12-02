@@ -22,6 +22,7 @@ import org.matsim.core.router.TripRouter;
 
 import com.google.inject.Inject;
 
+import at.ac.ait.matsim.drs.analysis.DrsReplanningStats;
 import at.ac.ait.matsim.drs.analysis.DrsTripsInfoCollector;
 import at.ac.ait.matsim.drs.optimizer.BestMatchFinder;
 import at.ac.ait.matsim.drs.optimizer.DrsMatch;
@@ -52,18 +53,20 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
     private final DrsConfigGroup drsConfig;
     private final RoutingModule driverRouter;
     private final OutputDirectoryHierarchy outputDirectoryHierarchy;
+    private final DrsReplanningStats replanningStats;
     private final ConflictManager conflictManager;
     private final UnmatchedRiderConflictResolver unmatchedRiderConflictResolver;
 
     @Inject
     public DrsReplanningListener(Scenario scenario, DrsConfigGroup drsConfig, DrsData drsData, TripRouter tripRouter,
-            OutputDirectoryHierarchy outputDirectoryHierarchy) {
+            OutputDirectoryHierarchy outputDirectoryHierarchy, DrsReplanningStats replanningStats) {
         this.scenario = scenario;
         this.drsData = drsData;
         this.globalConfig = scenario.getConfig().global();
         this.drsConfig = drsConfig;
         driverRouter = tripRouter.getRoutingModule(Drs.DRIVER_MODE);
         this.outputDirectoryHierarchy = outputDirectoryHierarchy;
+        this.replanningStats = replanningStats;
 
         // Create a custom ConflictManager with an actual resolver for our conflicts.
         // Must not be bound to the "official" conflict resolver because
@@ -90,14 +93,14 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
         if (event.getIteration() != 0) {
             return;
         }
-        optimizeDrs(event.isLastIteration());
+        optimizeDrs(event.getIteration(), event.isLastIteration());
     }
 
     /** before iterations > 0 */
     @Override
     public void notifyReplanning(ReplanningEvent event) {
         conflictManager.initializeReplanning(scenario.getPopulation());
-        optimizeDrs(event.isLastIteration());
+        optimizeDrs(event.getIteration(), event.isLastIteration());
         conflictManager.run(scenario.getPopulation(), event.getIteration());
 
         // TODO rethink this. deleting the plans here could hinder
@@ -105,7 +108,7 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
         // unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
     }
 
-    private void optimizeDrs(boolean isLastIteration) {
+    private void optimizeDrs(int iteration, boolean isLastIteration) {
         LOGGER.info("Drs replanning started.");
         DrsUtil.routeCalculations.set(0);
         Population population = scenario.getPopulation();
@@ -138,6 +141,8 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
         for (DrsMatch match : result.matches()) {
             planModifier.modifyPlans(match);
         }
+
+        replanningStats.writeStats(iteration, driverRequests.size(), riderRequests.size(), result);
         LOGGER.info("Modified drs plans.");
         LOGGER.info("Drs replanning finished using {} route calculations.",
                 DrsUtil.routeCalculations.get());

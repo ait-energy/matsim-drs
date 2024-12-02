@@ -184,13 +184,13 @@ and can also be configured via the relevant parameters in the `drs` config group
 
 The following output files are additionally created in the MATSim output directory:
 
-- `drs_request_stats.csv/png`: evolution of number of matched and unmatched drs requests
+- `drs_replanning_stats.csv/png`: evolution of the number of DRS requests and matches
+- `drs_replanning_trips_[un]matched.csv`: details of all matched and unmatched trips of the *last iteration*
+- `drs_sim_stats.csv`: evolution of the actual drs simulation, e.g. nr of stuck riders (similar to experienced plans)
 - `drs_vkt_stats.csv/png`: evolution of distribution of vehicle kilometres traveled by motorized individual transport between
   - DRS travel, i.e. parts of a DRS driver's trip with an actual rider
   - before and after DRS, i.e. parts of a DRS driver's trip to the pickup point / after dropping off the rider
   - individual travel, i.e. regular non-DRS car trips or unmatched DRS driver trips
-- `drs_[un]matched_trips.csv`: details for all matched and unmatched trips of the *last iteration*
-- `drs_sim_stats.csv`: stats (e.g. nr of stuck riders) of the actual simulation run (similar to experienced plans)
 
 ## Limitations & Future Work
 

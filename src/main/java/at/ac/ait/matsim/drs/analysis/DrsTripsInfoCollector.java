@@ -18,9 +18,9 @@ import at.ac.ait.matsim.drs.optimizer.DrsRequest;
 import at.ac.ait.matsim.drs.run.Drs;
 
 public class DrsTripsInfoCollector {
-    public static final String FILENAME_MATCHED_DRS_TRIPS = "drs_matched_trips";
+    public static final String FILENAME_MATCHED_DRS_TRIPS = "drs_replanning_trips_matched";
     private final String matchedTripsFileName;
-    public static final String FILENAME_UNMATCHED_DRS_TRIPS = "drs_unmatched_trips";
+    public static final String FILENAME_UNMATCHED_DRS_TRIPS = "drs_replanning_trips_unmatched";
     private final String unmatchedTripsFileName;
     private final String delimiter;
 
