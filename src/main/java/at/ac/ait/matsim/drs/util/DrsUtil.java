@@ -20,7 +20,6 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.ControllerConfigGroup;
-import org.matsim.core.controler.events.AfterMobsimEvent;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.population.routes.GenericRouteImpl;
 import org.matsim.core.router.DefaultRoutingRequest;

@@ -10,6 +10,7 @@ import org.matsim.pt2matsim.tools.NetworkTools;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.uber.h3core.H3Core;
 import com.uber.h3core.LengthUnit;
@@ -34,6 +35,8 @@ public class DrsData {
                 ImmutableSet.of(Drs.DRIVER_MODE));
         LOGGER.info("Filtered {} drs driver links from network with {} links", drsNetwork.getLinks().size(),
                 scenario.getNetwork().getLinks().size());
+        LOGGER.debug("Removed links: {}",
+                Sets.difference(scenario.getNetwork().getLinks().keySet(), drsNetwork.getLinks().keySet()));
 
         int resolution = findH3ResolutionForDistance(drsConfig.getMaxMatchingDistanceMeters());
         this.zoneSystem = new H3ZoneSystem(scenario.getConfig().global().getCoordinateSystem(), resolution,

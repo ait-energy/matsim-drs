@@ -29,11 +29,11 @@
             <attribute class="java.lang.String" name="hasLicense">no</attribute>
         </attributes>
         <plan selected="yes">
-            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="07:20:00" end_time="07:20:00" />
+            <activity type="home" link="28" x="5991.161" y="345598.0287" end_time="07:20:00" />
             <leg mode="bike" />
-            <activity type="work" link="152" x="3360.657" y="344813.230" start_time="07:40:00" end_time="17:30:00" />
+            <activity type="work" link="1655" x="3400.587" y="344774.199" start_time="07:40:00" end_time="17:30:00" />
             <leg mode="bike" />
-            <activity type="home" link="112" x="5826.522" y="345633.182" start_time="18:00:00" />
+            <activity type="home" link="28" x="5991.161" y="345598.0287" start_time="18:00:00" />
         </plan>
     </person>
 

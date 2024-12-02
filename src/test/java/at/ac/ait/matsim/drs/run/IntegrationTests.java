@@ -28,6 +28,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.TripStructureUtils;
+import org.matsim.core.router.TripStructureUtils.Trip;
 
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderHeaderAware;
@@ -250,8 +251,8 @@ public class IntegrationTests {
     }
 
     /**
-     * SubtourModeChoice + matching logic test: test that a trival match works
-     * (rider + driver with same locations and times)
+     * SubtourModeChoice + matching logic test for a trivial match:
+     * rider + driver with same locations and times
      */
     @Test
     @Tag("IntegrationTest")
@@ -265,12 +266,67 @@ public class IntegrationTests {
         CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
         assertEquals(2, replanningStats.size());
         assertEquals("2", replanningStats.get(1, CsvField.matchedRiders));
+        assertEquals("2", replanningStats.get(1, CsvField.matchedDrivers));
         assertEquals("0", replanningStats.get(1, CsvField.unmatchedRiders));
+        assertEquals("0", replanningStats.get(1, CsvField.unmatchedDrivers));
 
         // driver and rider must use drs mode
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
         assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").filter("trip_number", "1").get("main_mode"));
         assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").filter("trip_number", "1").get("main_mode"));
+    }
+
+    /**
+     * SubtourModeChoice + matching logic test for:
+     * rider + driver with similar locations (and same times)
+     *
+     * Also check if the network routes (access egress) are OK
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testAdjacentMatch(@TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+        new RunAdjacentMatchExample().run(false, tempDir);
+
+        // In iteration 1 (after replanning)
+
+        // driver and rider are matched
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
+        assertEquals(2, replanningStats.size());
+        assertEquals("2", replanningStats.get(1, CsvField.matchedRiders));
+        assertEquals("2", replanningStats.get(1, CsvField.matchedDrivers));
+        assertEquals("0", replanningStats.get(1, CsvField.unmatchedRiders));
+        assertEquals("0", replanningStats.get(1, CsvField.unmatchedDrivers));
+
+        // driver and rider must use drs mode
+        CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
+        assertEquals(Drs.DRIVER_MODE, trips.filter("person", "carPerson").filter("trip_number", "1").get("main_mode"));
+        assertEquals(Drs.RIDER_MODE, trips.filter("person", "ridePerson").filter("trip_number", "1").get("main_mode"));
+
+        Population outputPlans = PopulationUtils
+                .readPopulation(tempDir.resolve("output_plans.xml.gz").toFile().toString());
+
+        // rider route with a single leg
+        Plan riderPlan = outputPlans.getPersons().get(Id.createPersonId("ridePerson")).getSelectedPlan();
+        Trip riderTrip = TripStructureUtils.getTrips(riderPlan).get(0);
+        assertEquals(1, riderTrip.getLegsOnly().size());
+        Route riderRoute = riderTrip.getLegsOnly().get(0).getRoute();
+        assertEquals("28", riderRoute.getStartLinkId().toString());
+        assertEquals("1655", riderRoute.getEndLinkId().toString());
+
+        // driver route with three legs (detour for pickup / dropoff)
+        Plan driverPlan = outputPlans.getPersons().get(Id.createPersonId("carPerson")).getSelectedPlan();
+        Trip driverTrip = TripStructureUtils.getTrips(driverPlan).get(0);
+        assertEquals(3, driverTrip.getLegsOnly().size());
+        Route driverPickupRoute = driverTrip.getLegsOnly().get(0).getRoute();
+        assertEquals("112", driverPickupRoute.getStartLinkId().toString());
+        assertEquals("28", driverPickupRoute.getEndLinkId().toString());
+        Route driverWithRiderRoute = driverTrip.getLegsOnly().get(1).getRoute();
+        assertEquals("28", driverWithRiderRoute.getStartLinkId().toString());
+        assertEquals("1655", driverWithRiderRoute.getEndLinkId().toString());
+        Route driverFinalRoute = driverTrip.getLegsOnly().get(2).getRoute();
+        assertEquals("1655", driverFinalRoute.getStartLinkId().toString());
+        assertEquals("152", driverFinalRoute.getEndLinkId().toString());
     }
 
     /**
@@ -291,7 +347,9 @@ public class IntegrationTests {
         CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
         assertEquals(11, replanningStats.size());
         assertEquals("2", replanningStats.get(10, CsvField.matchedRiders));
+        assertEquals("2", replanningStats.get(10, CsvField.matchedDrivers));
         assertEquals("0", replanningStats.get(10, CsvField.unmatchedRiders));
+        assertEquals("0", replanningStats.get(10, CsvField.unmatchedDrivers));
 
         // driver and rider must use drs mode
         CSV trips = readCsv(tempDir.resolve("output_trips.csv.gz"));
@@ -327,7 +385,7 @@ public class IntegrationTests {
     }
 
     /**
-     * Test dRS engine behavior: riders must be able to adjust their departure time
+     * Test drs engine behavior: riders must be able to adjust their departure time
      */
     @Test
     @Tag("IntegrationTest")
