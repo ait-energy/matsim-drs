@@ -8,7 +8,7 @@
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
-        <matsim.version>2025.0-PR3578</matsim.version>
+        <matsim.version>2025.0-PR3544</matsim.version>
 
         <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
