@@ -18,7 +18,8 @@ import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
 /**
- * Rejects plans containing one or more unmatched drs rider legs
+ * Rejects plans containing one or more unmatched drs rider legs.
+ * Optionally deletes invalid plans.
  */
 public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdentifier {
 

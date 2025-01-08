@@ -418,4 +418,24 @@ public class IntegrationTests {
         }
     }
 
+    /**
+     * Test that a perfect match must be found for each of the 12 trips
+     *
+     * NOTE: this test takes much longer than all other tests due to the high number
+     * of iterations
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testPerfectMatch(
+            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+
+        new RunPerfectMatchExample().run(true, tempDir);
+        CSV replanningStats = readCsv(tempDir.resolve(DrsReplanningStats.FILENAME + ".csv"));
+        assertEquals(101, replanningStats.size());
+        assertEquals("6", replanningStats.get(100, CsvField.matchedRiders));
+        assertEquals("0", replanningStats.get(100, CsvField.unmatchedRiders));
+        assertEquals("6", replanningStats.get(100, CsvField.matchedDrivers));
+        assertEquals("0", replanningStats.get(100, CsvField.unmatchedDrivers));
+    }
 }
