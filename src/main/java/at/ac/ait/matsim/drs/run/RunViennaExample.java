@@ -12,7 +12,6 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
-import org.matsim.core.population.PersonUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import at.ac.ait.matsim.drs.util.CarLinkAssigner;
@@ -27,12 +26,17 @@ public class RunViennaExample {
         Scenario scenario = ScenarioUtils.loadScenario(config);
         enforceMaxPopulationSize(scenario.getPopulation(), 1_000);
         clearSubpopulation(scenario.getPopulation());
-        addDrsAffinity(scenario.getPopulation());
 
-        // optional steps to prepare the scenario
+        // prepare the scenario for drs
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
+        int fixed = DrsUtil.addMissingDrsAffinity(scenario.getPopulation());
+        if (fixed == 0) {
+            LOGGER.info("All agents already had a {}, great!", Drs.ATTRIB_AFFINITY);
+        } else {
+            LOGGER.warn("For {} agents {} was missing and has been added.", Drs.ATTRIB_AFFINITY, fixed);
+        }
 
         // necessary to kick-start the drs driver pool
         int count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
@@ -59,15 +63,6 @@ public class RunViennaExample {
         List<Id<Person>> deleteKeys = keys.subList(maxPopulationSize, keys.size());
         deleteKeys.forEach(k -> population.removePerson(k));
         return deleteKeys.size();
-    }
-
-    public static void addDrsAffinity(Population population) {
-        for (Person person : population.getPersons().values()) {
-            String drsAffinity = PersonUtils.getCarAvail(person).equals("always")
-                    ? Drs.AFFINITY_DRIVER_OR_RIDER
-                    : Drs.AFFINITY_RIDER_ONLY;
-            person.getAttributes().putAttribute(Drs.ATTRIB_AFFINITY, drsAffinity);
-        }
     }
 
     public static void clearSubpopulation(Population population) {

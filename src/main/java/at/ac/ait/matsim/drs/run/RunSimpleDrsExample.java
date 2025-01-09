@@ -37,21 +37,28 @@ public class RunSimpleDrsExample {
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        // optional steps to prepare the scenario
+        // prepare the scenario for drs
         new CarLinkAssigner(scenario.getNetwork()).run(scenario.getPopulation());
         DrsUtil.addMissingCoordsToPlanElementsFromLinks(scenario.getPopulation(), scenario.getNetwork());
         DrsUtil.addNewAllowedModeToCarLinks(scenario.getNetwork(), Drs.DRIVER_MODE);
+        int fixed = DrsUtil.addMissingDrsAffinity(scenario.getPopulation());
+        if (fixed == 0) {
+            LOGGER.info("All agents already had a {}, great!", Drs.ATTRIB_AFFINITY);
+        } else {
+            LOGGER.warn("For {} agents {} was missing and has been added.", Drs.ATTRIB_AFFINITY, fixed);
+        }
+
         DrsUtil.addFakeGenericRouteToDrsDriverLegs(scenario.getPopulation());
 
         if (assignDrs) {
             // kick-start all ride agents as riders
             int count = DrsUtil.addDrsPlanForEligiblePlans(scenario.getPopulation(), scenario.getConfig(),
                     Drs.RIDER_MODE, Set.of(TransportMode.ride));
-            LOGGER.info("added initial drs rider plan to {} agent(s)", count);
+            LOGGER.info("Added initial drs rider plan to {} agent(s)", count);
 
             // necessary to kick-start the drs driver pool
             count = DrsUtil.addDrsDriverPlans(scenario.getPopulation(), scenario.getConfig());
-            LOGGER.info("added initial drs driver plan to {} agent(s)", count);
+            LOGGER.info("Added initial drs driver plan to {} agent(s)", count);
         }
 
         Controler controller = new Controler(scenario);

@@ -20,6 +20,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.ControllerConfigGroup;
+import org.matsim.core.population.PersonUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.population.routes.GenericRouteImpl;
 import org.matsim.core.router.DefaultRoutingRequest;
@@ -77,6 +78,33 @@ public class DrsUtil {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Checks each person if it has the drsAffinity attribute. If not it it set in a
+     * very optimistic way: everybody would ride, everybody who can drive a car
+     * would drive (similar to PermissibleModesCalculatorForDrs)
+     *
+     * @return the number of persons where the attribute was missing
+     */
+    public static int addMissingDrsAffinity(Population population) {
+        int affectedPersons = 0;
+        for (Person person : population.getPersons().values()) {
+            if (!getDrsAffinity(person).isEmpty()) {
+                continue;
+            }
+            affectedPersons++;
+            boolean hasLicense = !"no".equals(PersonUtils.getLicense(person));
+            boolean carAvailable = !"never".equals(PersonUtils.getCarAvail(person));
+            String drsAffinity = hasLicense && carAvailable
+                    ? Drs.AFFINITY_DRIVER_OR_RIDER
+                    : Drs.AFFINITY_RIDER_ONLY;
+            person.getAttributes().putAttribute(Drs.ATTRIB_AFFINITY, drsAffinity);
+        }
+        return affectedPersons;
+    }
+
+    /**
+     * @return a String (may be empty, never null)
+     */
     public static String getDrsAffinity(Person person) {
         Object affinity = person.getAttributes().getAttribute(Drs.ATTRIB_AFFINITY);
         return affinity == null ? "" : affinity.toString();

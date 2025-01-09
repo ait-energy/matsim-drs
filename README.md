@@ -58,7 +58,7 @@ In more detail, DRS is integrated into the MATSim loop as follows:
 ### Replanning
 
 First the slightly adjusted innovation strategy `SubtourModeChoiceForDrs` assigns the new modes `drsDriver` and `drsRider` to agents' subtours.
-This assignment can be restricted with the optional person attribute `drsAffinity`.
+This assignment can be restricted with the person attribute `drsAffinity`.
 
 Then requests are collected and matched based on origin, destination, departure time and detour time.
 The riders' acceptance of deviations to their desired departure time can be controlled with the DRS config parameter `riderDepartureTimeAdjustmentSeconds`.
@@ -112,7 +112,7 @@ add the MATSim repo and the following dependency to your `pom.xml`:
 </dependencies>
 ```
 
-The DRS module's major version (e.g. 14) corresponds to the MATSim version it is compatible with.
+The DRS module's major version corresponds to the MATSim version it is compatible with.
 
 ### Config Parameters
 
