@@ -45,7 +45,7 @@ public class RunSimpleDrsExample {
         if (fixed == 0) {
             LOGGER.info("All agents already had a {}, great!", Drs.ATTRIB_AFFINITY);
         } else {
-            LOGGER.warn("For {} agents {} was missing and has been added.", Drs.ATTRIB_AFFINITY, fixed);
+            LOGGER.warn("For {} agents {} was missing and has been added.", fixed, Drs.ATTRIB_AFFINITY);
         }
 
         DrsUtil.addFakeGenericRouteToDrsDriverLegs(scenario.getPopulation());

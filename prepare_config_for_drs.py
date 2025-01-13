@@ -1,10 +1,13 @@
-# %%
 """
 Prepare MATSim config files for use with the drs (dynamic ride sharing) module.
-Adjust the XML templates below to your liking before running the script.
+Adjust the integrated XML snippets to your liking before running the script.
 """
-from lxml import etree
+
+import argparse
 import logging
+
+from lxml import etree
+from pathlib import Path
 
 DRS_MODULE = """
 <module name="drs">
@@ -225,21 +228,25 @@ def _adjust_scoring(scoring: etree.Element) -> None:
         scoring.append(params)
 
 
-config_file = "/home/mstraub/tmp/config-baseline-subtourModeChoice.xml"
-config_file_out = "/home/mstraub/tmp/config-baseline-subtourModeChoice+drs.xml"
-tree = etree.parse(config_file, CLEAN_PARSER)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("in_file", type=Path)
+    parser.add_argument("out_file", type=Path)
+    args = vars(parser.parse_args())
 
-add_drs_module(tree)
-adjust_qsim(tree)
-adjust_replanning(tree)
-adjust_routing(tree)
-adjust_scoring(tree)
+    logger.info(f"reading config from {args["in_file"]}")
+    tree = etree.parse(args["in_file"], CLEAN_PARSER)
 
-tree.write(
-    config_file_out,
-    encoding=tree.docinfo.encoding,
-    pretty_print=True,
-    xml_declaration=True,
-)
+    add_drs_module(tree)
+    adjust_qsim(tree)
+    adjust_replanning(tree)
+    adjust_routing(tree)
+    adjust_scoring(tree)
 
-# %%
+    tree.write(
+        args["out_file"],
+        encoding=tree.docinfo.encoding,
+        pretty_print=True,
+        xml_declaration=True,
+    )
+    logger.info(f"adjusted config written to {args["out_file"]}")
