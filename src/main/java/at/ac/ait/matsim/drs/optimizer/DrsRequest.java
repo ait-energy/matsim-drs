@@ -45,6 +45,7 @@ public abstract class DrsRequest implements Request {
      * leg or a drs leg accompanied by walk access and egress legs.
      *
      * @param drsNetwork must only consist of links accessible to the drsDriver mode
+     * @return null in case no useful request can be created
      */
     public static DrsRequest create(Id<Request> id, RoutingModule driverRouter, Network drsNetwork, Person person,
             Trip trip) {

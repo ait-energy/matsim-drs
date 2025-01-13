@@ -63,6 +63,9 @@ public class RequestsCollector {
 
                 Id<Request> id = Id.create(++requestId, Request.class);
                 DrsRequest request = DrsRequest.create(id, driverRouter, drsNetwork, person, trip);
+                if (request == null) {
+                    continue;
+                }
 
                 double distance = request.getNetworkRouteDistance();
                 if (request instanceof DrsDriverRequest) {
