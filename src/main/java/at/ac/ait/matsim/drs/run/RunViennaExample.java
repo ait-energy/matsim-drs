@@ -25,6 +25,7 @@ public class RunViennaExample {
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         enforceMaxPopulationSize(scenario.getPopulation(), 1_000);
+        // clear subpop to allow for a much smaller (exemplary) config
         clearSubpopulation(scenario.getPopulation());
 
         // prepare the scenario for drs

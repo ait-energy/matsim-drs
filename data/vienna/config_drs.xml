@@ -3,194 +3,193 @@
 <!-- Example showing how to set up drs (with mode innovation and a regular population not containing initial drsDriver/Riders) -->
 <!-- Copy model data from https://github.com/ait-energy/matsim-model-vienna -->
 <config>
-	<module name="global">
-		<param name="numberOfThreads" value="3" />
-		<param name="coordinateSystem" value="epsg:3416" />
-	</module>
+    <module name="global">
+        <param name="numberOfThreads" value="3" />
+        <param name="coordinateSystem" value="epsg:3416" />
+    </module>
 
-	<module name="network">
-		<param name="inputNetworkFile" value="./network.xml.gz" />
-	</module>
+    <module name="network">
+        <param name="inputNetworkFile" value="./network.xml.gz" />
+    </module>
 
-	<module name="plans">
-		<param name="inputPlansFile" value="./population.xml.gz" />
-		<!-- <param name="inputPlansFile" value="./population-snippet.xml" /> -->
-	</module>
+    <module name="plans">
+        <param name="inputPlansFile" value="./population.xml.gz" />
+    </module>
 
-	<module name="controller">
-		<param name="outputDirectory" value="./output-vienna-drs" />
-		<param name="overwriteFiles" value="deleteDirectoryIfExists" />
-		<param name="firstIteration" value="0" />
-		<param name="lastIteration" value="2" />
-		<param name="writeEventsInterval" value="1" />
-		<param name="writePlansInterval" value="1" />
-		<param name="writeSnapshotsInterval" value="1" />
-	</module>
+    <module name="controller">
+        <param name="outputDirectory" value="./output-vienna-drs" />
+        <param name="overwriteFiles" value="deleteDirectoryIfExists" />
+        <param name="firstIteration" value="0" />
+        <param name="lastIteration" value="10" />
+        <param name="writeEventsInterval" value="1" />
+        <param name="writePlansInterval" value="1" />
+        <param name="writeSnapshotsInterval" value="1" />
+    </module>
 
-	<module name="qsim">
-		<param name="numberOfThreads" value="3" />
-		<param name="startTime" value="00:00:00" />
-		<param name="endTime" value="30:00:00" />
-		<!-- DRS NOTE: drsDriver mode must be added as a mainMode to QSim -->
-		<param name="mainMode" value="car,drsDriver" />
-	</module>
+    <module name="qsim">
+        <param name="numberOfThreads" value="3" />
+        <param name="startTime" value="00:00:00" />
+        <param name="endTime" value="30:00:00" />
+        <!-- DRS NOTE: drsDriver mode must be added as a mainMode to QSim -->
+        <param name="mainMode" value="car,drsDriver" />
+    </module>
 
-	<!-- DRS-NOTE: drsRider must be added as teleported mode.
-         Since adding one or more modes clears predefined modes
-         we must re-add all default teleported modes -->
-	<module name="routing">
-		<!-- DRS NOTE: drsDriver mode must be added as a networkMode -->
-		<param name="networkModes" value="car,drsDriver" />
-		<param name="clearDefaultTeleportedModeParams" value="true" />
+    <module name="routing">
+        <!-- <param name="accessEgressType" value="accessEgressModeToLink" /> -->
+        <!-- DRS NOTE: drsDriver mode must be added as a networkMode -->
+        <param name="networkModes" value="car,drsDriver" />
+        <!-- DRS NOTE: drsRider routes are internally calculated with the drsDriver routing module.
+             Unfortunately we still need to provide a teleportation config for drsRider
+             because it may be used by the ReRoute strategy (even if the result of the rerouting does not make sense
+             and will be replaced by the results of our matching algorithm immediately.)
+             To specify a teleportation config for drsRider we need to also explicitly set the
+             default modes, because they are deleted as soon as a single mode is configured here :/ -->
+        <param name="clearDefaultTeleportedModeParams" value="true" />
 
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="1.3" />
-			<param name="mode" value="bike" />
-			<param name="teleportedModeSpeed" value="4.166666666666667" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="1.3" />
-			<param name="mode" value="walk" />
-			<param name="teleportedModeSpeed" value="0.8333333333333333" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="1.3" />
-			<param name="mode" value="non_network_walk" />
-			<param name="teleportedModeSpeed" value="0.8333333333333333" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="1.3" />
-			<param name="mode" value="ride" />
-			<param name="teleportedModeFreespeedFactor" value="1.0" />
-		</parameterset>
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="1.3" />
-			<param name="mode" value="pt" />
-			<param name="teleportedModeFreespeedFactor" value="2.0" />
-		</parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="bike" />
+            <param name="teleportedModeSpeed" value="4.166666666666667" />
+        </parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="walk" />
+            <param name="teleportedModeSpeed" value="0.8333333333333333" />
+        </parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="non_network_walk" />
+            <param name="teleportedModeSpeed" value="0.8333333333333333" />
+        </parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="ride" />
+            <param name="teleportedModeFreespeedFactor" value="1.0" />
+        </parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="pt" />
+            <param name="teleportedModeFreespeedFactor" value="2.0" />
+        </parameterset>
+        <parameterset type="teleportedModeParameters">
+            <param name="beelineDistanceFactor" value="1.3" />
+            <param name="mode" value="drsRider" />
+            <param name="teleportedModeFreespeedFactor" value="2.0" />
+        </parameterset>
+    </module>
 
-		<!-- DRS NOTE: The routing config for drsRider here is ONLY relevant for UNMATCHED riders,
-             since matched riders will either be picked up by the driver (or stuck).
-             The idea is that unmatched riders should not be stuck but get a mobility guarantee.
-             To avoid persons switching from fast modes (such as car) to drsRider arrive late
-             the proposed config of beelineDistanceFactor=2 and teleportedModeSpeed=8.3 is recommended. -->
-		<parameterset type="teleportedModeParameters">
-			<param name="beelineDistanceFactor" value="2" />
-			<param name="mode" value="drsRider" />
-			<param name="teleportedModeSpeed" value="8.3" />
-		</parameterset>
-	</module>
+    <module name="scoring">
+        <param name="writeExperiencedPlans" value="true" />
+        <parameterset type="activityParams">
+            <param name="activityType" value="education" />
+            <param name="typicalDuration" value="06:00:00" />
+        </parameterset>
+        <parameterset type="activityParams">
+            <param name="activityType" value="errand" />
+            <param name="typicalDuration" value="01:00:00" />
+        </parameterset>
+        <parameterset type="activityParams">
+            <param name="activityType" value="home" />
+            <param name="typicalDuration" value="12:00:00" />
+        </parameterset>
+        <parameterset type="activityParams">
+            <param name="activityType" value="leisure" />
+            <param name="typicalDuration" value="01:00:00" />
+        </parameterset>
+        <parameterset type="activityParams">
+            <param name="activityType" value="shopping" />
+            <param name="typicalDuration" value="00:30:00" />
+        </parameterset>
+        <parameterset type="activityParams">
+            <param name="activityType" value="work" />
+            <param name="typicalDuration" value="08:00:00" />
+        </parameterset>
 
-	<module name="scoring">
-		<parameterset type="activityParams">
-			<param name="activityType" value="education" />
-			<param name="typicalDuration" value="06:00:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType" value="errand" />
-			<param name="typicalDuration" value="01:00:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType" value="home" />
-			<param name="typicalDuration" value="12:00:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType" value="leisure" />
-			<param name="typicalDuration" value="01:00:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType" value="shopping" />
-			<param name="typicalDuration" value="00:30:00" />
-		</parameterset>
-		<parameterset type="activityParams">
-			<param name="activityType" value="work" />
-			<param name="typicalDuration" value="08:00:00" />
-		</parameterset>
-
-		<!-- DRS NOTE: activityParams and modeParams must be added for drs
+        <!-- DRS NOTE: activityParams and modeParams must be added for drs
              (the others are added by default)-->
-		<parameterset type="activityParams">
-			<param name="activityType" value="drsDriver interaction" />
-			<param name="priority" value="1.0" />
-			<param name="scoringThisActivityAtAll" value="false" />
-			<param name="typicalDurationScoreComputation" value="relative" />
-		</parameterset>
-		<parameterset type="modeParams">
-			<param name="constant" value="0.0" />
-			<!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
+        <parameterset type="activityParams">
+            <param name="activityType" value="drsDriver interaction" />
+            <param name="priority" value="1.0" />
+            <param name="scoringThisActivityAtAll" value="false" />
+            <param name="typicalDurationScoreComputation" value="relative" />
+        </parameterset>
+        <parameterset type="modeParams">
+            <param name="constant" value="0.0" />
+            <!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
                  (use drs.carAndDrsDailyMonetaryConstant instead) -->
-			<param name="dailyMonetaryConstant" value="0.0" />
-			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
-			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-			<param name="mode" value="car" />
-			<!-- DRS NOTE: should be the same as monetaryDistanceRate for drsDriver -->
-			<param name="monetaryDistanceRate" value="-0.000091"/>
-		</parameterset>
-		<!-- DRS NOTE: The scoring config for drsRider applies to BOTH matched an unmatched riders.
-             To avoid masses of unmatched riders we should apply costs to the that,
-             but ideally not here but in drs.riderMobilityGuaranteeMonetaryConstant -->
-		<parameterset type="modeParams">
-			<param name="constant" value="0.0" />
-			<param name="dailyMonetaryConstant" value="0.0" />
-			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
-			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-			<param name="mode" value="drsRider" />
-			<!-- DRS NOTE: costs for using drs as rider -->
-			<param name="monetaryDistanceRate" value="-0.0002"/>
-		</parameterset>
-		<parameterset type="modeParams">
-			<param name="constant" value="0.0" />
-			<!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
+            <param name="dailyMonetaryConstant" value="0.0" />
+            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
+            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+            <param name="mode" value="car" />
+            <!-- DRS NOTE: should be the same as monetaryDistanceRate for drsDriver -->
+            <param name="monetaryDistanceRate" value="-0.000091"/>
+        </parameterset>
+        <parameterset type="modeParams">
+            <param name="constant" value="0.0" />
+            <!-- DRS NOTE: dailyMonetaryConstant must be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes
                  (use drs.carAndDrsDailyMonetaryConstant instead) -->
-			<param name="dailyMonetaryConstant" value="0.0" />
-			<param name="marginalUtilityOfDistance_util_m" value="0.0" />
-			<param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
-			<param name="mode" value="drsDriver" />
-			<!-- DRS NOTE: should be the same as monetaryDistanceRate for car -->
-			<param name="monetaryDistanceRate" value="-0.000091"/>
-		</parameterset>
-	</module>
+            <param name="dailyMonetaryConstant" value="0.0" />
+            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
+            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+            <param name="mode" value="drsDriver" />
+            <!-- DRS NOTE: should be the same as monetaryDistanceRate for car -->
+            <param name="monetaryDistanceRate" value="-0.000091"/>
+        </parameterset>
+        <!-- DRS NOTE: The scoring config for drsRider applies to BOTH matched an unmatched riders.
+             (there shouldn't be unmatched riders anymore) -->
+        <parameterset type="modeParams">
+            <param name="constant" value="0.0" />
+            <param name="dailyMonetaryConstant" value="0.0" />
+            <param name="marginalUtilityOfDistance_util_m" value="0.0" />
+            <param name="marginalUtilityOfTraveling_util_hr" value="-6.0" />
+            <param name="mode" value="drsRider" />
+            <!-- DRS NOTE: costs for using drs as rider -->
+            <param name="monetaryDistanceRate" value="-0.0002"/>
+        </parameterset>
 
-	<module name="replanning">
-		<param name="maxAgentPlanMemorySize" value="5" />
-		<param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
-		<parameterset type="strategysettings">
-			<param name="strategyName" value="SelectExpBeta"/>
-			<param name="weight" value="0.8"/>
-		</parameterset>
-		<parameterset type="strategysettings">
-			<param name="strategyName" value="ReRoute"/>
-			<param name="weight" value="0.1"/>
-		</parameterset>
-		<parameterset type="strategysettings">
-			<!-- DRS NOTE: for drs this strategy must be used instead of regular SubtourModeChoice -->
-			<param name="strategyName" value="SubtourModeChoiceForDrs"/>
-			<param name="weight" value="0.1"/>
-		</parameterset>
-	</module>
+    </module>
 
-	<module name="transit">
-		<param name="routingAlgorithmType" value="SwissRailRaptor"/>
-		<param name="transitModes" value="pt,bus,tram,subway,rail,ferry"/>
-		<param name="transitScheduleFile" value="transit_schedule.xml.gz"/>
-		<param name="useTransit" value="true"/>
-		<param name="usingTransitInMobsim" value="true"/>
-		<param name="vehiclesFile" value="transit_vehicles.xml.gz"/>
-	</module>
-	<module name="swissRailRaptor">
-		<param name="useIntermodalAccessEgress" value="true"/>
-		<parameterset type="intermodalAccessEgress">
-			<param name="mode" value="walk"/>
-			<param name="initialSearchRadius" value="500"/>
-			<param name="searchExtensionRadius" value="500"/>
-			<param name="maxRadius" value="2000"/>
-		</parameterset>
-	</module>
+    <module name="replanning">
+        <param name="maxAgentPlanMemorySize" value="5" />
+        <param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
+        <param name="fractionOfIterationsToDisableInnovation" value="0.9" />
+        <parameterset type="strategysettings">
+            <param name="strategyName" value="SelectExpBeta"/>
+            <param name="weight" value="0.6"/>
+        </parameterset>
+        <parameterset type="strategysettings">
+            <param name="strategyName" value="ReRoute"/>
+            <param name="weight" value="0.1"/>
+        </parameterset>
+        <parameterset type="strategysettings">
+            <!-- DRS NOTE: for drs this strategy must be used instead of regular SubtourModeChoice -->
+            <param name="strategyName" value="SubtourModeChoiceForDrs"/>
+            <param name="weight" value="0.3"/>
+        </parameterset>
+    </module>
 
-	<!-- DRS NOTE: main drs config, leave empty to use defaults -->
-	<module name="drs">
-		<param name="driverProfitPerKm" value="0.8" />
-		<param name="carAndDrsDailyMonetaryConstant" value="-12.34" />
-		<param name="pickupWaitingSeconds" value="180" />
-	</module>
+    <module name="transit">
+        <param name="routingAlgorithmType" value="SwissRailRaptor"/>
+        <param name="transitModes" value="pt,bus,tram,subway,rail,ferry"/>
+        <param name="transitScheduleFile" value="transit_schedule.xml.gz"/>
+        <param name="useTransit" value="true"/>
+        <param name="usingTransitInMobsim" value="true"/>
+        <param name="vehiclesFile" value="transit_vehicles.xml.gz"/>
+    </module>
+    <module name="swissRailRaptor">
+        <param name="useIntermodalAccessEgress" value="true"/>
+        <parameterset type="intermodalAccessEgress">
+            <param name="mode" value="walk"/>
+            <param name="initialSearchRadius" value="500"/>
+            <param name="searchExtensionRadius" value="500"/>
+            <param name="maxRadius" value="2000"/>
+        </parameterset>
+    </module>
+
+    <!-- DRS NOTE: main drs config, leave empty to use defaults -->
+    <module name="drs">
+        <param name="driverProfitPerKm" value="0.8" />
+        <param name="carAndDrsDailyMonetaryConstant" value="-12.34" />
+        <param name="pickupWaitingSeconds" value="300" />
+    </module>
 </config>
