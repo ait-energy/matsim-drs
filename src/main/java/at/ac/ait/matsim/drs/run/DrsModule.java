@@ -14,7 +14,6 @@ import at.ac.ait.matsim.drs.engine.DrsData;
 import at.ac.ait.matsim.drs.engine.DrsReplanningListener;
 import at.ac.ait.matsim.drs.engine.PermissibleModesCalculatorForDrs;
 import at.ac.ait.matsim.drs.engine.PlanModificationUndoer;
-import at.ac.ait.matsim.drs.engine.SubtourModeChoiceForDrs;
 import at.ac.ait.matsim.drs.engine.UnmatchedRiderConflictIdentifier;
 
 public final class DrsModule extends AbstractModule {
@@ -34,8 +33,6 @@ public final class DrsModule extends AbstractModule {
         bind(DrsData.class).asEagerSingleton();
 
         bind(PermissibleModesCalculator.class).to(PermissibleModesCalculatorForDrs.class);
-        addPlanStrategyBinding(SubtourModeChoiceForDrs.STRATEGY_NAME)
-                .toProvider(SubtourModeChoiceForDrs.Provider.class);
 
         installQSimModule(new DrsEngineQSimModule());
 

@@ -24,11 +24,11 @@ public class RunNoDriverExample extends RunSimpleDrsExample {
         // (so that we can demonstrate the unmatched rider problem)
         config.replanning().clearStrategySettings();
         config.replanning()
-                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(1));
+                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoice").setWeight(1));
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setSubtourModeChoiceModes(new String[] { Drs.RIDER_MODE, TransportMode.bike });
-        drs.setSubtourModeChoiceChainBasedModes(new String[] { TransportMode.bike });
+        config.subtourModeChoice().setModes(new String[] { Drs.RIDER_MODE, TransportMode.bike });
+        config.subtourModeChoice().setChainBasedModes(new String[] { TransportMode.bike });
     }
 
 }

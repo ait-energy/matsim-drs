@@ -26,13 +26,12 @@ public class RunTrivialMatchWithReRouteExample extends RunSimpleDrsExample {
         config.replanning()
                 .addStrategySettings(new StrategySettings().setStrategyName("BestScore").setWeight(0.1));
         config.replanning()
-                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(0.4));
+                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoice").setWeight(0.4));
         config.replanning()
                 .addStrategySettings(new StrategySettings().setStrategyName("ReRoute").setWeight(0.5));
 
-        DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setSubtourModeChoiceModes(new String[] { Drs.DRIVER_MODE, Drs.RIDER_MODE, TransportMode.bike });
-        drs.setSubtourModeChoiceChainBasedModes(new String[] { Drs.DRIVER_MODE, TransportMode.bike });
+        config.subtourModeChoice().setModes(new String[] { Drs.DRIVER_MODE, Drs.RIDER_MODE, TransportMode.bike });
+        config.subtourModeChoice().setChainBasedModes(new String[] { Drs.DRIVER_MODE, TransportMode.bike });
     }
 
 }

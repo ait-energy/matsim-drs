@@ -162,10 +162,15 @@
             <param name="weight" value="0.1"/>
         </parameterset>
         <parameterset type="strategysettings">
-            <!-- DRS NOTE: for drs this strategy must be used instead of regular SubtourModeChoice -->
-            <param name="strategyName" value="SubtourModeChoiceForDrs"/>
+            <param name="strategyName" value="SubtourModeChoice"/>
             <param name="weight" value="0.3"/>
         </parameterset>
+    </module>
+
+    <!-- DRS NOTE: when using SubtourModeChoice the drs modes must be added -->
+    <module name="subtourModeChoice">
+        <param name="chainBasedModes" value="car,drsDriver,bike" />
+        <param name="modes" value="car,drsDriver,drsRider,pt,bike,walk" />
     </module>
 
     <module name="transit">
@@ -185,6 +190,8 @@
             <param name="maxRadius" value="2000"/>
         </parameterset>
     </module>
+
+
 
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">

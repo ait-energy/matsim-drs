@@ -119,18 +119,10 @@ def adjust_replanning(tree: etree.ElementTree) -> None:
         "module[@name='replanning']/"
         "parameterset[@type='strategysettings' and param[@name='strategyName'] and param[@value='SubtourModeChoice']]"
     )
-    logger.info(
-        f"replanning: changing {len(smc)} SubtourModeChoice strategies to SubtourModeChoiceForDrs"
+    logger.info(f"replanning: using {len(smc)} SubtourModeChoice strategies")
+    logger.warning(
+        "TODO implement checking if drsDriver and drsRider are present to the subtourmodechoice config group"
     )
-    for p in smc:
-        p.find("param[@name='strategyName']").set("value", "SubtourModeChoiceForDrs")
-
-    smc_for_drs = tree.xpath(
-        "module[@name='replanning']/"
-        "parameterset[@type='strategysettings' and param[@name='strategyName'] and param[@value='SubtourModeChoiceForDrs']]"
-    )
-    if len(smc_for_drs) == 0:
-        logger.warning("replanning: no SubtourModeChoiceForDrs found")
 
 
 def adjust_routing(tree: etree.ElementTree) -> None:

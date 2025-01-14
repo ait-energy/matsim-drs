@@ -24,11 +24,10 @@ public class RunTrivialMatchExample extends RunSimpleDrsExample {
         // (so that we can demonstrate the perfect match)
         config.replanning().clearStrategySettings();
         config.replanning()
-                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoiceForDrs").setWeight(1));
+                .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoice").setWeight(1));
 
-        DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setSubtourModeChoiceModes(new String[] { Drs.DRIVER_MODE, Drs.RIDER_MODE, TransportMode.bike });
-        drs.setSubtourModeChoiceChainBasedModes(new String[] { Drs.DRIVER_MODE, TransportMode.bike });
+        config.subtourModeChoice().setModes(new String[] { Drs.DRIVER_MODE, Drs.RIDER_MODE, TransportMode.bike });
+        config.subtourModeChoice().setChainBasedModes(new String[] { Drs.DRIVER_MODE, TransportMode.bike });
     }
 
 }

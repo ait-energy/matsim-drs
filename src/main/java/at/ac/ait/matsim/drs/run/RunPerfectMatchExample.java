@@ -17,10 +17,9 @@ public class RunPerfectMatchExample extends RunSimpleDrsExample {
         config.controller().setLastIteration(100);
         config.controller().setOutputDirectory("output-floridsdorf-perfectMatch");
         config.plans().setInputFile("population_drs_perfectMatch.xml");
+        // just check if multi-threading breaks
         config.qsim().setNumberOfThreads(10);
         config.global().setNumberOfThreads(10);
-
-        // DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
     }
 
 }

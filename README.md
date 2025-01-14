@@ -57,8 +57,9 @@ In more detail, DRS is integrated into the MATSim loop as follows:
 
 ### Replanning
 
-First the slightly adjusted innovation strategy `SubtourModeChoiceForDrs` assigns the new modes `drsDriver` and `drsRider` to agents' subtours.
-This assignment can be restricted with the person attribute `drsAffinity`.
+In case of using `SubtourModeChoice` replanning:
+The drs modes must be added via the regular `SubtourModeChoice` config group.
+Then `PermissibleModesCalculatorForDrs` takes care to remove drs for agents that don't want it using their `drsAffinity`.
 
 Then requests are collected and matched based on origin, destination, departure time and detour time.
 The riders' acceptance of deviations to their desired departure time can be controlled with the DRS config parameter `riderDepartureTimeAdjustmentSeconds`.
@@ -156,10 +157,6 @@ List of all parameters:
   During the matching process, the arrival of driver to pick-up point is checked
   whether it is within the rider departure time +- the riderDepartureTimeAdjustment.
 
-**Plan Innovation**
-
-- `subtourModeChoiceChainBasedModes`: Defines the chain-based modes for the `SubtourModeChoiceForDrs` strategy, separated by commas.
-- `subtourModeChoiceModes`: Defines all modes available for the `SubtourModeChoiceForDrs` strategy, including chain-based modes, separated by commas.
 
 ### Run Example
 
@@ -174,11 +171,12 @@ This should assure, that at the beginning of the simulation many drivers are pre
 (MATSim guarantees to try out / score all un-scored plans of an agent - see `RandomUnscoredPlanSelector` -
 before a different plan is selected e.g. via `SelectPlanExpBeta`).
 
-### Mode Innovation
+### Replanning / Mode Innovation
 
-Mode innovation relies on an adapted version of the innovation strategy `SubtourModeChoice` named `SubtourModeChoiceForDrs`.
-`SubtourModeChoiceForDrs` will by default add the DRS driver and rider mode to the mix
-and can also be configured via the relevant parameters in the `drs` config group.
+#### SubtourModeChoice
+
+The drs modes must be added via the regular `SubtourModeChoice` config group.
+Then the `PermissibleModesCalculatorForDrs` takes care to remove drs for agents that don't want it using their `drsAffinity`.
 
 ### Output
 

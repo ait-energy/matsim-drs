@@ -17,13 +17,18 @@ import com.google.inject.Inject;
 import at.ac.ait.matsim.drs.run.Drs;
 import at.ac.ait.matsim.drs.util.DrsUtil;
 
+/**
+ * Adds drs modes where applicable (see drsAffinity) in addition to the default
+ * modes.
+ * Mostly relevant for replanning with SubtourModeChoice.
+ */
 public class PermissibleModesCalculatorForDrs implements PermissibleModesCalculator {
 
     private final Set<String> availableModes;
 
     @Inject
     public PermissibleModesCalculatorForDrs(Config config) {
-        this.availableModes = ImmutableSet.copyOf(Drs.addOrGetConfigGroup(config).getSubtourModeChoiceModes());
+        this.availableModes = ImmutableSet.copyOf(config.subtourModeChoice().getModes());
     }
 
     @Override
