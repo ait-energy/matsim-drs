@@ -21,7 +21,7 @@ public class RunViennaExample {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml");
+        Config config = ConfigUtils.loadConfig("data/vienna/config_drs.xml", new DrsConfigGroup());
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         enforceMaxPopulationSize(scenario.getPopulation(), 1_000);
