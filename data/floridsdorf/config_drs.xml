@@ -175,6 +175,29 @@
         <param name="modes" value="car,drsDriver,drsRider,pt,bike,walk" />
     </module>
 
+    <module name="DiscreteModeChoice">
+        <param name="modelType" value="Tour" />
+
+        <param name="modeAvailability" value="Car" />
+        <parameterset type="modeAvailability:Car">
+            <param name="availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
+        </parameterset>
+
+        <!--<param name="tourEstimator" value="MATSimDayScoring" />-->
+        <param name="tourEstimator" value="Uniform" />
+
+        <!--<param name="selector" value="MultinomialLogit" />-->
+        <param name="selector" value="Random" />
+
+        <param name="tourFinder" value="ActivityBased" />
+        <parameterset type="tourFinder:ActivityBased">
+            <!-- means that each home activity marks the end of a tour -->
+            <param name="activityTypes" value="home" />
+        </parameterset>
+
+        <param name="tourConstraints" value="VehicleContinuity" />
+    </module>
+
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">
         <param name="driverProfitPerKm" value="1" />

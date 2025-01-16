@@ -58,6 +58,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>discrete_mode_choice</artifactId>
+            <version>${matsim.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.matsim</groupId>
             <artifactId>pt2matsim</artifactId>
             <version>24.4</version>

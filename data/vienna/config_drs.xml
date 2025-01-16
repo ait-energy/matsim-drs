@@ -191,8 +191,6 @@
         </parameterset>
     </module>
 
-
-
     <!-- DRS NOTE: main drs config, leave empty to use defaults -->
     <module name="drs">
         <param name="driverProfitPerKm" value="0.8" />

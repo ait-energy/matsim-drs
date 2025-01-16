@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.contribs.discrete_mode_choice.modules.DiscreteModeChoiceModule;
+import org.matsim.contribs.discrete_mode_choice.modules.config.DiscreteModeChoiceConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
@@ -22,13 +24,14 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
  */
 public class RunSimpleDrsExample {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String configFile = "data/floridsdorf/config_drs.xml";
 
     public static void main(String[] args) {
         new RunSimpleDrsExample().run(true, null);
     }
 
     public void run(boolean assignDrs, Path outputDirOverride) {
-        Config config = ConfigUtils.loadConfig("data/floridsdorf/config_drs.xml", new DrsConfigGroup());
+        Config config = ConfigUtils.loadConfig(configFile, new DrsConfigGroup(), new DiscreteModeChoiceConfigGroup());
         adjustConfig(config);
         if (outputDirOverride != null) {
             config.controller().setOutputDirectory(outputDirOverride.toAbsolutePath().toString());
@@ -65,6 +68,7 @@ public class RunSimpleDrsExample {
 
         // necessary to register the drs module
         Drs.prepareController(controller);
+        controller.addOverridingModule(new DiscreteModeChoiceModule());
 
         controller.run();
     }

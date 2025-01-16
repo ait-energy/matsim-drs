@@ -26,7 +26,6 @@ public class RunNoDriverExample extends RunSimpleDrsExample {
         config.replanning()
                 .addStrategySettings(new StrategySettings().setStrategyName("SubtourModeChoice").setWeight(1));
 
-        DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
         config.subtourModeChoice().setModes(new String[] { Drs.RIDER_MODE, TransportMode.bike });
         config.subtourModeChoice().setChainBasedModes(new String[] { TransportMode.bike });
     }

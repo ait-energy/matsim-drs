@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE population SYSTEM "http://www.matsim.org/files/dtd/population_v6.dtd">
+
+<population>
+    <attributes>
+        <attribute name="coordinateReferenceSystem" class="java.lang.String">epsg:31256</attribute>
+    </attributes>
+
+    <!-- Long tour suitable for hub-based ride-sharing:
+    1) Start day near Brigittenauer Brücke hub
+    2) Short car trip to hub, then ride-sharing to work near Floridsdorf U6
+    3) use pt to go to Brigittenau near Höchstädtplatz
+    4) ride-sharing back to the hub and short car trip home -->
+
+    <person id="ridePerson">
+        <attributes>
+            <attribute class="java.lang.String" name="carAvail">never</attribute>
+            <attribute class="java.lang.String" name="drsAffinity">riderOnly</attribute>
+            <attribute class="java.lang.String" name="hasLicense">no</attribute>
+        </attributes>
+        <plan selected="yes">
+            <!-- full subtour starting and ending at home so that SubtourModeChoice works properly -->
+            <activity type="home" link="626" x="5780" y="345107" start_time="07:20:00" end_time="07:20:00" />
+            <leg mode="bike" />
+            <activity type="work" link="1871" x="4863.11609" y="346331.876" start_time="07:40:00" end_time="17:30:00" />
+            <leg mode="bike" />
+            <activity type="leisure" link="152" x="3360.657" y="344813.230" start_time="18:00:00" end_time="20:00:00" />
+            <leg mode="bike" />
+            <activity type="home" link="626" x="5780" y="345107" start_time="20:30:00" />
+        </plan>
+    </person>
+
+</population>
