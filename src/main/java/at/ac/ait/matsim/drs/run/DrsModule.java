@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import at.ac.ait.matsim.drs.analysis.DrsReplanningStats;
 import at.ac.ait.matsim.drs.analysis.DrsSimStats;
 import at.ac.ait.matsim.drs.analysis.VktStatsControlerListener;
+import at.ac.ait.matsim.drs.dmc.DmcForDrsModule;
 import at.ac.ait.matsim.drs.engine.DailyMonetaryConstantListener;
 import at.ac.ait.matsim.drs.engine.DrsData;
 import at.ac.ait.matsim.drs.engine.DrsReplanningListener;
@@ -20,6 +21,8 @@ public final class DrsModule extends AbstractModule {
 
     @Override
     public void install() {
+        install(new DmcForDrsModule());
+
         addControlerListenerBinding().to(DailyMonetaryConstantListener.class);
         addControlerListenerBinding().to(DrsReplanningListener.class);
         addControlerListenerBinding().to(PlanModificationUndoer.class);

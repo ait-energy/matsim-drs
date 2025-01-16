@@ -178,8 +178,8 @@
     <module name="DiscreteModeChoice">
         <param name="modelType" value="Tour" />
 
-        <param name="modeAvailability" value="Car" />
-        <parameterset type="modeAvailability:Car">
+        <param name="modeAvailability" value="CarAndDrsDriver" />
+        <parameterset type="modeAvailability:CarAndDrsDriver">
             <param name="availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
         </parameterset>
 
