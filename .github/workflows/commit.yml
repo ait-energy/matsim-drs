@@ -1,8 +1,8 @@
-name: Build and deploy to MATSim repo for each commit to main branch
+name: Build and deploy to MATSim repo for each commit
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "meetingpoints" ]
 
 jobs:
   build:
