@@ -25,7 +25,7 @@ public class RunRidersDepartureTimeAdjustmentExample extends RunSimpleDrsExample
         config.plans().setInputFile("population_drs_departureTimeAdjustment.xml");
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setRiderDepartureTimeAdjustmentSeconds(adjustmentSeconds);
+        drs.riderDepartureTimeAdjustmentSeconds = adjustmentSeconds;
     }
 
 }

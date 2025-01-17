@@ -231,11 +231,11 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
         DrsUtil.setDrsStatus(leg, Drs.VALUE_STATUS_DRS);
         double distance = legWithRider.getRoute().getDistance();
 
-        if (drsConfig.getDriverProfitPerKm() != 0) {
+        if (drsConfig.driverProfitPerKm != 0) {
             eventsManager.processEvent(new PersonMoneyEvent(
                     now,
                     driver.getId(),
-                    drsConfig.getDriverProfitPerKm() * distance / 1000d,
+                    drsConfig.driverProfitPerKm * distance / 1000d,
                     Drs.DRIVER_MODE + " profit",
                     rider.getId().toString(),
                     null));

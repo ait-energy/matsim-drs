@@ -19,7 +19,7 @@ public class RunSinglePickupExample extends RunSimpleDrsExample {
         config.plans().setInputFile("population_drs_singlePickup.xml");
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setPickupWaitingSeconds(300);
+        drs.pickupWaitingSeconds = 300;
     }
 
 }

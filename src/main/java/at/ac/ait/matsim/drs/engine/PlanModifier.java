@@ -41,7 +41,7 @@ public class PlanModifier {
     private void addNewActivitiesToDriverPlan(DrsMatch match, double pickupTime) {
         Activity pickup = populationFactory.createActivityFromLinkId(Drs.DRIVER_INTERACTION,
                 match.getRider().getFromLink().getId());
-        pickup.setEndTime(pickupTime + drsConfig.getPickupWaitingSeconds());
+        pickup.setEndTime(pickupTime + drsConfig.pickupWaitingSeconds);
         DrsUtil.setActivityType(pickup, Drs.ActivityType.pickup);
         DrsUtil.setRiderId(pickup, match.getRider().getPerson().getId());
 

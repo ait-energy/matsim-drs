@@ -48,8 +48,8 @@ class RequestsCollectorTest {
     @Test
     void testNumberOfRequestsWithMinimumDistances() {
         DrsConfigGroup cfgWithMinimums = new DrsConfigGroup();
-        cfgWithMinimums.setMinDriverLegMeters(4_500);
-        cfgWithMinimums.setMinRiderLegMeters(2_000);
+        cfgWithMinimums.minDriverLegMeters = 4_500;
+        cfgWithMinimums.minRiderLegMeters = 2_000;
         RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
         collector.collectRequests();
 
@@ -60,8 +60,8 @@ class RequestsCollectorTest {
     @Test
     void testNumberOfRequestsWithMinimumDistancesExtreme() {
         DrsConfigGroup cfgWithMinimums = new DrsConfigGroup();
-        cfgWithMinimums.setMinDriverLegMeters(20_000);
-        cfgWithMinimums.setMinRiderLegMeters(20_000);
+        cfgWithMinimums.minDriverLegMeters = 20_000;
+        cfgWithMinimums.minRiderLegMeters = 20_000;
         RequestsCollector collector = new RequestsCollector(cfgWithMinimums, population, network, driverRouter);
         collector.collectRequests();
 

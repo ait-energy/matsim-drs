@@ -126,9 +126,9 @@ public class MatchMaker {
     public List<DrsRiderRequest> findPotentialRiders(Node origin, Node destination, double departureTime) {
         return findPotentialRiders(drsConfig,
                 requestsRegister.getOriginZoneRegistry().findRequestsWithinDistance(origin,
-                        drsConfig.getMaxMatchingDistanceMeters()),
+                        drsConfig.maxMatchingDistanceMeters),
                 requestsRegister.getDestinationZoneRegistry().findRequestsWithinDistance(destination,
-                        drsConfig.getMaxMatchingDistanceMeters()),
+                        drsConfig.maxMatchingDistanceMeters),
                 requestsRegister.getTimeSegmentRegistry().findNearestRequests(departureTime));
     }
 
@@ -141,7 +141,7 @@ public class MatchMaker {
                 .filter(DrsRiderRequest.class::isInstance)
                 .map(DrsRiderRequest.class::cast);
         return zoneRegistryIntersection.filter(temporalNearRequests.collect(Collectors.toList())::contains)
-                .limit(drsConfig.getMaxPossibleCandidates())
+                .limit(drsConfig.maxPossibleCandidates)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

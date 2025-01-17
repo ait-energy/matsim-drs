@@ -19,7 +19,7 @@ public class RunRidersLateForPickupExample extends RunSimpleDrsExample {
         config.plans().setInputFile("population_drs_ridersLateForPickup.xml");
 
         DrsConfigGroup drs = (DrsConfigGroup) config.getModules().get("drs");
-        drs.setPickupWaitingSeconds(120);
+        drs.pickupWaitingSeconds = 120;
     }
 
 }

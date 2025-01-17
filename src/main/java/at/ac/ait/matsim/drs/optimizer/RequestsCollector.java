@@ -69,14 +69,14 @@ public class RequestsCollector {
 
                 double distance = request.getNetworkRouteDistance();
                 if (request instanceof DrsDriverRequest) {
-                    if (drsConfig.getMinDriverLegMeters() <= 0 || drsConfig.getMinDriverLegMeters() <= distance) {
+                    if (drsConfig.minDriverLegMeters <= 0 || drsConfig.minDriverLegMeters <= distance) {
                         driverRequests.add((DrsDriverRequest) request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),
                                 person.getId());
                     }
                 } else if (request instanceof DrsRiderRequest) {
-                    if (drsConfig.getMinRiderLegMeters() <= 0 || drsConfig.getMinRiderLegMeters() <= distance) {
+                    if (drsConfig.minRiderLegMeters <= 0 || drsConfig.minRiderLegMeters <= distance) {
                         riderRequests.add((DrsRiderRequest) request);
                     } else {
                         LOGGER.debug("Ignoring {} request below min distance for person {}", request.getMode(),

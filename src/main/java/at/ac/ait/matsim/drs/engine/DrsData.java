@@ -38,7 +38,7 @@ public class DrsData {
         LOGGER.debug("Removed links: {}",
                 Sets.difference(scenario.getNetwork().getLinks().keySet(), drsNetwork.getLinks().keySet()));
 
-        int resolution = findH3ResolutionForDistance(drsConfig.getMaxMatchingDistanceMeters());
+        int resolution = findH3ResolutionForDistance(drsConfig.maxMatchingDistanceMeters);
         this.zoneSystem = new H3ZoneSystem(scenario.getConfig().global().getCoordinateSystem(), resolution,
                 scenario.getNetwork(), Predicates.alwaysTrue());
         LOGGER.info("Initialized H3 zone system with resolution {}.", resolution);

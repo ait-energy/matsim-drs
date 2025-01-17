@@ -35,7 +35,7 @@ public class PotentialMatchFinder {
                     driverRequest.getPerson());
             double expectedPickupTime = driverRequest.getDepartureTime() + toPickup.getTravelTime().seconds();
             if (checkRiderTimeConstraints(riderRequest, expectedPickupTime,
-                    drsConfig.getRiderDepartureTimeAdjustmentSeconds())) {
+                    drsConfig.riderDepartureTimeAdjustmentSeconds)) {
                 filteredRiderRequests.add(DrsMatch.createMinimal(driverRequest, riderRequest, toPickup));
             }
         }

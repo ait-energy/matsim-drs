@@ -180,9 +180,9 @@
 
         <param name="modeAvailability" value="CarAndDrsDriver" />
         <!-- TODO how to get rid of java.lang.IllegalStateException: Unknown component configuration of type 'modeAvailability' and name 'CarAndDrsDriver'. -->
-        <parameterset type="modeAvailability:CarAndDrsDriver">
+        <!-- <parameterset type="modeAvailability:CarAndDrsDriver">
             <param name="availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
-        </parameterset>
+        </parameterset> -->
 
         <!--<param name="tourEstimator" value="MATSimDayScoring" />-->
         <param name="tourEstimator" value="Uniform" />

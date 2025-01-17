@@ -47,7 +47,7 @@ class PotentialMatchFinderTest {
         RoutingModule driverRouter = routingForTests.getDriverRouter();
 
         DrsConfigGroup cfg = new DrsConfigGroup();
-        cfg.setRiderDepartureTimeAdjustmentSeconds(180);
+        cfg.riderDepartureTimeAdjustmentSeconds = 180;
         potentialMatchFinder = new PotentialMatchFinder(cfg, driverRouter);
         driverRequest = DrsTestUtil.mockDriverRequest(1, 8 * 60 * 60,
                 network.getLinks().get(Id.createLinkId(1540)), null);

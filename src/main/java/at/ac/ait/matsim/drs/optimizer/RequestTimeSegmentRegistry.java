@@ -24,7 +24,7 @@ public class RequestTimeSegmentRegistry {
     }
 
     public void addRequest(DrsRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.timeSegmentLengthSeconds);
         Map<Id<Request>, DrsRequest> requestsInTimeSegment = requestsInTimeSegments.get(timeSegment);
         if (requestsInTimeSegment != null) {
             if (requestsInTimeSegments.get(timeSegment).get(request.getId()) != null) {
@@ -40,14 +40,14 @@ public class RequestTimeSegmentRegistry {
     }
 
     public void removeRequest(DrsRequest request) {
-        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(request.getDepartureTime(), drsConfig.timeSegmentLengthSeconds);
         if (requestsInTimeSegments.get(timeSegment).remove(request.getId()) == null) {
             throw new IllegalStateException(request + " is not in the registry");
         }
     }
 
     public Stream<DrsRequest> findNearestRequests(double departureTime) {
-        int timeSegment = getTimeSegment(departureTime, drsConfig.getTimeSegmentLengthSeconds());
+        int timeSegment = getTimeSegment(departureTime, drsConfig.timeSegmentLengthSeconds);
         Stream<DrsRequest> requestsInPreviousSegment = Stream.empty();
         Stream<DrsRequest> requestsInCurrentSegment = Stream.empty();
         Stream<DrsRequest> requestsInNextSegment = Stream.empty();
