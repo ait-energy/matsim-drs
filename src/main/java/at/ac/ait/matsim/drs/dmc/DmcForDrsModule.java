@@ -18,7 +18,9 @@ public class DmcForDrsModule extends AbstractDiscreteModeChoiceExtension {
     @Provides
     public CarAndDrsDriverModeAvailability provideCarAndDrsDriverModeAvailability(
             DiscreteModeChoiceConfigGroup dmcConfig) {
-        ModeAvailabilityConfigGroup config = dmcConfig.getCarModeAvailabilityConfig();
+        ModeAvailabilityConfigGroup config = (ModeAvailabilityConfigGroup) dmcConfig.getComponentConfig(
+                DiscreteModeChoiceConfigGroup.MODE_AVAILABILITY,
+                CAR_AND_DRSDRIVER);
         return new CarAndDrsDriverModeAvailability(config.getAvailableModes());
     }
 

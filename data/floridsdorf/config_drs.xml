@@ -179,8 +179,8 @@
         <param name="modelType" value="Tour" />
 
         <param name="modeAvailability" value="CarAndDrsDriver" />
-        <parameterset type="modeAvailability:Car">
-            <!-- should be modeAvailability:Car but this fails.. however, this config works, the correct modes are passed to our modAvailability -->
+        <!-- TODO how to get rid of java.lang.IllegalStateException: Unknown component configuration of type 'modeAvailability' and name 'CarAndDrsDriver'. -->
+        <parameterset type="modeAvailability:CarAndDrsDriver">
             <param name="availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
         </parameterset>
 
