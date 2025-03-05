@@ -8,7 +8,7 @@
     <description>Dynamic Ride-Sharing for MATSim</description>
 
     <properties>
-        <matsim.version>2025.0-PR3544</matsim.version>
+        <matsim.version>2025.0-PR3759</matsim.version>
 
         <!-- the properties below are taken from the matsim pom.xml (so we use matching versions!)-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,7 +21,7 @@
         <guava.version>33.3.0-jre</guava.version>
         <jackson.version>2.17.2</jackson.version>
         <jts.version>1.20.0</jts.version>
-        <log4j.version>2.24.0</log4j.version>
+        <log4j.version>2.24.2</log4j.version>
     </properties>
 
     <distributionManagement>
