@@ -42,7 +42,7 @@ import at.ac.ait.matsim.drs.util.DrsUtil;
  * phase.
  *
  * Note: this process must be started AFTER PersonPrepareForSim!
- * Otherwise the leg attributes (where we store machting info)
+ * Otherwise the leg attributes (where we store matching info)
  * will be cleared due to rerouting.
  */
 public class DrsReplanningListener implements ReplanningListener, IterationStartsListener {
@@ -103,7 +103,8 @@ public class DrsReplanningListener implements ReplanningListener, IterationStart
         optimizeDrs(event.getIteration(), event.isLastIteration());
         conflictManager.run(scenario.getPopulation(), event.getIteration());
 
-        // TODO rethink this. deleting the plans here could hinder
+        // we initially deleted conflicting plans.
+        // but on second thought this seems to hinder
         // reaching equilibrium (as seen with PerfectMatchExample)
         // unmatchedRiderConflictResolver.deleteInvalidPlans(scenario.getPopulation());
     }
