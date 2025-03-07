@@ -48,10 +48,6 @@ public class UnmatchedRiderConflictResolver extends UnmatchedRiderConflictIdenti
         return conflictingPersonIds;
     }
 
-    /**
-     * ConflictManager does not delete invalid plans as of MATSim 2024.0, so let's
-     * take care of that ourselves
-     */
     public void deleteInvalidPlans(Population population) {
         for (Entry<Id<Person>, Plan> e : invalidPlans.entrySet()) {
             Person person = population.getPersons().get(e.getKey());
