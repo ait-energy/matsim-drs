@@ -1,5 +1,9 @@
 package at.ac.ait.matsim.drs.run;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.matsim.contrib.common.util.ReflectiveConfigGroupWithConfigurableParameterSets;
 
 import jakarta.validation.constraints.Positive;
@@ -59,13 +63,29 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
     public double carAndDrsDailyMonetaryConstant = 0;
 
     @Parameter
-    @Comment("minimum length of legs (routed with the drsDriver mode) to be considered for the drsDriver mode. 0 means no minimum.")
+    @Comment("Minimum length of legs (routed with the drsDriver mode) to be considered for the drsDriver mode. 0 means no minimum.")
     @PositiveOrZero
     public int minDriverLegMeters = 10;
 
     @Parameter
-    @Comment("minimum length of legs (routed with the drsDriver mode) to be considered for the drsRider mode. 0 means no minimum.")
+    @Comment("Minimum length of legs (routed with the drsDriver mode) to be considered for the drsRider mode. 0 means no minimum.")
     @PositiveOrZero
     public int minRiderLegMeters = 10;
+
+    // The DMC modules allows for a lot of extensions,
+    // but it was not possible to introduce something like
+    // <parameterset type="modeAvailability:CarAndDrsDriver">
+    // -> This means we have to configure the modes in our module config
+    @Parameter("DiscreteModeChoice.modeAvailability.CarAndDrsDriver.availableModes")
+    @Comment("Available modes to be used when using DMC with modeAvailability=CarAndDrsDriver. Comma-separated list of modes.")
+    public String dmcCarAndDrsDriverAvailableModes = "car,drsDriver,drsRider";
+
+    public List<String> getDmcCarAndDrsDriverAvailableModes() {
+        if (dmcCarAndDrsDriverAvailableModes == null) {
+            return List.of();
+        }
+        return Arrays.asList(dmcCarAndDrsDriverAvailableModes.split(",")).stream().map(String::trim)
+                .collect(Collectors.toList());
+    }
 
 }

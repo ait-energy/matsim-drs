@@ -178,11 +178,8 @@
     <module name="DiscreteModeChoice">
         <param name="modelType" value="Tour" />
 
+        <!-- note: availableModes are configured in drs module -->
         <param name="modeAvailability" value="CarAndDrsDriver" />
-        <!-- TODO how to get rid of java.lang.IllegalStateException: Unknown component configuration of type 'modeAvailability' and name 'CarAndDrsDriver'. -->
-        <!-- <parameterset type="modeAvailability:CarAndDrsDriver">
-            <param name="availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
-        </parameterset> -->
 
         <!--<param name="tourEstimator" value="MATSimDayScoring" />-->
         <param name="tourEstimator" value="Uniform" />
@@ -204,6 +201,7 @@
         <param name="driverProfitPerKm" value="1" />
         <param name="maxMatchingDistanceMeters" value="500" />
         <param name="pickupWaitingSeconds" value="300" />
+        <param name="DiscreteModeChoice.modeAvailability.CarAndDrsDriver.availableModes" value="car,drsDriver,drsRider,pt,bike,walk" />
     </module>
 
 </config>

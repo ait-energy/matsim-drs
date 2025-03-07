@@ -13,7 +13,11 @@ import org.matsim.core.population.PersonUtils;
 import at.ac.ait.matsim.drs.run.Drs;
 
 /**
- * Similar to CarModeAvailability but also handles drsDriver properly
+ * This mode availability filters out "car" and "drsDriver" from the list of
+ * given modes if an agent does not have a driving license or does not have car
+ * availability.
+ *
+ * I.e. it is similar to CarModeAvailability but also handles drsDriver properly
  */
 public class CarAndDrsDriverModeAvailability extends DefaultModeAvailability {
     public CarAndDrsDriverModeAvailability(Collection<String> modes) {
