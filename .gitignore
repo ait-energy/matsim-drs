@@ -4,6 +4,7 @@
 /TODO.md
 /data/floridsdorf/network.geojsonl
 /data/vienna
+/config-baseline*
 
 dependency-reduced-pom.xml
 /target
