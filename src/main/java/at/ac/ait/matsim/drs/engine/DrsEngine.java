@@ -246,7 +246,13 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
         eventsManager.processEvent(new PersonLeavesVehicleEvent(now, rider.getId(), driver.getVehicle().getId()));
         rider.notifyArrivalOnLinkByNonNetworkMode(rider.getDestinationLinkId());
         rider.endLegAndComputeNextState(now);
-        internalInterface.arrangeNextAgentState(rider);
+        try {
+            internalInterface.arrangeNextAgentState(rider);
+        } catch (Exception e) {
+            LOGGER.error("Failed to arrangeNextAgentState for rider agent {} after dropoff by {}", rider.getId(),
+                    driver.getId());
+            throw e;
+        }
     }
 
     /**
@@ -299,7 +305,13 @@ public class DrsEngine implements MobsimEngine, ActivityHandler, DepartureHandle
 
         // end the interaction activity early due to successful pickup
         driver.endActivityAndComputeNextState(now);
-        internalInterface.arrangeNextAgentState(driver);
+        try {
+            internalInterface.arrangeNextAgentState(driver);
+        } catch (Exception e) {
+            LOGGER.error("Failed to arrangeNextAgentState for driver agent {} after pickup of {}", driver.getId(),
+                    rider.getId());
+            throw e;
+        }
         return false;
     }
 
