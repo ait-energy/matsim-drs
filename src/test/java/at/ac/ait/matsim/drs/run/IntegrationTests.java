@@ -438,4 +438,16 @@ public class IntegrationTests {
         assertEquals("6", replanningStats.get(100, CsvField.matchedDrivers));
         assertEquals("0", replanningStats.get(100, CsvField.unmatchedDrivers));
     }
+
+    /**
+     * For now simply check that the run completes without crashing
+     */
+    @Test
+    @Tag("IntegrationTest")
+    public void testDMCMeetingPoints(
+            @TempDir(cleanup = CleanupMode.NEVER, factory = TDFactory.class) Path tempDir)
+            throws Exception {
+
+        new RunDmcExample().run(true, tempDir);
+    }
 }
