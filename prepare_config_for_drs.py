@@ -115,13 +115,22 @@ def adjust_qsim(tree: etree.ElementTree) -> None:
 
 
 def adjust_replanning(tree: etree.ElementTree) -> None:
+    replanning = tree.find("module[@name='replanning']")
+    removal_selector = replanning.find("param[@name='planSelectorForRemoval']")
+    if removal_selector != "WorstPlanForRemovalSelectorWithConflicts":
+        logger.warning(
+            "replanning.planSelectorForRemoval: must take conflict resolving into account, "
+            "otherwise ConflictManager is likely to stop the simulation with the exception '* has no non-conflicting plan'."
+            "Verify your selector or switch to 'WorstPlanForRemovalSelectorWithConflicts'"
+        )
+
     smc = tree.xpath(
         "module[@name='replanning']/"
         "parameterset[@type='strategysettings' and param[@name='strategyName'] and param[@value='SubtourModeChoice']]"
     )
     logger.info(f"replanning: using {len(smc)} SubtourModeChoice strategies")
     logger.warning(
-        "TODO implement checking if drsDriver and drsRider are present to the subtourmodechoice config group"
+        "TODO implement checking if drsDriver and drsRider are present in the subtourmodechoice config group"
     )
 
 
@@ -188,9 +197,9 @@ def _adjust_scoring(scoring: etree.Element) -> None:
         daily_cost = daily_cost.get("value")
         if mode == "car" and float(daily_cost) != 0:
             logger.warning(
-                f"scoring for car has dailyMonetaryConstant of {daily_cost}. "
-                "It should be 0 to avoid double dailyMonetaryCost in case a plan has both car and drsDriver modes."
-                "Use drs.carAndDrsDailyMonetaryConstant instead"
+                f"scoring for 'car' sets a dailyMonetaryConstant of {daily_cost}. "
+                "It should be 0 to avoid the agent paying dailyMonetaryCost twice in case a plan has both 'car' and 'drsDriver' legs. "
+                "Consider using drs.carAndDrsDailyMonetaryConstant instead"
             )
 
     driver_mode_q = (
@@ -242,3 +251,4 @@ if __name__ == "__main__":
         xml_declaration=True,
     )
     logger.info(f"adjusted config written to {args["out_file"]}")
+    logger.warning("make sure to address / double-check all warnings!")

@@ -152,6 +152,7 @@
 
     <module name="replanning">
         <param name="maxAgentPlanMemorySize" value="5" />
+        <!-- DRS NOTE: we use a conflict resolver and therefore must use a worst plan selector considering conflicts -->
         <param name="planSelectorForRemoval" value="WorstPlanForRemovalSelectorWithConflicts" />
         <param name="fractionOfIterationsToDisableInnovation" value="0.9" />
         <parameterset type="strategysettings">

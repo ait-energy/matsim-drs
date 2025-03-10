@@ -36,7 +36,7 @@ The implemented DRS has the following additional properties / restrictions:
 - Matching of drivers and riders is done *before the start of each day* (no spontaneous requests during the day or during the trip),
   i.e. in the `replanning` phase of the MATSim loop before `mobsim`.
   In comparison to Wang et al (2017) this approach reduces complexity and avoids waiting time for the rider,
-  since with the `dvrp` module only allows a rider to request a ride when he already wants to depart.
+  since the `dvrp` module only allows a rider to request a ride when he already wants to depart.
 
 **New modes of transport**
 
