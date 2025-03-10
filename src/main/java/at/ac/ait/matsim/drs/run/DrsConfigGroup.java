@@ -1,10 +1,17 @@
 package at.ac.ait.matsim.drs.run;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.matsim.contrib.common.util.ReflectiveConfigGroupWithConfigurableParameterSets;
+import org.matsim.core.config.Config;
+
+import com.google.common.base.Verify;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -13,9 +20,17 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
 
     public static final String GROUP_NAME = "drs";
 
+    public enum OperationalScheme {
+        door2door, drive2meetingPoint
+    };
+
     public DrsConfigGroup() {
         super(GROUP_NAME);
     }
+
+    @Parameter
+    @Comment("Basic operational scheme of dynamic ride sharing")
+    public OperationalScheme operationalScheme = OperationalScheme.door2door;
 
     @Parameter
     @Comment("Maximum euclidean distance between requests to be considered by the matching algorithm, "
@@ -86,6 +101,25 @@ public class DrsConfigGroup extends ReflectiveConfigGroupWithConfigurableParamet
         }
         return Arrays.asList(dmcCarAndDrsDriverAvailableModes.split(",")).stream().map(String::trim)
                 .collect(Collectors.toList());
+    }
+
+    @Parameter
+    @Comment("Geopackage with a layer 'meeting_points' or Shapefile containing point geometries "
+            + " with the optional attributes 'id (string)' and an 'linkId' (string). " +
+            "Points without linkId (or an invalid one) are assigned to the nearset link.")
+    @Nullable
+    public String meetingPointsGeoFile;
+
+    @Override
+    protected void checkConsistency(Config config) {
+        super.checkConsistency(config);
+
+        if (operationalScheme.equals(OperationalScheme.drive2meetingPoint)) {
+            Verify.verify(meetingPointsGeoFile != null,
+                    "meetingPointsGeoFile is required when using " + operationalScheme);
+            Verify.verify(Files.exists(Paths.get(meetingPointsGeoFile)),
+                    "the specified meetingPointsGeoFile '" + meetingPointsGeoFile + "'' does not exist");
+        }
     }
 
 }

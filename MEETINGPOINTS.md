@@ -7,10 +7,6 @@
 - driver requests (A, B, departure time)
 - rider requests (A, B, departure time)
 
-**config file adjustments**
-- new `type` = `door2door`, `driveToMeetingPoint`, .. probably more like `driveToMeetingPointSuperDuperOptimized`
-- new `meetingPointGeoFile`
-
 ## Algorithm
 
 - we must look at complete subtours

@@ -1,11 +1,14 @@
 package at.ac.ait.matsim.drs.engine;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.common.zones.systems.grid.h3.H3Utils;
 import org.matsim.contrib.common.zones.systems.grid.h3.H3ZoneSystem;
+import org.matsim.facilities.ActivityFacility;
 import org.matsim.pt2matsim.tools.NetworkTools;
 
 import com.google.common.base.Predicates;
@@ -28,6 +31,7 @@ public class DrsData {
 
     private Network drsNetwork;
     private H3ZoneSystem zoneSystem;
+    private Map<String, ActivityFacility> meetingPoints;
 
     @Inject
     public DrsData(Scenario scenario, DrsConfigGroup drsConfig) {
@@ -42,6 +46,12 @@ public class DrsData {
         this.zoneSystem = new H3ZoneSystem(scenario.getConfig().global().getCoordinateSystem(), resolution,
                 scenario.getNetwork(), Predicates.alwaysTrue());
         LOGGER.info("Initialized H3 zone system with resolution {}.", resolution);
+
+        if (drsConfig.meetingPointsGeoFile != null) {
+            meetingPoints = MeetingPoints.loadAndMatchMeetingPoints(scenario, drsConfig.meetingPointsGeoFile);
+        } else {
+            meetingPoints = Map.of();
+        }
     }
 
     public static int findH3ResolutionForDistance(int meters) {
@@ -66,4 +76,9 @@ public class DrsData {
     public H3ZoneSystem getH3ZoneSystem() {
         return zoneSystem;
     }
+
+    public Map<String, ActivityFacility> getMeetingPoints() {
+        return meetingPoints;
+    }
+
 }

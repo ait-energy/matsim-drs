@@ -20,6 +20,9 @@ import at.ac.ait.matsim.drs.run.Drs;
  * I.e. it is similar to CarModeAvailability but also handles drsDriver properly
  */
 public class CarAndDrsDriverModeAvailability extends DefaultModeAvailability {
+
+    public static final String NAME = "CarAndDrsDriver";
+
     public CarAndDrsDriverModeAvailability(Collection<String> modes) {
         super(modes);
     }
